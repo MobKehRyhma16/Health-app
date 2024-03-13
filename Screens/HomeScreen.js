@@ -4,12 +4,13 @@ import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from "react-n
 export default function HomeScreen() {
     return (
         <SafeAreaView style={styles.container}>
-        <View>
-            <Text style={styles.heading}>Home</Text>
-        </View>
+            <View>
+                <Text style={styles.heading}>Home</Text>
+            </View>
         </SafeAreaView>
     );
 }
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
