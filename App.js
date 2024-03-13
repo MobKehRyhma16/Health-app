@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './Screens/LoginScreen';
 import HomeScreen from './Screens/HomeScreen';
+import Stepcounter from './Components/Stepcounter';
 
 const Stack = createNativeStackNavigator();
 
@@ -12,6 +13,7 @@ function App() {
       <Stack.Navigator>
         <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}} />
         <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}} />
+        <Stack.Screen name="Stepcounter" component={Stepcounter} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );
