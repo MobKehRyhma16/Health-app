@@ -1,13 +1,15 @@
 import React from "react";
 import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from "react-native";
-import Stepcounter from "../Components/Stepcounter";
 
-export default function HomeScreen() {
+
+export default function PlaceholderScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <View>
-                <Stepcounter />
-                <Text style={styles.heading}>Home</Text>
+                <Text style={styles.heading}>Placeholder</Text>
+                <Text>This is a placeholder screen. It will be replaced with the actual screen.</Text>
+                <Text>For now, you can use this screen to test the navigation.</Text>
+                <Text>For example, you can navigate to this screen from the Home screen.</Text>
             </View>
         </SafeAreaView>
     );
