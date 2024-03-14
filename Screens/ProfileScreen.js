@@ -1,13 +1,11 @@
 import React from "react";
 import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from "react-native";
-import Stepcounter from "../Components/Stepcounter";
 
-export default function HomeScreen() {
+export default function ProfileScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <View>
-                <Stepcounter />
-                <Text style={styles.heading}>Home</Text>
+                <Text style={styles.heading}>Profile</Text>
             </View>
         </SafeAreaView>
     );
