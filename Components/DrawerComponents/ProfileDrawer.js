@@ -1,4 +1,4 @@
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerToggleButton } from '@react-navigation/drawer';
 import ProfileScreen from '../../Screens/ProfileScreen';
 import LoginScreen from '../../Screens/LoginScreen';
 import Info from './Info';
@@ -9,8 +9,10 @@ const Drawer = createDrawerNavigator();
 function ProfileDrawer() {
   return (
     <Drawer.Navigator 
-    initialRouteName="Profile"
-    screenOptions={{headerShown: false, drawerPosition: 'right',
+    screenOptions={{
+      drawerPosition: 'right',
+      headerLeft: false,
+      headerRight: () => <DrawerToggleButton />,
     drawerStyle: DrawerStyles.drawerContainer}}
     >
       <Drawer.Screen name="Profile" component={ProfileScreen} />
