@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView } from 'react-native';
 import { Accelerometer } from 'expo-sensors';
+import Caloriecalculator from './Caloriecalculator';
 
-const CALORIES_PER_STEP = 0.05;
+const CALORIES_PER_STEP = 0.05; 
 
 export default function Stepcounter() {
   const [steps, setSteps] = useState(0);
@@ -16,7 +17,7 @@ export default function Stepcounter() {
       if (result) {
         subscription = Accelerometer.addListener((accelerometerData) => {
           const { y } = accelerometerData;
-          const threshold = 0.1;
+          const threshold = 0.1; //sensitivity
           const timestamp = new Date().getTime();
 
           if (
@@ -63,10 +64,7 @@ export default function Stepcounter() {
           <Text style ={styles.stepsLabel}>Steps</Text>
         </View>
         <View styles = {styles.caloriesContainer}>
-          <Text style={styles.caloriesLabel}>Estimated Calories Burned:</Text>
-          <Text style ={styles.caloriesText}>
-            {estimatedCaloriesBurned.toFixed(2)} calories
-          </Text>
+        <Caloriecalculator steps={steps} />
         </View>
       </View>
 
