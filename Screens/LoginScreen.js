@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Constants from 'expo-constants';
 import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from 'react-native';
-import Login from '../Components/Login';
+import Login from '../Components/DrawerComponents/Login';
 
 export default function LoginScreen({ navigation }) {
 

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import Firebase from '../Firebase/Config';
+import Firebase from '../../Firebase/Config';
 import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from 'react-native';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import DrawerStyles from './DrawerStyles';
 
 export default function Login({ setLogin }) {
     
@@ -26,34 +27,15 @@ export default function Login({ setLogin }) {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={DrawerStyles.container}>
             <View>
-                <Text style={styles.heading}>Login</Text>
-                <Text style={styles.field}>Username</Text>
-                <TextInput style={styles.field} keyboardType='default' value={username} onChangeText={text => setUsername(text)} />
-                <Text style={styles.field}>Password</Text>
-                <TextInput style={styles.field} keyboardType='default' value={password} onChangeText={text => setPassword(text)} />
+                <Text style={DrawerStyles.heading}>Login</Text>
+                <Text style={DrawerStyles.field}>Username</Text>
+                <TextInput style={DrawerStyles.field} keyboardType='default' value={username} onChangeText={text => setUsername(text)} />
+                <Text style={DrawerStyles.field}>Password</Text>
+                <TextInput style={DrawerStyles.field} keyboardType='default' value={password} onChangeText={text => setPassword(text)} />
                 <Button title='Login' onPress={login} />
             </View>
         </SafeAreaView>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        padding: 16,
-    },
-    heading: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 16,
-    },
-    field: {
-        marginBottom: 8,
-    },
-    errorMessage: {
-        marginBottom: 16,
-    },
-});
