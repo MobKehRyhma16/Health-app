@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import trackLocation from './getLocation'; // Assuming you have the Location component in Location.js
+import trackLocation from './getLocation';
 
 const useLocationRecorder = () => {
   const [locationList, setLocationList] = useState([]);

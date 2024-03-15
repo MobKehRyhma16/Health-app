@@ -1,11 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native';
-import LocationView from './screens/ShowLocation';
-import RecordLocationScreen from './screens/ShowLocations';
+import StartWorkoutScreen from './screens/StartWorkout';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <RecordLocationScreen />
+      <StartWorkoutScreen />
     </View>
   );
 }
@@ -13,8 +12,5 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

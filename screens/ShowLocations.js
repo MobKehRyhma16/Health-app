@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
-import useLocationRecorder from '../functions/Location/LocationRecorder'; // Assuming you have the useLocationRecorder hook in useLocationRecorder.js
+import useLocationRecorder from '../functions/LocationRecorder';
 
 const RecordLocationScreen = () => {
   const { locationList, startRecording, stopRecording } = useLocationRecorder();
