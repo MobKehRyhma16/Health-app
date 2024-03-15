@@ -3,7 +3,7 @@ import HomeScreen from '../Screens/HomeScreen';
 import Placeholder from '../Screens/PlaceholderScreen';
 import HistoryScreen from '../Screens/HistoryScreen';
 import ProfileDrawer from './DrawerComponents/ProfileDrawer';
-import { Ionicons } from '@expo/vector-icons'; // Import Ionicons from Expo
+import { Ionicons } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
 
