@@ -1,39 +1,20 @@
-<<<<<<< HEAD
-import { StyleSheet, Text, View } from 'react-native';
-import StartWorkoutScreen from './screens/StartWorkout';
-=======
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getAuth } from './Firebase/Config';
 import MyTabs from './Components/BottomTab';
-import LoginScreen from './Screens/LoginScreen';
->>>>>>> ba0a0dfd2409ade7c5f3ba3c32cf9786729ec7fe
-
+import LoginScreen from './screens/LoginScreen';
 const Stack = createNativeStackNavigator();
 
 // Define the AuthNavigator component outside of the App component
 const AuthNavigator = () => {
   return (
-<<<<<<< HEAD
-    <View style={styles.container}>
-      <StartWorkoutScreen />
-    </View>
-=======
     <Stack.Navigator headerMode="none">
       <Stack.Screen name="Login" component={LoginScreen} />
     </Stack.Navigator>
->>>>>>> ba0a0dfd2409ade7c5f3ba3c32cf9786729ec7fe
   );
 };
 
-<<<<<<< HEAD
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
-=======
 const App = () => {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(null);
@@ -65,4 +46,3 @@ const App = () => {
 };
 
 export default App;
->>>>>>> ba0a0dfd2409ade7c5f3ba3c32cf9786729ec7fe
