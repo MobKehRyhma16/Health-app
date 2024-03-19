@@ -1,9 +1,10 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from '../Screens/HomeScreen';
-import Placeholder from '../Screens/PlaceholderScreen';
-import HistoryScreen from '../Screens/HistoryScreen';
+import HomeScreen from '../screens/HomeScreen';
+import Placeholder from '../screens/PlaceholderScreen';
+import HistoryScreen from '../screens/HistoryScreen';
 import ProfileDrawer from './DrawerComponents/ProfileDrawer';
 import { Ionicons } from '@expo/vector-icons';
+import StartWorkoutScreen from '../screens/StartWorkout';
 
 const Tab = createBottomTabNavigator();
 
@@ -24,12 +25,12 @@ function MyTabs() {
                 }}
             />
             <Tab.Screen
-                name="Placeholder"
-                component={Placeholder}
+                name="Workout"
+                component={StartWorkoutScreen}
                 options={{
-                    tabBarLabel: 'Placeholder',
+                    tabBarLabel: 'Workout',
                     tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="skull-outline" 
+                        <Ionicons name="timer-outline" 
                         size={size} color={color} />
                     ),
                 }}
