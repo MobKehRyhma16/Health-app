@@ -1,10 +1,10 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from '../screens/HomeScreen';
-import Placeholder from '../screens/PlaceholderScreen';
-import HistoryScreen from '../screens/HistoryScreen';
+import HomeScreen from '../Screens/HomeScreen';
+import Placeholder from '../Screens/PlaceholderScreen';
+import HistoryScreen from '../Screens/HistoryScreen';
 import ProfileDrawer from './DrawerComponents/ProfileDrawer';
 import { Ionicons } from '@expo/vector-icons';
-import StartWorkoutScreen from '../screens/StartWorkout';
+import StartWorkoutScreen from '../Screens/StartWorkout';
 
 const Tab = createBottomTabNavigator();
 

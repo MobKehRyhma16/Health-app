@@ -1,6 +1,6 @@
 import { createDrawerNavigator, DrawerToggleButton } from '@react-navigation/drawer';
-import ProfileScreen from '../../screens/ProfileScreen';
-import LoginScreen from '../../screens/LoginScreen';
+import ProfileScreen from '../../Screens/ProfileScreen';
+import LoginScreen from '../../Screens/LoginScreen';
 import Info from './Info';
 import Logout from './Logout';
 import DrawerStyles from './DrawerStyles';
