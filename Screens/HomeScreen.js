@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from "react-n
 import Stepcounter from "../Components/Stepcounter";
 
 export default function HomeScreen() {
+
     return (
         <SafeAreaView style={styles.container}>
             <View>
