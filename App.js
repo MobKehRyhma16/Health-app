@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { getAuth } from './Firebase/Config';
 import MyTabs from './Components/BottomTab';
 import LoginScreen from './Screens/LoginScreen';
+import InfoScreen from './Screens/InfoScreen';
 const Stack = createNativeStackNavigator();
 
 // Define the AuthNavigator component outside of the App component
@@ -11,6 +12,7 @@ const AuthNavigator = () => {
   return (
     <Stack.Navigator headerMode="none">
       <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Info" component={InfoScreen} />
     </Stack.Navigator>
   );
 };
