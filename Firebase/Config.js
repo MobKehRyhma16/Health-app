@@ -28,7 +28,8 @@ const app = initializeApp(FirebaseConfig);
 const auth = initializeAuth(app, {
     persistence: getReactNativePersistence(ReactNativeAsyncStorage)
   });
-
+  
+const db = getFirestore(app);
 const firestore = getFirestore();
 
 const WORKOUTS = 'workouts'
@@ -37,6 +38,7 @@ export {
     app,
     firestore,
     auth,
+    db,
     getAuth,
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,

@@ -2,11 +2,24 @@ import { useState } from 'react';
 import { getAuth, createUserWithEmailAndPassword } from '../../Firebase/Config';
 import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from 'react-native';
 import DrawerStyles from './DrawerStyles';
+import { addDoc, collection, db } from '../../Firebase/Config';
 
 export default function Signup() {
 
     const [email, setEmail] = useState('testuser@tester.com');
     const [password, setPassword] = useState('test123');
+
+    async function addData() {
+        try {
+            const docRef = await addDoc(collection(db, "users"), {
+              email: email,
+              password: password,
+            });
+            console.log("Document written with ID: ", docRef.id);
+          } catch (e) {
+            console.error("Error adding document: ", e);
+          }
+        }
 
     const signup = async () => {
 
@@ -15,6 +28,7 @@ export default function Signup() {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             // User registration successful
             const user = userCredential.user;
+            addData();
             console.log('User registered:', user.uid);
             return user; // Return user data if needed
         } catch (error) {
