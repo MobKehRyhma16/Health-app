@@ -1,48 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from "react-native";
-import { firestore, collection, addDoc, serverTimestamp, query, onSnapshot , WORKOUTS } from "../Firebase/Config";
-import { convertFirebaseTimeStampToJS } from "../helpers/Functions";
+// import { firestore, collection, addDoc, serverTimestamp, query, onSnapshot , WORKOUTS } from "../Firebase/Config";
+// import { convertFirebaseTimeStampToJS } from "../helpers/Functions";
+import { getWorkouts } from "../Firebase/getWorkouts";
 
 // import GetWorkout from "../Components/Workouts/GetWorkout";
 
 export default function HistoryScreen() {
 
-    const [workouts, setWorkouts] = useState([])
+
+    const workouts = getWorkouts('VlxwyuiQTxRE1w5eii4kcReqhTU2')
+
+    //For debugging
+    useEffect(() => {
+    console.log('WORKOUTS:: ', workouts);
+
+    workouts.forEach(workout => {
+      console.log(workout.steps);
+    });
+    }, [workouts]);
 
     useEffect(() => {
-        const q = query(collection(firestore, WORKOUTS));
       
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
-          const tempWorkouts = [];
-      
-          querySnapshot.forEach((doc) => {
-            // console.log(doc.data())
-
-            const workoutObject = {
-              id: doc.id,
-              calories: doc.data().calories,
-              created: convertFirebaseTimeStampToJS(doc.data().created_at),
-              duration: doc.data().duration,
-              route: doc.data().route,
-              user_id: doc.data().user_id,
-              workout_type: doc.data().workout_type
-              
-            };
-
-            // console.log(workoutObject)
-            tempWorkouts.push(workoutObject);
-
-          });
-          setWorkouts(tempWorkouts);
-          
-          console.log('WORKOUTS:: ', workouts)
-          console.log('TEMPWORKOUTS:: ', tempWorkouts)
-        });
-      
-        return () => {
-          unsubscribe();
-        };
-      }, []);
+    }, []);
 
 
     return (
@@ -50,9 +30,9 @@ export default function HistoryScreen() {
             <View>
                 <Text style={styles.heading}>History</Text>
 
-                {workouts.map((workout) => {
+                {/* {workouts.map((workout) => {
                     <Text>{workout}</Text>
-                } )}
+                } )} */}
             </View>
         </SafeAreaView>
     );
