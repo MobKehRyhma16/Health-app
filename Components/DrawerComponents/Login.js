@@ -13,7 +13,6 @@ export default function Login({ setLogin }) {
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
-                setLogin(true);
             })
             .catch((error) => {
                 if (error.code === 'auth/wrong-password' || error.code == 'auth/user-not-found') {
@@ -25,7 +24,11 @@ export default function Login({ setLogin }) {
                 }
             })
     }
-    
+    const LoginHandler = () => {
+        login();
+        setLogin(true);
+    }
+
     return (
         <SafeAreaView style={DrawerStyles.container}>
             <View>
@@ -34,7 +37,7 @@ export default function Login({ setLogin }) {
                 <TextInput style={DrawerStyles.field} keyboardType='default' value={email} onChangeText={text => setEmail(text)} />
                 <Text style={DrawerStyles.field}>Password</Text>
                 <TextInput style={DrawerStyles.field} keyboardType='default' value={password} onChangeText={text => setPassword(text)} />
-                <Button title='Login' onPress={login} />
+                <Button title='Login' onPress={LoginHandler} />
             </View>
         </SafeAreaView>
     );

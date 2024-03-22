@@ -5,15 +5,19 @@ import { getAuth } from './Firebase/Config';
 import MyTabs from './Components/BottomTab';
 import LoginScreen from './Screens/LoginScreen';
 import InfoScreen from './Screens/InfoScreen';
+import HomeScreen from './Screens/HomeScreen';
+import { showHidden } from 'yargs';
 const Stack = createNativeStackNavigator();
 
 // Define the AuthNavigator component outside of the App component
 const AuthNavigator = () => {
   return (
-    <Stack.Navigator headerMode="none">
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Info" component={InfoScreen} />
+    <Stack.Navigator>
+      <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Info" component={InfoScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
+
   );
 };
 

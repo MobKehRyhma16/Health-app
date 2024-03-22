@@ -3,6 +3,7 @@ import Constants from 'expo-constants';
 import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from 'react-native';
 import Login from '../Components/DrawerComponents/Login';
 import Signup from '../Components/DrawerComponents/Signup';
+import MyTabs from '../Components/BottomTab';
 
 export default function LoginScreen({ navigation }) {
 
@@ -14,7 +15,7 @@ export default function LoginScreen({ navigation }) {
 };
   
   if (logged) {
-    navigation.navigate('Home');
+    navigation.navigate("Home");
   } else {
     return (
       <>
