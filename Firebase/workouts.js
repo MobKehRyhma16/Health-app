@@ -3,6 +3,8 @@ import { convertFirebaseTimeStampToJS } from "../helpers/Functions";
 import { useEffect, useState } from "react";
 import { addDoc, doc } from 'firebase/firestore'; // Import the 'doc' function
 
+
+//saveWorkout(userId,101,201,3000,'running',[[x,x],[x,x],[x,x].....]
 export const saveWorkout  = async (userid ,calories, steps, duration, workout_type, routeArray) => {
     
     const geoPointsArray = []
