@@ -1,26 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, SafeAreaView, Button } from "react-native";
+import { View, Text, StyleSheet, SafeAreaView} from "react-native";
 import { getWorkouts, saveWorkout } from "../Firebase/workouts";
+import { Foundation,FontAwesome5 } from '@expo/vector-icons';
+import { Button, List, Divider, IconButton, Colors } from "react-native-paper";
+
+
 
 export default function HistoryScreen() {
     const userId = 'VlxwyuiQTxRE1w5eii4kcReqhTU2'; // user id for testing
+    const testRouteArray = [[10,10],[30,30],[11,22]] //test array
 
     const workouts = getWorkouts(userId);
 
-    useEffect(() => {
-        console.log('WORKOUTS FOR USER_ID ' + userId + ': ', workouts);
-
-        workouts.forEach(workout => {
-            console.log(workout.steps);
-        });
-    }, [workouts]);
-
     return (
         <SafeAreaView style={styles.container}>               
-          <Button title="TEST SAVE" onPress={() => saveWorkout(userId,101,201,3000,'running')}></Button>
+          {/* <Button title="TEST SAVE" onPress={() => saveWorkout(userId,101,201,3000,'running',testRouteArray)}></Button> */}
 
             <View>
-                <Text style={styles.heading}>History</Text>
+
                 {workouts.length > 0 ? (
                     workouts.map((workout, index) => (
                         <WorkoutItem key={index} workout={workout} />
@@ -36,9 +33,11 @@ export default function HistoryScreen() {
 const WorkoutItem = ({ workout }) => {
     return (
         <View style={styles.workoutItem}>
-            <Text>Steps: {workout.steps}</Text>
-            <Text>Calories: {workout.calories}</Text>
-            <Text>Duration: {(workout.duration / 60).toFixed()} minutes</Text>
+            <Text><Foundation name="foot" size={24} color="black" />    {workout.steps}</Text>
+            <Text><FontAwesome5 name="fire-alt" size={24} color="black" />  {workout.calories}</Text>
+            <Text><FontAwesome5 name="clock" size={24} color="black" /> {(workout.duration / 60).toFixed()} MIN</Text>
+
+            <Text>{workout.created_at}</Text>
         </View>
     );
 };
