@@ -7,6 +7,7 @@ export const saveWorkout  = async (userid ,calories, steps, duration, workout_ty
     
     const geoPointsArray = []
 
+    //Convert to geopoint array from [[xx,xx],[xx,xx]]
     routeArray.forEach(geopoint => {
         geoPointsArray.push(new GeoPoint(geopoint[0],geopoint[1]))
     })
@@ -16,9 +17,7 @@ export const saveWorkout  = async (userid ,calories, steps, duration, workout_ty
             calories: calories,
             steps: steps,
             duration: duration,
-            //todo check the types of route and created at
             created_at: new Date(),
-            // todo Nested arrays not allowed
             route: geoPointsArray,
             user_id: `/users/${userid}`,
             workout_type: workout_type
