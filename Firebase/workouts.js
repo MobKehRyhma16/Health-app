@@ -21,7 +21,6 @@ export const saveWorkout  = async (userid ,calories, steps, duration, workout_ty
             duration: duration,
             created_at: new Date(),
             route: geoPointsArray,
-            // user_id: `/users/${userid}`,
             user_id: userDocRef,
             workout_type: workout_type
     })
@@ -58,7 +57,7 @@ export const getWorkouts = (userId) => {
                 const workoutObject = {
                     id: doc.id,
                     calories: doc.data().calories,
-                    created: convertFirebaseTimeStampToJS(doc.data().created_at),
+                    created_at: convertFirebaseTimeStampToJS(doc.data().created_at),
                     duration: doc.data().duration,
                     user_id: doc.data().user_id.id,
                     steps: doc.data().steps,
