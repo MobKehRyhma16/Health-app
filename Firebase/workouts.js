@@ -12,6 +12,8 @@ export const saveWorkout  = async (userid ,calories, steps, duration, workout_ty
         geoPointsArray.push(new GeoPoint(geopoint[0],geopoint[1]))
     })
 
+    const userDocRef = doc(firestore, "users", userid);
+
     try{
         const docRef = await addDoc(collection(firestore,WORKOUTS), {
             calories: calories,
@@ -19,7 +21,8 @@ export const saveWorkout  = async (userid ,calories, steps, duration, workout_ty
             duration: duration,
             created_at: new Date(),
             route: geoPointsArray,
-            user_id: `/users/${userid}`,
+            // user_id: `/users/${userid}`,
+            user_id: userDocRef,
             workout_type: workout_type
     })
     } catch(error){
