@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, View, TouchableOpacity, Text, Modal } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
-import { FontAwesome6, Ionicons } from "@expo/vector-icons";
+import { FontAwesome6, Ionicons, AntDesign } from "@expo/vector-icons";
 
 const StartWorkoutScreen = ({ navigation }) => {
   const [location, setLocation] = useState(null);
@@ -87,6 +87,13 @@ const StartWorkoutScreen = ({ navigation }) => {
               <FontAwesome6 name="person-walking" size={24} color="white" />
               <Text style={styles.modalText}>Walking</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={()=>setModalVisible(!modalVisible)}
+            >
+              <AntDesign name="closecircle" size={24} color="white" />
+            </TouchableOpacity>
+
           </View>
         </View>
       </Modal>
@@ -129,7 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.85)",
+    backgroundColor: "rgba(0,0,0,0.9)",
   },
   modalView: {
     margin: 20,
