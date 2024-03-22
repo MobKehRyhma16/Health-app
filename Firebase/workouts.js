@@ -1,10 +1,15 @@
-import { firestore, collection, query, where, onSnapshot, WORKOUTS } from "./Config";
+import { firestore, collection, query, where, onSnapshot, WORKOUTS, GeoPoint } from "./Config";
 import { convertFirebaseTimeStampToJS } from "../helpers/Functions";
 import { useEffect, useState } from "react";
 import { addDoc, doc } from 'firebase/firestore'; // Import the 'doc' function
 
-export const saveWorkout  = async (userid ,calories, steps, duration, workout_type) => {
-    // const [calories, setCalories]
+export const saveWorkout  = async (userid ,calories, steps, duration, workout_type, routeArray) => {
+    
+    const geoPointsArray = []
+
+    routeArray.forEach(geopoint => {
+        geoPointsArray.push(new GeoPoint(geopoint[0],geopoint[1]))
+    })
 
     try{
         const docRef = await addDoc(collection(firestore,WORKOUTS), {
@@ -14,21 +19,13 @@ export const saveWorkout  = async (userid ,calories, steps, duration, workout_ty
             //todo check the types of route and created at
             created_at: new Date(),
             // todo Nested arrays not allowed
-            // route: [[10,11],[12,13]],
+            route: geoPointsArray,
             user_id: `/users/${userid}`,
             workout_type: workout_type
     })
     } catch(error){
         console.log(error)
     }
-
-    // id: doc.id,
-    // calories: doc.data().calories,
-    // created: convertFirebaseTimeStampToJS(doc.data().created_at),
-    // duration: doc.data().duration,
-    // user_id: doc.data().user_id.id,
-    // steps: doc.data().steps,
-    // workout_type: doc.data().workout_type,
 }
  
 

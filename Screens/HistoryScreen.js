@@ -4,6 +4,7 @@ import { getWorkouts, saveWorkout } from "../Firebase/workouts";
 
 export default function HistoryScreen() {
     const userId = 'VlxwyuiQTxRE1w5eii4kcReqhTU2'; // user id for testing
+    const testRouteArray = [[10,10],[30,30],[11,22]] //test array
 
     const workouts = getWorkouts(userId);
 
@@ -17,7 +18,7 @@ export default function HistoryScreen() {
 
     return (
         <SafeAreaView style={styles.container}>               
-          <Button title="TEST SAVE" onPress={() => saveWorkout(userId,101,201,3000,'running')}></Button>
+          <Button title="TEST SAVE" onPress={() => saveWorkout(userId,101,201,3000,'running',testRouteArray)}></Button>
 
             <View>
                 <Text style={styles.heading}>History</Text>
