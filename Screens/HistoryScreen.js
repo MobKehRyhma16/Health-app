@@ -8,13 +8,13 @@ export default function HistoryScreen() {
 
     const workouts = getWorkouts(userId);
 
-    useEffect(() => {
-        console.log('WORKOUTS FOR USER_ID ' + userId + ': ', workouts);
+    // useEffect(() => {
+    //     console.log('WORKOUTS FOR USER_ID ' + userId + ': ', workouts);
 
-        workouts.forEach(workout => {
-            console.log(workout.steps);
-        });
-    }, [workouts]);
+    //     workouts.forEach(workout => {
+    //         console.log(workout.steps);
+    //     });
+    // }, [workouts]);
 
     return (
         <SafeAreaView style={styles.container}>               

@@ -44,18 +44,13 @@ export const getWorkouts = (userId) => {
             const tempWorkouts = [];
 
             querySnapshot.forEach((doc) => {
-                // console.log(doc.data())
-
 
                 const routeArray = []
 
                 doc.data().route.map(points => {
-                    console.log(points)
-                    // routeArray.push([points.latitude, points.longitude])
+
                     routeArray.push([points.latitude,points.longitude])
                 })
-
-                console.log('Route array ',routeArray)
 
                 const workoutObject = {
                     id: doc.id,
@@ -71,9 +66,9 @@ export const getWorkouts = (userId) => {
 
                 };
 
-                workoutObject.route.forEach(points => {
-                    console.log('GEOPOINT',points)
-                })
+                // workoutObject.route.forEach(points => {
+                //     console.log('GEOPOINT',points)
+                // })
 
 
                 tempWorkouts.push(workoutObject);
