@@ -52,4 +52,5 @@ export {
     serverTimestamp,
     query,
     onSnapshot,
+    where
 }; 
