@@ -59,7 +59,7 @@ const WorkoutItem = ({ workout }) => {
             </View>
 
             <Text style={styles.createdAtText}>{workout.created_at}</Text>
-            <Button icon="map-marker-distance" mode="contained" onPress={() => console.log('Pressed')}>
+            <Button icon="map-marker-distance" mode="contained" onPress={() => console.log('Pressed')} buttonColor="lightcoral">
                 ROUTE
             </Button>
 
