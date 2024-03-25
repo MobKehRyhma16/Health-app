@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, ScrollView} from "react-native";
 import { getWorkouts, saveWorkout } from "../Firebase/workouts";
 import { Foundation,FontAwesome5 } from '@expo/vector-icons';
 import { Button, List, Divider, IconButton, Colors } from "react-native-paper";
-''
+
 
 
 
@@ -33,7 +33,7 @@ export default function HistoryScreen() {
     );
 }
 
-const WorkoutItem = ({ workout }) => {
+export const WorkoutItem = ({ workout }) => {
     return (
         <View style={styles.workoutItem}>
 
@@ -105,6 +105,8 @@ const styles = StyleSheet.create({
         padding: 16,
         marginBottom: 12,
         backgroundColor: 'grey',
+        marginRight: 10,
+        marginLeft: 10
     },
     noWorkoutsText: {
         textAlign: 'center',
@@ -118,6 +120,8 @@ const styles = StyleSheet.create({
         padding: 16,
         marginBottom: 12,
         backgroundColor: 'white',
+        marginRight: 10,
+        marginLeft: 10
 
     },
     row: {
