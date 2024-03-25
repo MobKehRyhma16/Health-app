@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet } from 'react-native';
+import { getAuth, doc, getFirestore, db,collection, getDoc, query, where } from '../Firebase/Config';
+
 
 const CALORIES_PER_STEP = 0.05;
 
@@ -9,35 +11,33 @@ const Caloriecalculator = ({ steps }) => {
     const [height] = useState(170);
     const [sex] = useState('male');
     //using fixed values for testing
-
-  /*const [age, setAge] = useState(null);
-  const [weight, setWeight] = useState(null);
-  const [height, setHeight] = useState(null);
-  const [sex, setSex] = useState(null);
-    
-  useEffect(() => {
-    // Fetch data from Firebase
-    // Replace the placeholders with your Firebase logic
-    const fetchUserData = async () => {
-      try {
-        // Example Firebase fetch
-        const userData = await fetchUserDataFromFirebase();
-
-        // Update state with fetched data
-        setAge(userData.age);
-        setWeight(userData.weight);
-        setHeight(userData.height);
-        setSex(userData.sex);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-
-    fetchUserData();
-  }, []); // Empty dependency array ensures this effect runs only once
-*/
-
-  // Calculate Basal Metabolic Rate using appropriate formula based on sex
+  
+ 
+/*
+    const [weight, setWeight] = useState(null);
+    useEffect(() => {
+      const fetchWeight = async () => {
+        try {
+          const auth = getAuth();
+          const user = auth.currentUser;
+  
+          if (user) {
+            const weightRef = doc(db, 'users', user.uid);
+            const weightSnapshot = await weightRef.get();
+            console.log (weightSnapshot)
+  
+            if (weightSnapshot.exists()) {
+              setWeight(weightSnapshot.data().weight);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching weight:', error);
+        }
+      };
+  
+      fetchWeight();
+    }, []); // Run once on component mount */
+ 
   const calculateBMR = () => {
     if (age === null || weight === null || height === null || sex === null) {
       return null; // Return null if parameters missing
