@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Button } from 'react-native';
 import { auth } from '../../Firebase/Config'; // Assuming this is the path to your Firebase config file
+import GradientBackground from '../LinearGradient';
 
 const Logout = () => {
   const handleLogout = async () => {
@@ -14,9 +15,11 @@ const Logout = () => {
   };
 
   return (
-    <View>
-      <Button title="Logout" onPress={handleLogout} />
-    </View>
+    <GradientBackground>
+      <View>
+        <Button title="Logout" onPress={handleLogout} />
+      </View>
+    </GradientBackground>
   );
 };
 

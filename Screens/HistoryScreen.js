@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, SafeAreaView, ScrollView} from "react-native";
 import { getWorkouts, saveWorkout } from "../Firebase/workouts";
-import { Foundation,FontAwesome5 } from '@expo/vector-icons';
+import { Foundation, FontAwesome5 } from '@expo/vector-icons';
 import { Button, List, Divider, IconButton, Colors } from "react-native-paper";
-
-
+import GradientBackground from "../Components/LinearGradient";
 
 
 export default function HistoryScreen() {
     const userId = 'VlxwyuiQTxRE1w5eii4kcReqhTU2'; // user id for testing
-    const testRouteArray = [[10,10],[30,30],[11,22]] //test array
+    const testRouteArray = [[10, 10], [30, 30], [11, 22]] //test array
 
     const workouts = getWorkouts(userId);
 
@@ -29,7 +28,7 @@ export default function HistoryScreen() {
                     <Text style={styles.noWorkoutsText}>No workouts available</Text>
                 )}
             </ScrollView>
-        </SafeAreaView>
+         </SafeAreaView>
     );
 }
 

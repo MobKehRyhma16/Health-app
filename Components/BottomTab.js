@@ -1,9 +1,8 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../Screens/HomeScreen';
-import Placeholder from '../Screens/PlaceholderScreen';
 import HistoryScreen from '../Screens/HistoryScreen';
 import ProfileDrawer from './DrawerComponents/ProfileDrawer';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 import StartWorkoutScreen from '../Screens/StartWorkout';
 
 const Tab = createBottomTabNavigator();
@@ -19,7 +18,7 @@ function MyTabs() {
                 options={{
                     tabBarLabel: 'Home',
                     tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="home-outline"
+                        <Ionicons name="home-outline" 
                         size={size} color={color} />
                     ),
                 }}
@@ -30,7 +29,7 @@ function MyTabs() {
                 options={{
                     tabBarLabel: 'Workout',
                     tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="timer-outline" 
+                        <Ionicons name="map-outline" 
                         size={size} color={color} />
                     ),
                 }}
@@ -41,7 +40,7 @@ function MyTabs() {
                 options={{
                     tabBarLabel: 'History',
                     tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="thumbs-up-outline" 
+                        <Ionicons name="book-outline" 
                         size={size} color={color} />
                     ),
                 }}

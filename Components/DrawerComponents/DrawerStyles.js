@@ -1,4 +1,5 @@
-import { StyleSheet } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 const DrawerStyles = StyleSheet.create({
     container: {
@@ -8,7 +9,6 @@ const DrawerStyles = StyleSheet.create({
     },
     drawerContainer: {
         width: 200,
-        backgroundColor: 'lightblue',
     },
     heading: {
         fontSize: 24,
