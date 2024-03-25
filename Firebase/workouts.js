@@ -1,4 +1,4 @@
-import { firestore, collection, query, where, onSnapshot, WORKOUTS, GeoPoint } from "./Config";
+import { firestore, collection, query, where, onSnapshot, WORKOUTS, GeoPoint, orderBy } from "./Config";
 import { convertFirebaseTimeStampToJS } from "../helpers/Functions";
 import { useEffect, useState } from "react";
 import { addDoc, doc } from 'firebase/firestore'; // Import the 'doc' function
@@ -41,8 +41,13 @@ export const getWorkouts = (userId) => {
         const usersRef = collection(firestore, 'users');
         const userDocRef = doc(usersRef, userId); // Construct user document reference
 
-        // Create a query with a filter for the user_id field
-        const q = query(collection(firestore, 'workouts'), where("user_id", "==", userDocRef));
+        // // Create a query with a filter for the user_id field
+        // const q = query(collection(firestore, 'workouts'), where("user_id", "==", userDocRef), orderBy('created_at','desc'));
+        const q = query(
+            collection(firestore, 'workouts'),
+            where("user_id", "==", userDocRef),
+            orderBy('created_at', 'desc')
+          );
 
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const tempWorkouts = [];
