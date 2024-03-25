@@ -1,13 +1,16 @@
 import React from "react";
 import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from "react-native";
+import GradientBackground from '../Components/LinearGradient';
 
 export default function ProfileScreen() {
     return (
-        <SafeAreaView style={styles.container}>
-            <View>
-                <Text style={styles.heading}>Profile</Text>
-            </View>
-        </SafeAreaView>
+        <GradientBackground>
+            <SafeAreaView style={styles.container}>
+                <View>
+                    <Text style={styles.heading}>Profile</Text>
+                </View>
+            </SafeAreaView>
+        </GradientBackground>
     );
 }
 

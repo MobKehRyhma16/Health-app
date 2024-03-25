@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from 'react-native';
 import Login from '../Components/DrawerComponents/Login';
 import Signup from '../Components/DrawerComponents/Signup';
-import MyTabs from '../Components/BottomTab';
+import GradientBackground from '../Components/LinearGradient';
 
 export default function LoginScreen({ navigation }) {
 
@@ -19,9 +19,11 @@ export default function LoginScreen({ navigation }) {
   } else {
     return (
       <>
+        <GradientBackground>
         {!showSignup && <Login setLogin={setLogged} />}
-        {!showSignup && <Button title="Don't have a account?" onPress={toggleMode} />}
+        {!showSignup && <Button title="Don't have an account?" onPress={toggleMode} />}
         {showSignup && <Signup />}
+        </GradientBackground>
       </>
     );
   }
