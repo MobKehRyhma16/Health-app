@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
+import GradientBackground from '../Components/LinearGradient';
 import { View, Text, StyleSheet, SafeAreaView, Image, TouchableOpacity, Alert } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as ImagePicker from 'expo-image-picker';
-
 
 const Stack = createStackNavigator();
 
@@ -79,9 +79,8 @@ const ProfileScreen = ({ navigation }) => {
         }
     };
 
-
-
     return (
+        <GradientBackground>
         <SafeAreaView style={styles.container}>
             <View>
                 <View style={styles.avatarContainer}>
@@ -97,7 +96,8 @@ const ProfileScreen = ({ navigation }) => {
                     <Text style={styles.username}>Username</Text>
                 </View>
             </View>
-        </SafeAreaView>
+         </SafeAreaView>
+        </GradientBackground>
     );
 };
 

@@ -1,16 +1,19 @@
 import React from "react";
 import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from "react-native";
 import Stepcounter from "../Components/Stepcounter";
+import GradientBackground from '../Components/LinearGradient';
 
 export default function HomeScreen() {
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View>
-                <Stepcounter />
-                <Text style={styles.heading}>Home</Text>
-            </View>
-        </SafeAreaView>
+        <GradientBackground>
+            <SafeAreaView style={styles.container}>
+                <View>
+                    <Stepcounter />
+                    <Text style={styles.heading}>Home</Text>
+                </View>
+            </SafeAreaView>
+        </GradientBackground>
     );
 }
 

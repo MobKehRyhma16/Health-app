@@ -6,7 +6,7 @@ import MyTabs from './Components/BottomTab';
 import LoginScreen from './Screens/LoginScreen';
 import InfoScreen from './Screens/InfoScreen';
 import HomeScreen from './Screens/HomeScreen';
-import { showHidden } from 'yargs';
+
 const Stack = createNativeStackNavigator();
 
 // Define the AuthNavigator component outside of the App component
