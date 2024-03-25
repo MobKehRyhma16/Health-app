@@ -39,10 +39,13 @@ const WorkoutItem = ({ workout }) => {
 
             <View style={styles.nextTo}>
                 <View style={styles.onTop}>
+                {(workout.workout_type === 'running' || workout.workout_type === 'walking') && (
                     <View style={styles.row}>
                         <Foundation name="foot" size={35} color="black" />
                         <Text style={styles.largeText}>{workout.steps}</Text>
                     </View>
+                    )}
+
                     <View style={styles.row}>
                         <FontAwesome5 name="fire-alt" size={35} color="black" />
                         <Text style={styles.largeText}>{workout.calories}</Text>
