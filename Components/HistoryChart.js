@@ -14,9 +14,6 @@ const HistoryChart = ({ workouts }) => {
 
   return (
     <View style={styles.chartContainer}>
-      <Text>
-        {type}
-      </Text>
       <ToggleSwitch updateType={updateType} />
       {type === 'duration' ? (
         <BarChart

@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
         // backgroundColor: 'grey',
         // marginRight: 10,
         // marginLeft: 10
-        backgroundColor:'lightblue',
+        // backgroundColor:'lightblue',
         flexDirection: 'column',
 
         margin: 15
