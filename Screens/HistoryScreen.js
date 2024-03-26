@@ -13,12 +13,13 @@ export default function HistoryScreen() {
 
     const workouts = getWorkouts(userId);
 
+
     return (
         <SafeAreaView style={styles.container}>               
             {/* <Button mode="contained" onPress={() => saveWorkout(userId, 400, 200, 2000, 'walking', testRouteArray)}>TEST SAVE</Button> */}
 
             <View style={styles.graphContainer}>
-                    <HistoryChart></HistoryChart>
+                    <HistoryChart workouts={workouts}></HistoryChart>
             </View>
             <ScrollView style={styles.workoutsContainer}>
                 {workouts.length > 0 ? (
@@ -82,6 +83,8 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
         backgroundColor: '#f0f0f0',
+        
+
     },
     workoutsContainer: {
         flex: 1,
@@ -107,7 +110,10 @@ const styles = StyleSheet.create({
         // backgroundColor: 'grey',
         // marginRight: 10,
         // marginLeft: 10
-        width: '100%',
+        backgroundColor:'lightblue',
+        flexDirection: 'column',
+
+        margin: 15
     },
     noWorkoutsText: {
         textAlign: 'center',
