@@ -4,20 +4,21 @@ import { getWorkouts, saveWorkout } from "../Firebase/workouts";
 import { Foundation, FontAwesome5 } from '@expo/vector-icons';
 import { Button, List, Divider, IconButton, Colors } from "react-native-paper";
 import GradientBackground from "../Components/LinearGradient";
+import HistoryChart from '../Components/HistoryChart'
 
 
 export default function HistoryScreen() {
     const userId = 'VlxwyuiQTxRE1w5eii4kcReqhTU2'; // user id for testing
-    const testRouteArray = [[10, 10], [30, 30], [11, 22]] //test array
+    const testRouteArray = [[69, 69], [70, 69], [70, 70]] //test array
 
     const workouts = getWorkouts(userId);
 
     return (
         <SafeAreaView style={styles.container}>               
-            {/* <Button mode="contained" onPress={() => saveWorkout(userId, 101, 201, 3000, 'running', testRouteArray)}>TEST SAVE</Button> */}
+            {/* <Button mode="contained" onPress={() => saveWorkout(userId, 400, 200, 2000, 'walking', testRouteArray)}>TEST SAVE</Button> */}
 
             <View style={styles.graphContainer}>
-                <Text>GRAPH HERE</Text>
+                    <HistoryChart></HistoryChart>
             </View>
             <ScrollView style={styles.workoutsContainer}>
                 {workouts.length > 0 ? (
@@ -95,17 +96,18 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     graphContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '35%',
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 8,
-        padding: 16,
-        marginBottom: 12,
-        backgroundColor: 'grey',
-        marginRight: 10,
-        marginLeft: 10
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        // height: '35%',
+        // borderWidth: 1,
+        // borderColor: "#ccc",
+        // borderRadius: 8,
+        // padding: 16,
+        // marginBottom: 12,
+        // backgroundColor: 'grey',
+        // marginRight: 10,
+        // marginLeft: 10
+        width: '100%',
     },
     noWorkoutsText: {
         textAlign: 'center',
