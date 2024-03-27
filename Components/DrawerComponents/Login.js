@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, Image, SafeAreaView, TouchableOpacity } from 'react-native';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import DrawerStyles from './DrawerStyles';
+import Majakkalogo from '../../Images/MajakkaLogo2.png';
 
 export default function Login({ setLogin }) {
     
@@ -31,13 +32,31 @@ export default function Login({ setLogin }) {
 
     return (
         <SafeAreaView style={DrawerStyles.container}>
+             <View style={DrawerStyles.logoContainer}>
+                <Image source={Majakkalogo} style={DrawerStyles.logo} resizeMode="contain" />
+            </View>
             <View>
-                <Text style={DrawerStyles.heading}>Login</Text>
-                <Text style={DrawerStyles.field}>Email</Text>
-                <TextInput style={DrawerStyles.field} keyboardType='default' value={email} onChangeText={text => setEmail(text)} />
-                <Text style={DrawerStyles.field}>Password</Text>
-                <TextInput style={DrawerStyles.field} keyboardType='default' value={password} onChangeText={text => setPassword(text)} />
-                <Button title='Login' onPress={LoginHandler} />
+                <Text style={[DrawerStyles.heading, DrawerStyles.bold]}>Login</Text>
+                <Text style={[DrawerStyles.field, DrawerStyles.bold]}>Email:</Text>
+                <TextInput
+                    style={[DrawerStyles.field, DrawerStyles.textInput]}
+                    keyboardType='default'
+                    value={email}
+                    onChangeText={text => setEmail(text)}
+                    placeholder="Enter your email"
+                />
+                <Text style={[DrawerStyles.field, DrawerStyles.bold]}>Password:</Text>
+                <TextInput
+                    style={[DrawerStyles.field, DrawerStyles.textInput]}
+                    keyboardType='default'
+                    value={password}
+                    onChangeText={text => setPassword(text)}
+                    placeholder="Enter your password"
+                    secureTextEntry={true}
+                />
+                <TouchableOpacity style={DrawerStyles.Button} onPress={LoginHandler}>
+                    <Text style={DrawerStyles.buttonText}>Login</Text>
+                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );

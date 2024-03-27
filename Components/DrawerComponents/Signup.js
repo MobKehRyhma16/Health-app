@@ -3,16 +3,10 @@ import { getAuth, createUserWithEmailAndPassword } from '../../Firebase/Config';
 import { View, Text, TextInput, Button, SafeAreaView } from 'react-native';
 import DrawerStyles from './DrawerStyles';
 import { addDoc,collection, doc, setDoc, db } from '../../Firebase/Config';
-import { useNavigation } from '@react-navigation/native';
 
-export default function Signup() {
-    const navigation = useNavigation();
+export default function Signup({setLogin}) {
     const [email, setEmail] = useState('testuser@tester.com');
     const [password, setPassword] = useState('test123');
-
-    const goToInfo = () => {
-        navigation.navigate('Info');
-    }
 
     async function addData(uid) {
         try {
@@ -38,11 +32,9 @@ export default function Signup() {
         }
     };
 
-    const handleSignupAndNavigate = async () => {
-        const user = await signup(); // Wait for signup process to complete
-        if (user) {
-            goToInfo(); // Navigate to Info screen if signup is successful
-        }
+    const SignupHandler = () => {
+        signup();
+        setLogin(true);
     }
 
     return (
@@ -53,7 +45,7 @@ export default function Signup() {
                 <TextInput style={DrawerStyles.field} keyboardType='default' value={email} onChangeText={text => setEmail(text)} />
                 <Text style={DrawerStyles.field}>Password</Text>
                 <TextInput style={DrawerStyles.field} keyboardType='default' value={password} onChangeText={text => setPassword(text)} />
-                <Button title='Signup' onPress={handleSignupAndNavigate} />
+                <Button title='Signup' onPress={SignupHandler} />
             </View>
         </SafeAreaView>
     );
