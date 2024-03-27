@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Constants from 'expo-constants';
-import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text } from 'react-native';
 import Login from '../Components/DrawerComponents/Login';
 import Signup from '../Components/DrawerComponents/Signup';
 import GradientBackground from '../Components/LinearGradient';
+import DrawerStyles from '../Components/DrawerComponents/DrawerStyles';
 
 export default function LoginScreen({ navigation }) {
 
@@ -12,17 +13,20 @@ export default function LoginScreen({ navigation }) {
 
   const toggleMode = () => {
     setShowSignup(!showSignup); // Toggle between login and signup mode
-};
-  
+  };
+
   if (logged) {
     navigation.navigate("Home");
   } else {
     return (
       <>
         <GradientBackground>
-        {!showSignup && <Login setLogin={setLogged} />}
-        {!showSignup && <Button title="Don't have an account?" onPress={toggleMode} />}
-        {showSignup && <Signup />}
+          {!showSignup && <Login setLogin={setLogged} />}
+          {!showSignup &&
+            <TouchableOpacity style={DrawerStyles.LongerButton} onPress={toggleMode}>
+              <Text style={DrawerStyles.buttonText}>Don't have an account?</Text>
+            </TouchableOpacity>}
+          {showSignup && <Signup setLogin={setLogged} />}
         </GradientBackground>
       </>
     );

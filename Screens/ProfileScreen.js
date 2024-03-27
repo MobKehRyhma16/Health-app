@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect, useRef} from "react";
 import GradientBackground from '../Components/LinearGradient';
 import { View, Text, StyleSheet, SafeAreaView, Image, TouchableOpacity, Alert } from "react-native";
 import { Feather } from '@expo/vector-icons';
