@@ -6,6 +6,7 @@ import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as ImagePicker from 'expo-image-picker';
+import { firestore, doc, updateDoc, getDoc } from '../Firebase/Config';
 
 const Stack = createStackNavigator();
 
@@ -13,6 +14,12 @@ const ProfileScreen = ({ navigation, route }) => {
     const [avatar, setAvatar] = useState(null);
     const [hasCameraPermission, setHasCameraPermission] = useState(null);
     const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState(null);
+    const [firstname, setFirstname] = useState(null);
+    const [currentAvatar, setCurrentAvatar] = useState(null);
+    
+    useEffect(() => {
+        fetchUserData();
+    }, []);
 
     useEffect(() => {
         (async () => {
@@ -31,12 +38,46 @@ const ProfileScreen = ({ navigation, route }) => {
     }, [route.params]);
 
     useEffect(() => {
-        console.log("Avatar state when picking image:", avatar);
-    }, [avatar]); // Log whenever avatar state changes
+    console.log("Avatar state when picking image:", avatar);
+    // Upload avatar path to Firestore when avatar state changes
+    const updateUserAvatar = async () => {
+        try {
+            const userDocRef = doc(firestore, 'users', 'VlxwyuiQTxRE1w5eii4kcReqhTU2'); // Replace 'USER_DOCUMENT_ID' with the actual document ID of the user
+            await updateDoc(userDocRef, { avatar: avatar });
+            console.log("Avatar path updated in Firestore");
+        } catch (error) {
+            console.error("Error updating avatar path in Firestore:", error);
+        }
+    };
 
+    // Check if the new avatar path is different from the current avatar path
+    if (avatar && avatar !== currentAvatar) {
+        setCurrentAvatar(avatar); // Update the current avatar path
+        updateUserAvatar(); // Update the avatar in Firestore
+    }
+}, [avatar])
+
+    const fetchUserData = async () => {
+        try {
+            const userDocRef = doc(firestore, 'users', 'VlxwyuiQTxRE1w5eii4kcReqhTU2');
+            const userDocSnapshot = await getDoc(userDocRef);
+            if (userDocSnapshot.exists()) {
+                const userData = userDocSnapshot.data();
+                if (userData.avatar) {
+                    setAvatar(userData.avatar);
+                }
+                if (userData.firstname) {
+                    setFirstname(userData.firstname); // Set the username state here
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching user data from Firestore:", error);
+        }
+    };
+    
     const openAvatarOptions = () => {
         Alert.alert(
-            'Change Profile Picture',
+            'Change Avatar',
             'Choose from the following options:',
             [
                 {
@@ -44,7 +85,7 @@ const ProfileScreen = ({ navigation, route }) => {
                     style: 'cancel',
                 },
                 {
-                    text: 'Choose a file',
+                    text: 'Choose an image',
                     onPress: () => pickImage(),
                 },
                 {
@@ -95,13 +136,19 @@ const ProfileScreen = ({ navigation, route }) => {
                         <TouchableOpacity onPress={openAvatarOptions}>
                             <View style={styles.emptyAvatar}>
                                 {avatar ? (
-                                    <Image source={{ uri: avatar }} style={styles.avatarImage} />
+                                    <Image 
+                                    source={{ uri: avatar }} 
+                                    style={styles.avatarImage}
+
+                                    
+                                    
+                                    />
                                 ) : (
                                     <Feather name="camera" size={24} color="black" />
                                 )}
                             </View>
                         </TouchableOpacity>
-                        <Text style={styles.username}>Username</Text>
+                        <Text style={styles.username}>{firstname ? firstname : 'Loading...'}</Text>
                     </View>
                 </View>
             </SafeAreaView>
@@ -115,6 +162,8 @@ const CameraView = ({ navigation, route }) => {
     const [avatar, setAvatar] = useState(route.params.avatar || null);
     const [isCameraReady, setIsCameraReady] = useState(false); // 
     const [hasCameraPermission, setHasCameraPermission] = useState(null);
+    const [cameraType, setCameraType] = useState(Camera.Constants.Type.back); // Default to back camera
+    
    
     useEffect(() => {
         (async () => {
@@ -137,14 +186,20 @@ const CameraView = ({ navigation, route }) => {
         });
     }, [navigation]);
 
-
+    const toggleCameraType = () => {
+        setCameraType(
+            cameraType === Camera.Constants.Type.back
+                ? Camera.Constants.Type.front
+                : Camera.Constants.Type.back
+        );
+    };
     const takePicture = async () => {
         if (cameraRef.current) {
             try {
                 const data = await cameraRef.current.takePictureAsync({
                     skipProcessing: true,
                 });
-    
+
                 Alert.alert(
                     'Save Image',
                     'Do you want to save this image to your library?',
@@ -183,19 +238,26 @@ const CameraView = ({ navigation, route }) => {
     return (
         <SafeAreaView style={styles.container}>
             <Camera
+                ratio="16:9"
                 style={styles.camera}
+                type={cameraType}
                 ref={cameraRef}
                 onCameraReady={onCameraReady}
-                autoFocus={true}
+                autoFocus="on"
+
             />
             {isCameraReady && (
                 <TouchableOpacity style={styles.takePictureButton} onPress={takePicture}>
                     <Text style={styles.takePictureText}><Feather name="camera" size={24} color="black" /></Text>
                 </TouchableOpacity>
             )}
+            <TouchableOpacity style={styles.toggleCameraButton} onPress={toggleCameraType}>
+                <Text style={styles.toggleCameraText}>Toggle Camera</Text>
+            </TouchableOpacity>
         </SafeAreaView>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {
@@ -233,8 +295,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     camera: {
+        height: '100%',
         width: '100%',
-        height: '100%', // Set height to 100%
     },
 
     takePictureContainer: {
@@ -247,7 +309,7 @@ const styles = StyleSheet.create({
     takePictureButton: {
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#ccc',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Black color with 50% transparency
         position: 'absolute',
         borderRadius: 50,
         width: 100,
@@ -259,6 +321,21 @@ const styles = StyleSheet.create({
     takePictureText: {
         fontSize: 20,
         color: 'black',
+    },
+
+    toggleCameraButton: {
+        position: 'absolute',
+        top: 20,
+        right: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        borderRadius: 50,
+        padding: 10,
+    },
+    toggleCameraText: {
+        fontSize: 16,
+        color: 'white',
     },
 });
 
