@@ -5,7 +5,7 @@ import DrawerStyles from './DrawerStyles';
 import Majakkalogo from '../../Images/MajakkaLogo2.png';
 
 export default function Login({ setLogin }) {
-    
+
     const [email, setEmail] = useState('testuser@tester.com');
     const [password, setPassword] = useState('test123');
     const [isError, setIsError] = useState(false);
@@ -13,23 +13,23 @@ export default function Login({ setLogin }) {
 
     const login = () => {
         return new Promise((resolve, reject) => {
-        const auth = getAuth();
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                resolve(true);
-                return setLogin(true);
-            })
-            .catch((error) => {
-                reject(error);
-            });
+            const auth = getAuth();
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    resolve(true);
+                    return setLogin(true);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
         });
     };
 
     const handleLogin = async () => {
         setIsError(false);
         setErrorMessage('');
-    
+
         if (email === '' || password === '') {
             setIsError(true);
             setErrorMessage('Please fill in all fields');
@@ -39,7 +39,7 @@ export default function Login({ setLogin }) {
             setErrorMessage('Password must be at least 6 characters long');
             return;
         }
-    
+
         try {
             await login();
 
@@ -58,7 +58,7 @@ export default function Login({ setLogin }) {
     };
     return (
         <SafeAreaView style={DrawerStyles.container}>
-             <View style={DrawerStyles.logoContainer}>
+            <View style={DrawerStyles.logoContainer}>
                 <Image source={Majakkalogo} style={DrawerStyles.logo} resizeMode="contain" />
             </View>
             <View>
@@ -84,10 +84,9 @@ export default function Login({ setLogin }) {
                     <Text style={DrawerStyles.buttonText}>Login</Text>
                 </TouchableOpacity>
                 {isError &&
-                <Text style={DrawerStyles.field}>{errorMessage}
-                </Text>}
+                    <Text style={DrawerStyles.field}>{errorMessage}
+                    </Text>}
             </View>
         </SafeAreaView>
     );
 };
-                                       
