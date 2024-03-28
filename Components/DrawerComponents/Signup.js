@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { getAuth, createUserWithEmailAndPassword } from '../../Firebase/Config';
-import { View, Text, TextInput, Button, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, Image,TouchableOpacity, SafeAreaView } from 'react-native';
 import DrawerStyles from './DrawerStyles';
 import { addDoc, collection, doc, setDoc, db } from '../../Firebase/Config';
+import Majakkalogo from '../../Images/MajakkaLogo2.png';
 
 export default function Signup({ setLogin }) {
     const [email, setEmail] = useState('testuser@tester.com');
@@ -73,13 +74,31 @@ export default function Signup({ setLogin }) {
 
     return (
         <SafeAreaView style={DrawerStyles.container}>
+            <View style={DrawerStyles.logoContainer}>
+                <Image source={Majakkalogo} style={DrawerStyles.logo} resizeMode="contain" />
+            </View>
             <View>
-                <Text style={DrawerStyles.heading}>Signup</Text>
-                <Text style={DrawerStyles.field}>Email</Text>
-                <TextInput style={DrawerStyles.field} keyboardType='default' value={email} onChangeText={text => setEmail(text)} />
-                <Text style={DrawerStyles.field}>Password</Text>
-                <TextInput style={DrawerStyles.field} keyboardType='default' value={password} onChangeText={text => setPassword(text)} />
-                <Button title='Signup' onPress={SignupHandler} />
+                <Text style={[DrawerStyles.heading, DrawerStyles.bold]}>Signup</Text>
+                <Text style={[DrawerStyles.field, DrawerStyles.bold]}>Email:</Text>
+                <TextInput
+                    style={[DrawerStyles.field, DrawerStyles.textInput]}
+                    keyboardType='default'
+                    value={email}
+                    onChangeText={text => setEmail(text)}
+                    placeholder="Enter your email"
+                />
+                <Text style={[DrawerStyles.field, DrawerStyles.bold]}>Password:</Text>
+                <TextInput
+                    style={[DrawerStyles.field, DrawerStyles.textInput]}
+                    keyboardType='default'
+                    value={password}
+                    onChangeText={text => setPassword(text)}
+                    placeholder="Enter your password"
+                    secureTextEntry={true}
+                />
+                <TouchableOpacity style={DrawerStyles.Button} onPress={SignupHandler}>
+                    <Text style={DrawerStyles.buttonText}>Signup</Text>
+                </TouchableOpacity>
                 {isError &&
                     <Text style={DrawerStyles.field}>{errorMessage}
                     </Text>}
