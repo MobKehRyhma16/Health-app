@@ -53,7 +53,6 @@ const DrawerStyles = StyleSheet.create({
     logo: {
         width: 300,
         height: 200, 
-        bottompadding: 20,
     },
     logoContainer: {
         alignItems: 'center',
