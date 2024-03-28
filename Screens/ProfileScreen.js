@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import GradientBackground from '../Components/LinearGradient';
 import { View, Text, StyleSheet, SafeAreaView, Image, TouchableOpacity, Alert } from "react-native";
 import { Feather } from '@expo/vector-icons';
@@ -9,10 +9,10 @@ import * as ImagePicker from 'expo-image-picker';
 
 const Stack = createStackNavigator();
 
-const ProfileScreen = ({ navigation }) => {
+const ProfileScreen = ({ navigation, route }) => {
     const [avatar, setAvatar] = useState(null);
     const [hasCameraPermission, setHasCameraPermission] = useState(null);
-    const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = MediaLibrary.usePermissions()
+    const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState(null);
 
     useEffect(() => {
         (async () => {
@@ -23,6 +23,16 @@ const ProfileScreen = ({ navigation }) => {
             setHasMediaLibraryPermission(mediaLibraryStatus === 'granted');
         })();
     }, []);
+
+    useEffect(() => {
+        if (route.params && route.params.avatar) {
+            setAvatar(route.params.avatar);
+        }
+    }, [route.params]);
+
+    useEffect(() => {
+        console.log("Avatar state when picking image:", avatar);
+    }, [avatar]); // Log whenever avatar state changes
 
     const openAvatarOptions = () => {
         Alert.alert(
@@ -36,13 +46,11 @@ const ProfileScreen = ({ navigation }) => {
                 {
                     text: 'Choose a file',
                     onPress: () => pickImage(),
-
                 },
                 {
                     text: 'Take a Picture',
                     onPress: () => navigateToCameraView(),
                 },
-
             ],
             { cancelable: false }
         );
@@ -50,15 +58,16 @@ const ProfileScreen = ({ navigation }) => {
 
     const navigateToCameraView = () => {
         navigation.navigate('CameraView', { currentAvatar: avatar });
+        console.log('Camera permission:', hasCameraPermission);
     };
 
     const pickImage = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
             alert('Permission to access media library denied!');
-            return;
+            return; 
         }
-
+        console.log('MediaLibrary permission:', hasMediaLibraryPermission);
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -66,11 +75,10 @@ const ProfileScreen = ({ navigation }) => {
                 aspect: [4, 3],
                 quality: 1,
             });
-
-            console.log('Image picker result:', result);
-
+    
             if (!result.canceled) {
-                setAvatar(result.uri);
+                setAvatar(result.assets[0].uri);
+                console.log('Avatar state after setting:', result.assets[0].uri);
             } else {
                 console.log('Image picking was cancelled');
             }
@@ -81,31 +89,53 @@ const ProfileScreen = ({ navigation }) => {
 
     return (
         <GradientBackground>
-        <SafeAreaView style={styles.container}>
-            <View>
-                <View style={styles.avatarContainer}>
-                    <TouchableOpacity onPress={openAvatarOptions}>
-                        <View style={styles.emptyAvatar}>
-                            {avatar ? (
-                                <Image source={{ uri: avatar }} style={styles.avatarImage} />
-                            ) : (
-                                <Feather name="camera" size={24} color="black" />
-                            )}
-                        </View>
-                    </TouchableOpacity>
-                    <Text style={styles.username}>Username</Text>
+            <SafeAreaView style={styles.container}>
+                <View>
+                    <View style={styles.avatarContainer}>
+                        <TouchableOpacity onPress={openAvatarOptions}>
+                            <View style={styles.emptyAvatar}>
+                                {avatar ? (
+                                    <Image source={{ uri: avatar }} style={styles.avatarImage} />
+                                ) : (
+                                    <Feather name="camera" size={24} color="black" />
+                                )}
+                            </View>
+                        </TouchableOpacity>
+                        <Text style={styles.username}>Username</Text>
+                    </View>
                 </View>
-            </View>
-         </SafeAreaView>
+            </SafeAreaView>
         </GradientBackground>
     );
 };
 
 
-const CameraView = ({ navigation }) => {
+const CameraView = ({ navigation, route }) => {
     const cameraRef = useRef(null);
-    const [avatar, setAvatar] = useState(null);
+    const [avatar, setAvatar] = useState(route.params.avatar || null);
     const [isCameraReady, setIsCameraReady] = useState(false); // 
+    const [hasCameraPermission, setHasCameraPermission] = useState(null);
+   
+    useEffect(() => {
+        (async () => {
+            const { status } = await Camera.requestCameraPermissionsAsync();
+            setHasCameraPermission(status === 'granted');
+        })();
+    }, []);
+    
+    
+    useEffect(() => {
+        navigation.setOptions({ 
+            headerShown: true,
+            title: 'Back',
+            headerTransparent: true,
+            headerLeft: () => (
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Feather name="arrow-left" size={24} color="black" />
+                </TouchableOpacity>
+            ),
+        });
+    }, [navigation]);
 
 
     const takePicture = async () => {
@@ -114,8 +144,7 @@ const CameraView = ({ navigation }) => {
                 const data = await cameraRef.current.takePictureAsync({
                     skipProcessing: true,
                 });
-
-
+    
                 Alert.alert(
                     'Save Image',
                     'Do you want to save this image to your library?',
@@ -127,11 +156,8 @@ const CameraView = ({ navigation }) => {
                         {
                             text: 'Save',
                             onPress: async () => {
-                                // Save the captured image to the media library
                                 await MediaLibrary.saveToLibraryAsync(data.uri);
-                                console.log('Avatar', data);
-                                setAvatar(data.uri);
-                                navigation.goBack(); // Go back to the profile screen after taking the picture
+                                navigation.navigate('ProfileScreen', { avatar: data.uri });
                             },
                         },
                     ],
@@ -142,6 +168,13 @@ const CameraView = ({ navigation }) => {
             }
         }
     };
+
+    useEffect(() => {
+        if (avatar !== null) {
+            console.log('Avatar state inside camera view:', avatar);
+            navigation.goBack();
+        }
+    }, [avatar, navigation]);
 
     const onCameraReady = () => {
         setIsCameraReady(true);
@@ -160,8 +193,6 @@ const CameraView = ({ navigation }) => {
                     <Text style={styles.takePictureText}><Feather name="camera" size={24} color="black" /></Text>
                 </TouchableOpacity>
             )}
-
-
         </SafeAreaView>
     );
 };
@@ -171,6 +202,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: 'transparent',
     },
     avatarContainer: {
         alignItems: 'center',
@@ -201,8 +233,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     camera: {
-        flex: 1,
         width: '100%',
+        height: '100%', // Set height to 100%
     },
 
     takePictureContainer: {
@@ -216,10 +248,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#ccc',
+        position: 'absolute',
         borderRadius: 50,
         width: 100,
         height: 100,
-        marginBottom: 20,
+        bottom: 20, // Adjust bottom spacing as needed
+        left: '50%', // Center the button horizontally
+        marginLeft: -50, // Offset by half of the button width to center it
     },
     takePictureText: {
         fontSize: 20,
@@ -238,7 +273,11 @@ export default function ProfileScreenWithNavigation() {
             <Stack.Screen
                 name="CameraView"
                 component={CameraView}
-                options={{ title: 'Back' }}
+                options={{
+                    title: 'Back',
+                    headerTransparent: true,
+
+                }}
 
             />
         </Stack.Navigator>
