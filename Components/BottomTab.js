@@ -4,6 +4,7 @@ import HistoryScreen from '../Screens/HistoryScreen';
 import ProfileDrawer from './DrawerComponents/ProfileDrawer';
 import { Ionicons } from "@expo/vector-icons";
 import StartWorkoutScreen from '../Screens/StartWorkout';
+import OngoingWorkoutScreen from '../Screens/OngoingWorkoutScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -56,6 +57,9 @@ function MyTabs() {
                     ),
                 }}
             />
+
+            {/* <Tab.Screen name="OngoingWorkout" component={OngoingWorkoutScreen} /> */}
+
         </Tab.Navigator>
     );
 }

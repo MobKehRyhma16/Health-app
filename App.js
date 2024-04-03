@@ -6,6 +6,7 @@ import MyTabs from './Components/BottomTab';
 import LoginScreen from './Screens/LoginScreen';
 import InfoScreen from './Screens/InfoScreen';
 import HomeScreen from './Screens/HomeScreen';
+import OngoingWorkoutScreen from './Screens/OngoingWorkoutScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,15 +18,12 @@ const AuthNavigator = () => {
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Info" component={InfoScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
-
   );
 };
 
 const App = () => {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(null);
-
-  // Get the authentication instance from your config
   const auth = getAuth();
 
   useEffect(() => {
@@ -36,17 +34,37 @@ const App = () => {
       }
     });
 
-    // Clean up subscription on unmount
     return unsubscribe;
   }, []);
 
   if (initializing) {
-    return null; // Render nothing while initializing
+    return null;
   }
 
   return (
     <NavigationContainer>
-      {user ? <MyTabs /> : <AuthNavigator />}
+      <Stack.Navigator>
+        {user ? (
+          <>
+            <Stack.Screen
+              name="Main"
+              component={MyTabs}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="OngoingWorkout"
+              component={OngoingWorkoutScreen}
+              options={{ headerShown: false }}
+            />
+          </>
+        ) : (
+          <Stack.Screen
+            name="Auth"
+            component={AuthNavigator}
+            options={{ headerShown: false }}
+          />
+        )}
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
