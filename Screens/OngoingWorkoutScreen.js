@@ -1,13 +1,13 @@
 import { View, Text, StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Button, IconButton } from 'react-native-paper';
+import { Banner, Button, IconButton } from 'react-native-paper';
 
 
 
 const OngoingWorkoutScreen = () => {
 
-  const [visible,setVisible] = useState('false')
+  const [visible,setVisible] = useState(true)
 
     useEffect(() => {
         console.log('In ongoig workoutscreen!')
@@ -24,6 +24,19 @@ const OngoingWorkoutScreen = () => {
       </>
       );
   }
+
+  const StatsBanner = () => {
+    return (
+      <>
+      <Banner style={styles.bannerCont} visible={visible}>
+        <Text>12 MIN</Text>
+        <Text>1200 STEPS</Text>
+      </Banner>
+      </>
+      );
+  }
+   
+
    
     
 
@@ -33,6 +46,7 @@ const OngoingWorkoutScreen = () => {
 
       <Text style={styles.textCont}>OngoingWorkoutScreen, type:</Text>
 
+      <StatsBanner/>
       <View style={styles.bottomContainer}>
         <BottomActions/>
       </View>
@@ -59,16 +73,19 @@ const styles = StyleSheet.create({
   bottomContainer: {
     flex: 0.1,
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    // backgroundColor: '#FFAAAA',
-    
 
-    // justifyContent: 'center'
   },
-  // expandButton: {
-  //   justifyContent: 'space-around'
-  // }
+  bannerCont: {
+
+    flex: 1
+
+  },
+  bannerTextColumn: {
+    flex: 1
+  }
+  
 
 });
 
