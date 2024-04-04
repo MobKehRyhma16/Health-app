@@ -44,9 +44,9 @@ const OngoingWorkoutScreen = () => {
     <SafeAreaView style={styles.container}>
 
 
-      <Text style={styles.textCont}>OngoingWorkoutScreen, type:</Text>
+      {/* <Text style={styles.textCont}>OngoingWorkoutScreen, type:</Text> */}
 
-      <StatsBanner/>
+
       <View style={styles.bottomContainer}>
         <BottomActions/>
       </View>
@@ -60,6 +60,7 @@ const OngoingWorkoutScreen = () => {
 const styles = StyleSheet.create({
   container: {
       flex: 1,
+      justifyContent: 'flex-end'
       
 
       
