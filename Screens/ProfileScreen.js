@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import GradientBackground from '../Components/LinearGradient';
 import { View, Text, StyleSheet, SafeAreaView, Image, TouchableOpacity, Alert, TextInput } from "react-native";
 import { Feather } from '@expo/vector-icons';
@@ -6,9 +6,9 @@ import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as ImagePicker from 'expo-image-picker';
-import { firestore, doc, updateDoc, getDoc, getAuth } from '../Firebase/Config';
+import { firestore, doc, updateDoc, getDoc, firebase, getAuth } from '../Firebase/Config';
 import { getUserWorkoutTypes } from "../Firebase/profile";
-
+import { UserContext } from "../Components/UserProvider";
 
 const Stack = createStackNavigator();
 
@@ -20,11 +20,11 @@ const ProfileScreen = ({ navigation, route }) => {
     const [currentAvatar, setCurrentAvatar] = useState(null);
     const [description, setDescription] = useState('');
     const [totalWorkoutTypes, setTotalWorkoutTypes] = useState(0);
-    
+
     const userId = 'VlxwyuiQTxRE1w5eii4kcReqhTU2'; // user id for testing
     const workOutTypes = getUserWorkoutTypes(userId)
 
-    
+
 
 
     useEffect(() => {
@@ -43,7 +43,11 @@ const ProfileScreen = ({ navigation, route }) => {
         })();
     }, []);
 
-    
+    useEffect(() => {
+        if(!userId) {
+            return;
+        }
+    }, [userId]);
 
 
     useEffect(() => {
@@ -148,61 +152,133 @@ const ProfileScreen = ({ navigation, route }) => {
             console.log('Error picking an image:', error);
         }
     };
-    return (
-        <GradientBackground>
-            <SafeAreaView style={styles.container}>
-                <View style={styles.avatarContainer}>
-                    <TouchableOpacity onPress={openAvatarOptions}>
-                        <View style={styles.emptyAvatar}>
-                            {avatar ? (
-                                <Image
-                                    source={{ uri: avatar }}
-                                    style={styles.avatarImage}
-                                />
-                            ) : (
-                                <Feather name="camera" size={24} color="black" />
-                            )}
-                        </View>
+
+
+    const DailyGoal = () => {
+        const [dailyGoal, setDailyGoal] = useState('');
+        const { userId } = useContext(UserContext);
+    
+        useEffect(() => {
+            if (userId) {
+                fetchDailyGoal(userId); // Call fetchDailyGoal if userId is available
+            }
+        }, [userId]);
+    
+        const fetchDailyGoal = (userId) => {
+            if (!userId) {
+                console.error('No user logged in');
+                return;
+            }
+    
+            firebase.database().ref('users/' + userId).once('value')
+                .then((snapshot) => {
+                    const userData = snapshot.val();
+                    if (userData && userData.dailyGoal) {
+                        setDailyGoal(userData.dailyGoal.toString());
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching daily goal:', error.message);
+                });
+        };
+    
+        const handleSave = () => {
+            if (!userId) {
+                console.error('No user logged in');
+                return;
+            }
+    
+            const parsedGoal = parseInt(dailyGoal);
+            if (isNaN(parsedGoal)) {
+                console.error('Invalid daily goal:', dailyGoal);
+                return;
+            }
+    
+            firebase.database().ref('users/' + userId).update({
+                dailyGoal: parsedGoal
+            }).then(() => {
+                console.log('Daily goal saved successfully');
+            }).catch((error) => {
+                console.error('Error saving daily goal:', error.message);
+            });
+        };
+    
+        return (
+            <View style={styles.columnContainer}>
+                <View style={styles.column}>
+                    <Text style={styles.columnHeader}>Daily Step Goal</Text>
+                    <TextInput
+                        style={{ borderColor: 'gray', borderWidth: 1, padding: 5 }}
+                        keyboardType="numeric"
+                        onChangeText={setDailyGoal}
+                        value={dailyGoal}
+                    />
+                    <TouchableOpacity style={styles.button} onPress={handleSave}>
+                        <Text style={styles.buttonText}>Save</Text>
                     </TouchableOpacity>
-                    <Text style={styles.username}>{firstname ? firstname : 'Loading...'}</Text>
                 </View>
-                {/* Profile Description */}
-                <View style={styles.descriptionContainer}>
-                    <Text style={styles.heading}>Profile Description</Text>
-                </View>
-                <TextInput
-                    style={styles.input}
-                    value={description}
-                    onChangeText={saveDescription}
-                    placeholder="Enter your profile description"
-                    maxLength={120}
-                    textAlign="center"
-                    multiline={true}
-                    numberOfLines={3}
-                    textBreakStrategy="highQuality"
-                />
-                <View style={styles.columnContainer}>
-                    <View style={styles.column}>
-                        <Text style={styles.columnHeader}>Total Kilometers</Text>
-                        {/* Add your Total kilometers data here */}
-                        <Text style={{ color: '#ccc' }}>0</Text>
+            </View>
+        );
+    };
+    
+
+    return (
+            <GradientBackground>
+                <SafeAreaView style={styles.container}>
+                    <View style={styles.avatarContainer}>
+                        <TouchableOpacity onPress={openAvatarOptions}>
+                            <View style={styles.emptyAvatar}>
+                                {avatar ? (
+                                    <Image
+                                        source={{ uri: avatar }}
+                                        style={styles.avatarImage}
+                                    />
+                                ) : (
+                                    <Feather name="camera" size={24} color="black" />
+                                )}
+                            </View>
+                        </TouchableOpacity>
+                        <Text style={styles.username}>{firstname ? firstname : 'Loading...'}</Text>
                     </View>
-                </View>
-
-                <View style={styles.divider} />
-
-                <View style={styles.columnContainer}>
-                    <View style={styles.column}>
-                        <Text style={styles.columnHeader}>Activities</Text>
-                        {/* Add your Activities data here */}
-                        <Text style={{ color: '#ccc' }}>{workOutTypes.totalWorkoutTypes}</Text>
+                    {/* Profile Description */}
+                    <View style={styles.descriptionContainer}>
+                        <Text style={styles.heading}>Profile Description</Text>
                     </View>
-                </View>
+                    <TextInput
+                        style={styles.input}
+                        value={description}
+                        onChangeText={saveDescription}
+                        placeholder="Enter your profile description"
+                        maxLength={120}
+                        textAlign="center"
+                        multiline={true}
+                        numberOfLines={3}
+                        textBreakStrategy="highQuality"
+                    />
+                    <View style={styles.columnContainer}>
+                        <View style={styles.column}>
+                            <Text style={styles.columnHeader}>Total Kilometers</Text>
+                            {/* Add your Total kilometers data here */}
+                            <Text style={{ color: '#ccc' }}>0</Text>
+                        </View>
+                    </View>
 
-                <View style={styles.divider} />
+                    <View style={styles.divider} />
 
-            </SafeAreaView>
-        </GradientBackground>
+                    <View style={styles.columnContainer}>
+                        <View style={styles.column}>
+                            <Text style={styles.columnHeader}>Activities</Text>
+                            {/* Add your Activities data here */}
+                            <Text style={{ color: '#ccc' }}>{workOutTypes.totalWorkoutTypes}</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.divider} />
+                    <View>
+                        <DailyGoal />
+                    </View>
+                </SafeAreaView>
+            </GradientBackground>
     );
 };
 
@@ -412,7 +488,7 @@ const styles = StyleSheet.create({
     heading: {
         fontSize: 24,
         fontWeight: 'bold',
-        
+
     },
 
     descriptionContainer: {

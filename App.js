@@ -6,17 +6,23 @@ import MyTabs from './Components/BottomTab';
 import LoginScreen from './Screens/LoginScreen';
 import InfoScreen from './Screens/InfoScreen';
 import HomeScreen from './Screens/HomeScreen';
+import Login from './Components/DrawerComponents/Login';
+import { UserProvider } from './Components/UserProvider';
+import ProfileScreen from './Screens/ProfileScreen';
+import { Use } from 'react-native-svg';
 
 const Stack = createNativeStackNavigator();
 
 // Define the AuthNavigator component outside of the App component
 const AuthNavigator = () => {
   return (
+    <UserProvider>
     <Stack.Navigator>
       <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Info" component={InfoScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
+    </UserProvider>
 
   );
 };
@@ -45,9 +51,11 @@ const App = () => {
   }
 
   return (
-    <NavigationContainer>
-      {user ? <MyTabs /> : <AuthNavigator />}
-    </NavigationContainer>
+    <UserProvider>
+      <NavigationContainer>
+        {user ? <MyTabs /> : <AuthNavigator />}
+      </NavigationContainer>
+    </UserProvider>
   );
 };
 
