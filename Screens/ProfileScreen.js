@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import GradientBackground from '../Components/LinearGradient';
-import { View, Text, StyleSheet, SafeAreaView, Image, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, SafeAreaView, Image, TouchableOpacity, Alert, TextInput } from "react-native";
 import { Feather } from '@expo/vector-icons';
 import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as ImagePicker from 'expo-image-picker';
-import { firestore, doc, updateDoc, getDoc } from '../Firebase/Config';
+import { firestore, doc, updateDoc, getDoc, getAuth } from '../Firebase/Config';
+import { getUserWorkoutTypes } from "../Firebase/profile";
+
 
 const Stack = createStackNavigator();
 
@@ -16,9 +18,19 @@ const ProfileScreen = ({ navigation, route }) => {
     const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState(null);
     const [firstname, setFirstname] = useState(null);
     const [currentAvatar, setCurrentAvatar] = useState(null);
+    const [description, setDescription] = useState('');
+    const [totalWorkoutTypes, setTotalWorkoutTypes] = useState(0);
     
+    const userId = 'VlxwyuiQTxRE1w5eii4kcReqhTU2'; // user id for testing
+    const workOutTypes = getUserWorkoutTypes(userId)
+
+    
+
+
     useEffect(() => {
         fetchUserData();
+
+        console.log("Total Workout Types:", workOutTypes.totalWorkoutTypes);
     }, []);
 
     useEffect(() => {
@@ -31,6 +43,9 @@ const ProfileScreen = ({ navigation, route }) => {
         })();
     }, []);
 
+    
+
+
     useEffect(() => {
         if (route.params && route.params.avatar) {
             setAvatar(route.params.avatar);
@@ -38,27 +53,28 @@ const ProfileScreen = ({ navigation, route }) => {
     }, [route.params]);
 
     useEffect(() => {
-    console.log("Avatar state when picking image:", avatar);
-    // Upload avatar path to Firestore when avatar state changes
-    const updateUserAvatar = async () => {
-        try {
-            const userDocRef = doc(firestore, 'users', 'VlxwyuiQTxRE1w5eii4kcReqhTU2'); // Replace 'USER_DOCUMENT_ID' with the actual document ID of the user
-            await updateDoc(userDocRef, { avatar: avatar });
-            console.log("Avatar path updated in Firestore");
-        } catch (error) {
-            console.error("Error updating avatar path in Firestore:", error);
-        }
-    };
+        console.log("Avatar state when picking image:", avatar);
+        // Upload avatar path to Firestore when avatar state changes
+        const updateUserAvatar = async () => {
+            try {
+                const userDocRef = doc(firestore, 'users', 'VlxwyuiQTxRE1w5eii4kcReqhTU2'); // Replace 'USER_DOCUMENT_ID' with the actual document ID of the user
+                await updateDoc(userDocRef, { avatar: avatar });
+                console.log("Avatar path updated in Firestore");
+            } catch (error) {
+                console.error("Error updating avatar path in Firestore:", error);
+            }
+        };
 
-    // Check if the new avatar path is different from the current avatar path
-    if (avatar && avatar !== currentAvatar) {
-        setCurrentAvatar(avatar); // Update the current avatar path
-        updateUserAvatar(); // Update the avatar in Firestore
-    }
-}, [avatar])
+        // Check if the new avatar path is different from the current avatar path
+        if (avatar && avatar !== currentAvatar) {
+            setCurrentAvatar(avatar); // Update the current avatar path
+            updateUserAvatar(); // Update the avatar in Firestore
+        }
+    }, [avatar])
 
     const fetchUserData = async () => {
         try {
+
             const userDocRef = doc(firestore, 'users', 'VlxwyuiQTxRE1w5eii4kcReqhTU2');
             const userDocSnapshot = await getDoc(userDocRef);
             if (userDocSnapshot.exists()) {
@@ -74,7 +90,7 @@ const ProfileScreen = ({ navigation, route }) => {
             console.error("Error fetching user data from Firestore:", error);
         }
     };
-    
+
     const openAvatarOptions = () => {
         Alert.alert(
             'Change Avatar',
@@ -97,6 +113,11 @@ const ProfileScreen = ({ navigation, route }) => {
         );
     };
 
+    const saveDescription = (text) => { // Accept text parameter
+        setDescription(text); // Update the description state with the entered text
+    };
+
+
     const navigateToCameraView = () => {
         navigation.navigate('CameraView', { currentAvatar: avatar });
         console.log('Camera permission:', hasCameraPermission);
@@ -106,7 +127,7 @@ const ProfileScreen = ({ navigation, route }) => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
             alert('Permission to access media library denied!');
-            return; 
+            return;
         }
         console.log('MediaLibrary permission:', hasMediaLibraryPermission);
         try {
@@ -116,7 +137,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 aspect: [4, 3],
                 quality: 1,
             });
-    
+
             if (!result.canceled) {
                 setAvatar(result.assets[0].uri);
                 console.log('Avatar state after setting:', result.assets[0].uri);
@@ -127,30 +148,59 @@ const ProfileScreen = ({ navigation, route }) => {
             console.log('Error picking an image:', error);
         }
     };
-
     return (
         <GradientBackground>
             <SafeAreaView style={styles.container}>
-                <View>
-                    <View style={styles.avatarContainer}>
-                        <TouchableOpacity onPress={openAvatarOptions}>
-                            <View style={styles.emptyAvatar}>
-                                {avatar ? (
-                                    <Image 
-                                    source={{ uri: avatar }} 
+                <View style={styles.avatarContainer}>
+                    <TouchableOpacity onPress={openAvatarOptions}>
+                        <View style={styles.emptyAvatar}>
+                            {avatar ? (
+                                <Image
+                                    source={{ uri: avatar }}
                                     style={styles.avatarImage}
-
-                                    
-                                    
-                                    />
-                                ) : (
-                                    <Feather name="camera" size={24} color="black" />
-                                )}
-                            </View>
-                        </TouchableOpacity>
-                        <Text style={styles.username}>{firstname ? firstname : 'Loading...'}</Text>
+                                />
+                            ) : (
+                                <Feather name="camera" size={24} color="black" />
+                            )}
+                        </View>
+                    </TouchableOpacity>
+                    <Text style={styles.username}>{firstname ? firstname : 'Loading...'}</Text>
+                </View>
+                {/* Profile Description */}
+                <View style={styles.descriptionContainer}>
+                    <Text style={styles.heading}>Profile Description</Text>
+                </View>
+                <TextInput
+                    style={styles.input}
+                    value={description}
+                    onChangeText={saveDescription}
+                    placeholder="Enter your profile description"
+                    maxLength={120}
+                    textAlign="center"
+                    multiline={true}
+                    numberOfLines={3}
+                    textBreakStrategy="highQuality"
+                />
+                <View style={styles.columnContainer}>
+                    <View style={styles.column}>
+                        <Text style={styles.columnHeader}>Total Kilometers</Text>
+                        {/* Add your Total kilometers data here */}
+                        <Text style={{ color: '#ccc' }}>0</Text>
                     </View>
                 </View>
+
+                <View style={styles.divider} />
+
+                <View style={styles.columnContainer}>
+                    <View style={styles.column}>
+                        <Text style={styles.columnHeader}>Activities</Text>
+                        {/* Add your Activities data here */}
+                        <Text style={{ color: '#ccc' }}>{workOutTypes.totalWorkoutTypes}</Text>
+                    </View>
+                </View>
+
+                <View style={styles.divider} />
+
             </SafeAreaView>
         </GradientBackground>
     );
@@ -163,18 +213,18 @@ const CameraView = ({ navigation, route }) => {
     const [isCameraReady, setIsCameraReady] = useState(false); // 
     const [hasCameraPermission, setHasCameraPermission] = useState(null);
     const [cameraType, setCameraType] = useState(Camera.Constants.Type.back); // Default to back camera
-    
-   
+
+
     useEffect(() => {
         (async () => {
             const { status } = await Camera.requestCameraPermissionsAsync();
             setHasCameraPermission(status === 'granted');
         })();
     }, []);
-    
-    
+
+
     useEffect(() => {
-        navigation.setOptions({ 
+        navigation.setOptions({
             headerShown: true,
             title: 'Back',
             headerTransparent: true,
@@ -268,6 +318,7 @@ const styles = StyleSheet.create({
     },
     avatarContainer: {
         alignItems: 'center',
+        marginBottom: 20, // Added to provide spacing between avatar and columns
     },
 
     capturedImage: {
@@ -336,6 +387,46 @@ const styles = StyleSheet.create({
     toggleCameraText: {
         fontSize: 16,
         color: 'white',
+    },
+    divider: {
+        height: 1,
+        backgroundColor: '#ccc',
+        width: '100%',
+        marginVertical: 10,
+    },
+    columnContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start', // Adjusted to align columns to the left
+        alignItems: 'center',
+        width: '100%', // Added to ensure columns span the width of the screen
+        paddingHorizontal: 20, // Added for spacing between columns and edges
+    },
+    column: {
+        flex: 1, // Added to allow columns to occupy full width
+    },
+    columnHeader: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+
+    heading: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        
+    },
+
+    descriptionContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 8,
+    },
+    input: {
+        padding: 10,
+        marginBottom: 8,
+        marginTop: -12,
+        maxHeight: 120,
+        width: '90%',
     },
 });
 
