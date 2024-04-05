@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from "react-native";
 import Stepcounter from "../Components/Stepcounter";
 import GradientBackground from '../Components/LinearGradient';
+import Activitybar from "../Components/Activitybar";
 
 export default function HomeScreen() {
 
@@ -9,7 +10,7 @@ export default function HomeScreen() {
         <GradientBackground>
             <SafeAreaView style={styles.container}>
                 <View>
-                    <Stepcounter />
+                    <Activitybar />
                     <Text style={styles.heading}>Home</Text>
                 </View>
             </SafeAreaView>
@@ -20,7 +21,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'top',
         padding: 16,
     },
     heading: {
