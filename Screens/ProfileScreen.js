@@ -156,7 +156,6 @@ const ProfileScreen = ({ navigation, route }) => {
 
     const DailyGoal = () => {
         const [dailyGoal, setDailyGoal] = useState('');
-        const [goal, setGoal] = useState('');
         const { userId } = useContext(UserContext);
     
         useEffect(() => {
@@ -179,7 +178,7 @@ const ProfileScreen = ({ navigation, route }) => {
     
                 if (docSnap.exists()) {
                     const userData = docSnap.data();
-                    setGoal(userData.goal || '');
+                    setDailyGoal(userData.dailyGoal || '');
                 } else {
                     console.log("User document does not exist.");
                 }
@@ -201,7 +200,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 const uid = user.uid;
                 const userDocRef = doc(db, "users", uid);
                 await updateDoc(userDocRef, {
-                    goal: dailyGoal
+                    dailyGoal: dailyGoal
                 });
                 console.log("User information updated successfully.");
             } catch (error) {
@@ -214,7 +213,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 <View style={styles.column}>
                     <Text style={styles.columnHeader}>Daily Step Goal</Text>
                     <TextInput
-                        style={{ borderColor: 'gray', borderWidth: 1, padding: 5 }}
+                        style={{ borderColor: '#ccc', borderWidth: 1, padding: 5 }}
                         keyboardType="numeric"
                         onChangeText={setDailyGoal}
                         value={dailyGoal}
@@ -509,6 +508,14 @@ const styles = StyleSheet.create({
         marginTop: -12,
         maxHeight: 120,
         width: '90%',
+    },
+
+    button: {
+        backgroundColor: 'lightblue',
+        padding: 10,
+        borderRadius: 5,
+        marginTop: 10,
+        width: 75,
     },
 });
 
