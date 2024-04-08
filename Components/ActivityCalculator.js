@@ -4,7 +4,7 @@ import { getAuth, doc, getFirestore, db } from '../Firebase/Config';
 
 const ActivityCalculator = ({ activityType, speed, time, }) => {
   //tää on ihan paska -->
-  const [weight, setWeight] = useState(null);
+  /*const [weight, setWeight] = useState(null);
   useEffect(() => {
     const fetchWeight = async () => {
       try {
@@ -58,10 +58,17 @@ const ActivityCalculator = ({ activityType, speed, time, }) => {
         }
     }
   };
+*/
+
 
   // Calculate calories burned
   const calculateCaloriesBurned = () => {
-    const MET = determineMET(activityType, speed);
+    //const MET = determineMET(activityType, speed);
+    const MET = 10;
+    const weight = 80;
+    const time = 10;
+    //kovakoodattu hetkeksi :)
+
     const caloriesBurned = time * 60 * MET * 3.5 * weight / 200;
     return caloriesBurned;
   };
@@ -70,25 +77,20 @@ const ActivityCalculator = ({ activityType, speed, time, }) => {
 
   return (
     <React.Fragment>
-      <Text style={styles.caloriesLabel}>Estimated Calories Burned:</Text>
-      <Text style={styles.caloriesText}>
-        {estimatedCaloriesBurned.toFixed(2)} calories
+      <Text style = {styles.text}>Calories Burned: {estimatedCaloriesBurned.toFixed(2)}</Text>
+      <Text>
+      
       </Text>
     </React.Fragment>
   );
 };
+export default ActivityCalculator;
 
 const styles = StyleSheet.create({
-  caloriesLabel: {
-    fontSize: 20,
-    color: '#555',
-    marginRight: 6,
-  },
-  caloriesText: {
+
+  text: {
     fontSize: 18,
-    color: '#e74c3c',
+    color: 'red',
     fontWeight: 'bold',
   },
 });
-
-export default ActivityCalculator;
