@@ -6,7 +6,7 @@ import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as ImagePicker from 'expo-image-picker';
-import { firestore, doc, updateDoc, getDoc, firebase, getAuth, db } from '../Firebase/Config';
+import { firestore, doc, updateDoc, getDoc, getAuth, db } from '../Firebase/Config';
 import { getUserWorkoutTypes } from "../Firebase/profile";
 import { UserContext } from "../Components/UserProvider";
 
@@ -21,11 +21,13 @@ const ProfileScreen = ({ navigation, route }) => {
     const [description, setDescription] = useState('');
     const [totalWorkoutTypes, setTotalWorkoutTypes] = useState(0);
 
-    const userId = 'VlxwyuiQTxRE1w5eii4kcReqhTU2'; // user id for testing
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const uid = user.uid;
+
+    const userId = uid; 
+
     const workOutTypes = getUserWorkoutTypes(userId)
-
-
-
 
     useEffect(() => {
         fetchUserData();
@@ -44,13 +46,6 @@ const ProfileScreen = ({ navigation, route }) => {
     }, []);
 
     useEffect(() => {
-        if (!userId) {
-            return;
-        }
-    }, [userId]);
-
-
-    useEffect(() => {
         if (route.params && route.params.avatar) {
             setAvatar(route.params.avatar);
         }
@@ -61,7 +56,7 @@ const ProfileScreen = ({ navigation, route }) => {
         // Upload avatar path to Firestore when avatar state changes
         const updateUserAvatar = async () => {
             try {
-                const userDocRef = doc(firestore, 'users', 'VlxwyuiQTxRE1w5eii4kcReqhTU2'); // Replace 'USER_DOCUMENT_ID' with the actual document ID of the user
+                const userDocRef = doc(firestore, 'users', uid); // Replace 'USER_DOCUMENT_ID' with the actual document ID of the user
                 await updateDoc(userDocRef, { avatar: avatar });
                 console.log("Avatar path updated in Firestore");
             } catch (error) {
@@ -79,7 +74,7 @@ const ProfileScreen = ({ navigation, route }) => {
     const fetchUserData = async () => {
         try {
 
-            const userDocRef = doc(firestore, 'users', 'VlxwyuiQTxRE1w5eii4kcReqhTU2');
+            const userDocRef = doc(firestore, 'users', uid);
             const userDocSnapshot = await getDoc(userDocRef);
             if (userDocSnapshot.exists()) {
                 const userData = userDocSnapshot.data();
@@ -156,7 +151,6 @@ const ProfileScreen = ({ navigation, route }) => {
 
     const DailyGoal = () => {
         const [dailyGoal, setDailyGoal] = useState('');
-        const { userId } = useContext(UserContext);
     
         useEffect(() => {
             fetchUserGoal();
@@ -164,15 +158,12 @@ const ProfileScreen = ({ navigation, route }) => {
     
         async function fetchUserGoal() {
             try {
-                const auth = getAuth();
-                const user = auth.currentUser;
     
                 if (!user) {
                     console.log("No user signed in.");
                     return;
                 }
     
-                const uid = user.uid;
                 const userDocRef = doc(db, "users", uid);
                 const docSnap = await getDoc(userDocRef);
     
@@ -189,9 +180,6 @@ const ProfileScreen = ({ navigation, route }) => {
     
         async function handleSave() {
             try {
-                const auth = getAuth();
-                const user = auth.currentUser;
-    
                 if (!user) {
                     console.log("No user signed in.");
                     return;
