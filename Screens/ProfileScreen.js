@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import GradientBackground from '../Components/LinearGradient';
 import { View, Text, StyleSheet, SafeAreaView, Image, TouchableOpacity, Alert, TextInput } from "react-native";
 import { Feather } from '@expo/vector-icons';
@@ -6,9 +6,9 @@ import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as ImagePicker from 'expo-image-picker';
-import { firestore, doc, updateDoc, getDoc, getAuth } from '../Firebase/Config';
+import { firestore, doc, updateDoc, getDoc, getAuth, db } from '../Firebase/Config';
 import { getUserWorkoutTypes } from "../Firebase/profile";
-
+import { UserContext } from "../helpers/UserProvider";
 
 const Stack = createStackNavigator();
 
@@ -20,12 +20,14 @@ const ProfileScreen = ({ navigation, route }) => {
     const [currentAvatar, setCurrentAvatar] = useState(null);
     const [description, setDescription] = useState('');
     const [totalWorkoutTypes, setTotalWorkoutTypes] = useState(0);
-    
-    const userId = 'VlxwyuiQTxRE1w5eii4kcReqhTU2'; // user id for testing
+
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const uid = user.uid;
+
+    const userId = uid; 
+
     const workOutTypes = getUserWorkoutTypes(userId)
-
-    
-
 
     useEffect(() => {
         fetchUserData();
@@ -43,9 +45,6 @@ const ProfileScreen = ({ navigation, route }) => {
         })();
     }, []);
 
-    
-
-
     useEffect(() => {
         if (route.params && route.params.avatar) {
             setAvatar(route.params.avatar);
@@ -57,7 +56,7 @@ const ProfileScreen = ({ navigation, route }) => {
         // Upload avatar path to Firestore when avatar state changes
         const updateUserAvatar = async () => {
             try {
-                const userDocRef = doc(firestore, 'users', 'VlxwyuiQTxRE1w5eii4kcReqhTU2'); // Replace 'USER_DOCUMENT_ID' with the actual document ID of the user
+                const userDocRef = doc(firestore, 'users', uid); // Replace 'USER_DOCUMENT_ID' with the actual document ID of the user
                 await updateDoc(userDocRef, { avatar: avatar });
                 console.log("Avatar path updated in Firestore");
             } catch (error) {
@@ -75,7 +74,7 @@ const ProfileScreen = ({ navigation, route }) => {
     const fetchUserData = async () => {
         try {
 
-            const userDocRef = doc(firestore, 'users', 'VlxwyuiQTxRE1w5eii4kcReqhTU2');
+            const userDocRef = doc(firestore, 'users', uid);
             const userDocSnapshot = await getDoc(userDocRef);
             if (userDocSnapshot.exists()) {
                 const userData = userDocSnapshot.data();
@@ -148,6 +147,73 @@ const ProfileScreen = ({ navigation, route }) => {
             console.log('Error picking an image:', error);
         }
     };
+
+
+    const DailyGoal = () => {
+        const [dailyGoal, setDailyGoal] = useState('');
+    
+        useEffect(() => {
+            fetchUserGoal();
+        }, []);
+    
+        async function fetchUserGoal() {
+            try {
+    
+                if (!user) {
+                    console.log("No user signed in.");
+                    return;
+                }
+    
+                const userDocRef = doc(db, "users", uid);
+                const docSnap = await getDoc(userDocRef);
+    
+                if (docSnap.exists()) {
+                    const userData = docSnap.data();
+                    setDailyGoal(userData.dailyGoal || '');
+                } else {
+                    console.log("User document does not exist.");
+                }
+            } catch (error) {
+                console.error("Error fetching user information:", error);
+            }
+        }
+    
+        async function handleSave() {
+            try {
+                if (!user) {
+                    console.log("No user signed in.");
+                    return;
+                }
+    
+                const uid = user.uid;
+                const userDocRef = doc(db, "users", uid);
+                await updateDoc(userDocRef, {
+                    dailyGoal: dailyGoal
+                });
+                console.log("User information updated successfully.");
+            } catch (error) {
+                console.error("Error updating user information:", error);
+            }
+        }
+    
+        return (
+            <View style={styles.columnContainer}>
+                <View style={styles.column}>
+                    <Text style={styles.columnHeader}>Daily Step Goal</Text>
+                    <TextInput
+                        style={{ borderColor: '#ccc', borderWidth: 1, padding: 5 }}
+                        keyboardType="numeric"
+                        onChangeText={setDailyGoal}
+                        value={dailyGoal}
+                    />
+                    <TouchableOpacity style={styles.button} onPress={handleSave}>
+                        <Text style={styles.buttonText}>Save</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        );
+    };
+    
     return (
         <GradientBackground>
             <SafeAreaView style={styles.container}>
@@ -200,7 +266,9 @@ const ProfileScreen = ({ navigation, route }) => {
                 </View>
 
                 <View style={styles.divider} />
-
+                <View>
+                    <DailyGoal />
+                </View>
             </SafeAreaView>
         </GradientBackground>
     );
@@ -309,6 +377,7 @@ const CameraView = ({ navigation, route }) => {
 };
 
 
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -412,7 +481,7 @@ const styles = StyleSheet.create({
     heading: {
         fontSize: 24,
         fontWeight: 'bold',
-        
+
     },
 
     descriptionContainer: {
@@ -427,6 +496,14 @@ const styles = StyleSheet.create({
         marginTop: -12,
         maxHeight: 120,
         width: '90%',
+    },
+
+    button: {
+        backgroundColor: 'lightblue',
+        padding: 10,
+        borderRadius: 5,
+        marginTop: 10,
+        width: 75,
     },
 });
 

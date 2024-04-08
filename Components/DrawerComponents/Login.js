@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, createContext, useContext } from 'react';
 import { View, Text, TextInput, Image, SafeAreaView, TouchableOpacity } from 'react-native';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword } from '../../Firebase/Config';
 import DrawerStyles from './DrawerStyles';
 import Majakkalogo from '../../Images/MajakkaLogo2.png';
+import { UserContext } from '../../helpers/UserProvider';
 
 export default function Login({ setLogin }) {
 
@@ -10,6 +11,7 @@ export default function Login({ setLogin }) {
     const [password, setPassword] = useState('test123');
     const [isError, setIsError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const { setUserContext } = useContext(UserContext); // Access setUserContext from context
 
     const login = () => {
         return new Promise((resolve, reject) => {
@@ -17,6 +19,9 @@ export default function Login({ setLogin }) {
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
+                    setUserContext(user.uid);
+                    console.log("User is logged in")
+                    console.log('User ID saved into context:', user.uid); // Add console log
                     resolve(true);
                     return setLogin(true);
                 })
@@ -56,6 +61,7 @@ export default function Login({ setLogin }) {
             }
         }
     };
+
     return (
         <SafeAreaView style={DrawerStyles.container}>
             <View style={DrawerStyles.logoContainer}>

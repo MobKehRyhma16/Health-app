@@ -21,7 +21,7 @@ const Logout = () => {
       <SafeAreaView style={DrawerStyles.container}>
         <View style={DrawerStyles.logoContainer}>
           <Image source={Majakkalogo} style={DrawerStyles.logo} resizeMode="contain" />
-          <TouchableOpacity style={DrawerStyles.Button} onPress={Logout}>
+          <TouchableOpacity style={DrawerStyles.Button} onPress={handleLogout}>
             <Text style={DrawerStyles.buttonText}>Logout</Text>
           </TouchableOpacity>
         </View>
