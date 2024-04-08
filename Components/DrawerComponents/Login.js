@@ -3,7 +3,7 @@ import { View, Text, TextInput, Image, SafeAreaView, TouchableOpacity } from 're
 import { getAuth, signInWithEmailAndPassword } from '../../Firebase/Config';
 import DrawerStyles from './DrawerStyles';
 import Majakkalogo from '../../Images/MajakkaLogo2.png';
-import { UserContext } from '../UserProvider';
+import { UserContext } from '../../helpers/UserProvider';
 
 export default function Login({ setLogin }) {
 

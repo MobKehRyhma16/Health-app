@@ -8,7 +8,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import * as ImagePicker from 'expo-image-picker';
 import { firestore, doc, updateDoc, getDoc, getAuth, db } from '../Firebase/Config';
 import { getUserWorkoutTypes } from "../Firebase/profile";
-import { UserContext } from "../Components/UserProvider";
+import { UserContext } from "../helpers/UserProvider";
 
 const Stack = createStackNavigator();
 

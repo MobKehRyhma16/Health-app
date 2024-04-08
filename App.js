@@ -6,10 +6,8 @@ import MyTabs from './Components/BottomTab';
 import LoginScreen from './Screens/LoginScreen';
 import InfoScreen from './Screens/InfoScreen';
 import HomeScreen from './Screens/HomeScreen';
-import Login from './Components/DrawerComponents/Login';
-import { UserProvider } from './Components/UserProvider';
-import ProfileScreen from './Screens/ProfileScreen';
-import { Use } from 'react-native-svg';
+import { UserProvider } from './helpers/UserProvider';
+
 
 const Stack = createNativeStackNavigator();
 

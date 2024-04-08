@@ -7,7 +7,7 @@ import DrawerStyles from './DrawerStyles';
 import { getAuth } from '../../Firebase/Config';
 import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { UserProvider } from '../UserProvider';
+import { UserProvider } from '../../helpers/UserProvider';
 
 const Drawer = createDrawerNavigator();
 const auth = getAuth();
