@@ -5,7 +5,7 @@ import { Banner, Button, Card, IconButton, Surface } from 'react-native-paper';
 
 
 
-const OngoingWorkoutScreen = () => {
+const OngoingWorkoutScreen = ({navigation}) => {
 
   const [duration,setDuration] = useState(0)
   const [speed,setSpeed] = useState(0)
@@ -18,7 +18,6 @@ const OngoingWorkoutScreen = () => {
 
   // https://react.dev/reference/react/useState#updating-state-based-on-the-previous-state
   const toggleVisibility = () => {
-    console.log('toggle visibility')
     setModalVisible(!modalVisible)
   }
 
@@ -28,7 +27,7 @@ const OngoingWorkoutScreen = () => {
     return (
       <>
 
-        <Button textColor='red' size={50} onPress={() => console.log('Quit button pressed')} icon="cancel"></Button>
+        <Button textColor='red' size={50} onPress={() => navigation.navigate('Workout')} icon="cancel"></Button>
 
 
         {/* {modalVisible===false && ( */}
