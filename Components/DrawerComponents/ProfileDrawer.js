@@ -7,6 +7,7 @@ import DrawerStyles from './DrawerStyles';
 import { getAuth } from '../../Firebase/Config';
 import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import { UserProvider } from '../../helpers/UserProvider';
 
 const Drawer = createDrawerNavigator();
 const auth = getAuth();
@@ -31,6 +32,7 @@ function ProfileDrawer() {
   }
 
   return (
+    <UserProvider >
     <Drawer.Navigator
       screenOptions={({ route }) => ({
         drawerPosition: 'right',
@@ -64,6 +66,7 @@ function ProfileDrawer() {
       )}
       <Drawer.Screen name="My Information" component={Info} />
     </Drawer.Navigator>
+    </UserProvider >
   );
 }
 

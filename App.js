@@ -7,17 +7,22 @@ import LoginScreen from './Screens/LoginScreen';
 import InfoScreen from './Screens/InfoScreen';
 import HomeScreen from './Screens/HomeScreen';
 import OngoingWorkoutScreen from './Screens/OngoingWorkoutScreen';
+import { UserProvider } from './helpers/UserProvider';
+
 
 const Stack = createNativeStackNavigator();
 
 // Define the AuthNavigator component outside of the App component
 const AuthNavigator = () => {
   return (
+    <UserProvider>
     <Stack.Navigator>
       <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Info" component={InfoScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
+    </UserProvider>
+
   );
 };
 

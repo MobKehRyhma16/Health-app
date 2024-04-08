@@ -5,6 +5,7 @@ import ProfileDrawer from './DrawerComponents/ProfileDrawer';
 import { Ionicons } from "@expo/vector-icons";
 import StartWorkoutScreen from '../Screens/StartWorkout';
 import OngoingWorkoutScreen from '../Screens/OngoingWorkoutScreen';
+import { UserProvider } from '../helpers/UserProvider';
 
 const Tab = createBottomTabNavigator();
 
