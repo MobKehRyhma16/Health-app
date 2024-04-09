@@ -1,13 +1,15 @@
 
 // https://www.geeksforgeeks.org/create-a-stop-watch-using-react-native/
 
-import { useEffect, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import { TouchableOpacity, View, StyleSheet, Text } from "react-native";
+
+const DurationContext = createContext();
 
 
 const Duration = () => {
-    const [started, setStarted] = useState(false)
 
+    const [started, setStarted] = useState(false)
     const [time, setTime] = useState(0); 
     const intervalRef = useRef(null); 
     const startTimeRef = useRef(0); 

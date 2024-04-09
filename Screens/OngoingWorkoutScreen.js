@@ -8,7 +8,7 @@ import Duration from '../Components/Duration';
 
 const OngoingWorkoutScreen = ({navigation}) => {
 
-  // const [duration,setDuration] = useState(0)
+  // const [time,setTime] = useState(0)
   const [speed,setSpeed] = useState(0)
   const [steps,setSteps] = useState(0)
   const [caloriesBurned, setCaloriesBurned] = useState(0)
@@ -17,7 +17,7 @@ const OngoingWorkoutScreen = ({navigation}) => {
   const [modalVisible,setModalVisible] = useState(false)
 
 
-  // https://react.dev/reference/react/useState#updating-state-based-on-the-previous-state
+
   const toggleVisibility = () => {
     setModalVisible(!modalVisible)
   }
@@ -52,20 +52,21 @@ const OngoingWorkoutScreen = ({navigation}) => {
 
 
             <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            // presentationStyle={'pageSheet'}
-            onRequestClose={() =>{
-              setModalVisible(!modalVisible)
-            }}
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              // presentationStyle={'pageSheet'}
+              onRequestClose={() =>{
+                setModalVisible(!modalVisible)
+              }}
             style={styles.modalStyle}>
               <TouchableOpacity onPress={() => toggleVisibility()}>
                   <Surface style={styles.surface} elevation={5}>
 
                     <View style={styles.cardStyle}>
                       <Text style={styles.modalTextStyle}>SPEED: {speed}</Text>
-                      <Text style={styles.modalTextStyle}>DURATION:<Duration/> </Text> 
+                      <Text style={styles.modalTextStyle}>DURATION: <Duration/> </Text> 
+                      {/* <Text style={styles.modalTextStyle}>DURATION: <Duration time={time} setTime={setTime}/> </Text>  */}
 
                     </View>
 
