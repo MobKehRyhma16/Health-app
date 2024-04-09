@@ -2,12 +2,13 @@ import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Banner, Button, Card, IconButton, Surface } from 'react-native-paper';
+import Duration from '../Components/Duration';
 
 
 
 const OngoingWorkoutScreen = ({navigation}) => {
 
-  const [duration,setDuration] = useState(0)
+  // const [duration,setDuration] = useState(0)
   const [speed,setSpeed] = useState(0)
   const [steps,setSteps] = useState(0)
   const [caloriesBurned, setCaloriesBurned] = useState(0)
@@ -45,18 +46,6 @@ const OngoingWorkoutScreen = ({navigation}) => {
       );
   }
 
-  // const StatsBanner = () => {
-  //   return (
-  //     <>
-  //     <Banner style={styles.bannerCont} visible={visible}>
-  //       <Text>12 MIN</Text>
-  //       <Text>1200 STEPS</Text>
-  //     </Banner>
-  //     </>
-  //     );
-  // }
-
-
 
     const SurfaceComp = () => {
       return (
@@ -76,7 +65,7 @@ const OngoingWorkoutScreen = ({navigation}) => {
 
                     <View style={styles.cardStyle}>
                       <Text style={styles.modalTextStyle}>SPEED: {speed}</Text>
-                      <Text style={styles.modalTextStyle}>DURATION: {duration}</Text>
+                      <Text style={styles.modalTextStyle}>DURATION:<Duration/> </Text> 
 
                     </View>
 
@@ -105,12 +94,6 @@ const OngoingWorkoutScreen = ({navigation}) => {
     <SafeAreaView style={styles.container}>
 
 
-      {/* <Text style={styles.textCont}>OngoingWorkoutScreen, type:</Text> */}
-
-      {/* {visible === true && (
-          <SurfaceComp></SurfaceComp>
-      )} */}
-      
       <SurfaceComp></SurfaceComp>
 
       <View style={styles.bottomContainer}>
