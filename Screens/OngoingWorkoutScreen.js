@@ -8,7 +8,6 @@ import DurationProvider, { useDuration } from '../Components/Duration';
 const OngoingWorkoutScreen = ({navigation}) => {
 
   const {time} = useDuration()
-  // const [time,setTime] = useState(0)
   const [speed,setSpeed] = useState(0)
   const [steps,setSteps] = useState(0)
   const [caloriesBurned, setCaloriesBurned] = useState(0)
