@@ -6,8 +6,7 @@ import ActivityCalculator from './ActivityCalculator';
 
 const CALORIES_PER_STEP = 0.05;
 
-export default function Stepcounter() {
-  const [steps, setSteps] = useState(0);
+export default function Stepcounter({steps,setSteps}) {
   const [isCounting, setisCounting] = useState(false);
   const [lastY, setLastY] = useState(0);
   const [lastTimeStamp, setLastTimeStamp] = useState(0);
