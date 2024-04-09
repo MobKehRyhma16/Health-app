@@ -8,6 +8,7 @@ import InfoScreen from './Screens/InfoScreen';
 import HomeScreen from './Screens/HomeScreen';
 import OngoingWorkoutScreen from './Screens/OngoingWorkoutScreen';
 import { UserProvider } from './helpers/UserProvider';
+import DurationProvider from './Components/Duration';
 
 
 const Stack = createNativeStackNavigator();
@@ -47,6 +48,7 @@ const App = () => {
   }
 
   return (
+    <DurationProvider>
     <NavigationContainer>
       <Stack.Navigator>
         {user ? (
@@ -71,6 +73,7 @@ const App = () => {
         )}
       </Stack.Navigator>
     </NavigationContainer>
+    </DurationProvider>
   );
 };
 

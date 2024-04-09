@@ -1,13 +1,13 @@
 
 // https://www.geeksforgeeks.org/create-a-stop-watch-using-react-native/
 
-import { createContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { TouchableOpacity, View, StyleSheet, Text } from "react-native";
+
 
 const DurationContext = createContext();
 
-
-const Duration = () => {
+export default function DurationProvider({children}) {
 
     const [started, setStarted] = useState(false)
     const [time, setTime] = useState(0); 
@@ -33,8 +33,8 @@ const Duration = () => {
 
     // Function to pause the stopwatch 
     const pauseStopwatch = () => { 
-        clearInterval(intervalRef.current); 
-        setRunning(false); 
+        clearInterval(intervalRef.current);
+        setStarted(false)
     }; 
 
     // Function to reset the stopwatch 
@@ -56,15 +56,26 @@ const Duration = () => {
   
 
     return (
-        <Text>{time}</Text>
+        <DurationContext.Provider value={{
+            time
+            }}>
+
+                {children}
+        </DurationContext.Provider>
 
       );
 }
+
+export function useDuration() {
+    return useContext(DurationContext);
+  }
+
+
 
 const styles = StyleSheet.create({
     container: {
 
     }
 })
+
  
-export default Duration;

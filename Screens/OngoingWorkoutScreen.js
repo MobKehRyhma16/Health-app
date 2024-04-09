@@ -1,13 +1,13 @@
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Banner, Button, Card, IconButton, Surface } from 'react-native-paper';
-import Duration from '../Components/Duration';
-
+import DurationProvider, { useDuration } from '../Components/Duration';
 
 
 const OngoingWorkoutScreen = ({navigation}) => {
 
+  const {time} = useDuration()
   // const [time,setTime] = useState(0)
   const [speed,setSpeed] = useState(0)
   const [steps,setSteps] = useState(0)
@@ -65,7 +65,7 @@ const OngoingWorkoutScreen = ({navigation}) => {
 
                     <View style={styles.cardStyle}>
                       <Text style={styles.modalTextStyle}>SPEED: {speed}</Text>
-                      <Text style={styles.modalTextStyle}>DURATION: <Duration/> </Text> 
+                      <Text style={styles.modalTextStyle}>DURATION: {toString(time).length > 0 ? (<>{time}</>) : (<>time empty</>)} </Text> 
                       {/* <Text style={styles.modalTextStyle}>DURATION: <Duration time={time} setTime={setTime}/> </Text>  */}
 
                     </View>
@@ -92,6 +92,7 @@ const OngoingWorkoutScreen = ({navigation}) => {
     
 
   return (
+
     <SafeAreaView style={styles.container}>
 
 
@@ -100,9 +101,11 @@ const OngoingWorkoutScreen = ({navigation}) => {
       <View style={styles.bottomContainer}>
         <BottomActions/>
       </View>
-        
+
 
     </SafeAreaView>
+
+
   )
 }
 
