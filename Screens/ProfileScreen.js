@@ -9,6 +9,9 @@ import * as ImagePicker from 'expo-image-picker';
 import { firestore, doc, updateDoc, getDoc, getAuth, db } from '../Firebase/Config';
 import { getUserWorkoutTypes } from "../Firebase/profile";
 import { UserContext } from "../helpers/UserProvider";
+import * as ImageManipulator from 'expo-image-manipulator';
+
+
 
 const Stack = createStackNavigator();
 
@@ -28,6 +31,8 @@ const ProfileScreen = ({ navigation, route }) => {
     const userId = uid; 
 
     const workOutTypes = getUserWorkoutTypes(userId)
+
+   
 
     useEffect(() => {
         fetchUserData();
@@ -317,7 +322,17 @@ const CameraView = ({ navigation, route }) => {
                 const data = await cameraRef.current.takePictureAsync({
                     skipProcessing: true,
                 });
-
+    
+                let flippedImageUri = data.uri;
+                if (cameraType === Camera.Constants.Type.front) {
+                    // Image taken with front camera, so flip horizontally
+                    const flippedImage = await ImageManipulator.manipulateAsync(
+                        data.uri,
+                        [{ flip: ImageManipulator.FlipType.Horizontal }],
+                        { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+                    );
+                    flippedImageUri = flippedImage.uri;
+                }
                 Alert.alert(
                     'Save Image',
                     'Do you want to save this image to your library?',
@@ -329,8 +344,8 @@ const CameraView = ({ navigation, route }) => {
                         {
                             text: 'Save',
                             onPress: async () => {
-                                await MediaLibrary.saveToLibraryAsync(data.uri);
-                                navigation.navigate('ProfileScreen', { avatar: data.uri });
+                                await MediaLibrary.saveToLibraryAsync(flippedImageUri);
+                                navigation.navigate('ProfileScreen', { avatar: flippedImageUri });
                             },
                         },
                     ],
