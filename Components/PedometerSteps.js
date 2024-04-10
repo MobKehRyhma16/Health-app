@@ -1,39 +1,77 @@
-
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { Pedometer } from 'expo-sensors';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function PedometerSteps() {
-  const [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
+const PedometerContext = createContext();
+
+export default function PedometerStepsProvider({ children }) {
   const [currentStepCount, setCurrentStepCount] = useState(0);
-  const [subscription, setSubscription] = useState(null); // State for the subscription
+  const [subscription, setSubscription] = useState(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   const subscribe = async () => {
     const isAvailable = await Pedometer.isAvailableAsync();
-    setIsPedometerAvailable(String(isAvailable));
-
-    if (isAvailable) {
+    if (isAvailable && !subscription) {
       const newSubscription = Pedometer.watchStepCount(result => {
-        setCurrentStepCount(result.steps);
+        if (!isPaused) {
+          setCurrentStepCount(result.steps);
+        }
       });
 
-      setSubscription(newSubscription); // Store the subscription in state
+      setSubscription(newSubscription);
     }
   };
 
   useEffect(() => {
-    subscribe();
+    console.log('Subscribing...');
+    if (!isPaused) {
+      subscribe();
+    }
 
-    // Cleanup function to remove the subscription
     return () => {
+      console.log('Unsubscribing...');
       if (subscription) {
         subscription.remove();
+        setSubscription(null);
       }
     };
-  }, []);
+  }, [isPaused]); // Subscribe/unsubscribe when isPaused changes
+
+  const onPause = () => {
+    console.log('Pausing...');
+    setIsPaused(true);
+    if (subscription) {
+      subscription.remove();
+      setSubscription(null);
+    }
+  };
+
+  const onResume = () => {
+    console.log('Resuming...');
+    setIsPaused(false);
+    // Subscribe to pedometer again
+    subscribe();
+  };
+
+  const onReset = () => {
+    console.log('Resetting...');
+    setCurrentStepCount(0);
+  };
+
+  const togglePedometer = () => {
+    if (isPaused) {
+      onResume();
+    } else {
+      onPause();
+    }
+  };
 
   return (
-      <Text>{currentStepCount}</Text>
+    <PedometerContext.Provider value={{ currentStepCount, onPause, onResume, onReset, togglePedometer }}>
+      {children}
+    </PedometerContext.Provider>
   );
+}
+
+export function usePedometer() {
+  return useContext(PedometerContext);
 }

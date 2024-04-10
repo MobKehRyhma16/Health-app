@@ -1,13 +1,20 @@
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Banner, Button, Card, IconButton, Surface } from 'react-native-paper';
+import DurationProvider, { useDuration } from '../Components/Duration';
+import { usePedometer } from '../Components/PedometerSteps';
 
 
 
 const OngoingWorkoutScreen = ({navigation}) => {
 
-  const [duration,setDuration] = useState(0)
+
+  //Context variables 
+  const {currentStepCount, onPause , onResume, onReset, togglePedometer} = usePedometer()
+  const {time, pauseStopwatch, startStopwatch, toggleStopwatch} = useDuration()
+
+  //Other variables
   const [speed,setSpeed] = useState(0)
   const [steps,setSteps] = useState(0)
   const [caloriesBurned, setCaloriesBurned] = useState(0)
@@ -16,46 +23,47 @@ const OngoingWorkoutScreen = ({navigation}) => {
   const [modalVisible,setModalVisible] = useState(false)
 
 
-  // https://react.dev/reference/react/useState#updating-state-based-on-the-previous-state
+  useEffect(() => {
+    console.log('Ongoing workout started')
+    startStopwatch()
+  }, []);
+
+  const quitWorkout = () => {
+    pauseStopwatch()
+    navigation.navigate('Workout')
+  }
+
+  const toggleWorkout = () => {
+    toggleStopwatch()
+    togglePedometer()
+
+  }
+
+
   const toggleVisibility = () => {
     setModalVisible(!modalVisible)
   }
 
-  
 
   const BottomActions = () => {
     return (
       <>
 
-        <Button textColor='red' size={50} onPress={() => navigation.navigate('Workout')} icon="cancel"></Button>
 
-
-        {/* {modalVisible===false && ( */}
+        <Button textColor='red' size={50} onPress={() => quitWorkout()} icon="cancel"></Button>
           <TouchableOpacity>
             <IconButton onPress={() => toggleVisibility()} size={35} mode='contained' icon='chevron-up'></IconButton>
           </TouchableOpacity>
 
-        {/* )} */}
-
-
-        
-        <Button onPress={() => console.log('Pause workout!')} size={50}  icon="pause-circle-outline"></Button>
+        <Surface>
+            <Text>{time}</Text>  
+            <Text>{currentStepCount}</Text>
+        </Surface>
+        <Button onPress={() => toggleWorkout()} size={50}  icon="pause-circle-outline"></Button>
 
       </>
       );
   }
-
-  // const StatsBanner = () => {
-  //   return (
-  //     <>
-  //     <Banner style={styles.bannerCont} visible={visible}>
-  //       <Text>12 MIN</Text>
-  //       <Text>1200 STEPS</Text>
-  //     </Banner>
-  //     </>
-  //     );
-  // }
-
 
 
     const SurfaceComp = () => {
@@ -63,29 +71,27 @@ const OngoingWorkoutScreen = ({navigation}) => {
 
 
             <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            // presentationStyle={'pageSheet'}
-            onRequestClose={() =>{
-              setModalVisible(!modalVisible)
-            }}
+              // animationType='fade'
+              transparent={true}
+              visible={modalVisible}
+              // presentationStyle={'pageSheet'}
+              onRequestClose={() =>{
+                setModalVisible(!modalVisible)
+              }}
             style={styles.modalStyle}>
               <TouchableOpacity onPress={() => toggleVisibility()}>
-                  <Surface style={styles.surface} elevation={5}>
+              {/* <TouchableOpacity> */}
+                  <Surface onPress={() => toggleVisibility()} style={styles.surface} elevation={5}>
 
                     <View style={styles.cardStyle}>
                       <Text style={styles.modalTextStyle}>SPEED: {speed}</Text>
-                      <Text style={styles.modalTextStyle}>DURATION: {duration}</Text>
-
+                      <Text style={styles.modalTextStyle}>DURATION: {toString(time).length > 0 ? (<>{time}</>) : (<>time empty</>)} </Text> 
                     </View>
 
                     <View style={styles.cardStyle}>
                       <Text style={styles.modalTextStyle}>CALORIES: {caloriesBurned}</Text>
                       <Text style={styles.modalTextStyle}>STEPS: {steps}</Text>
                     </View>
-
-                  
 
                       {/* <Button onPress={() => toggleVisibility()}>close</Button> */}
                   </Surface>
@@ -102,23 +108,20 @@ const OngoingWorkoutScreen = ({navigation}) => {
     
 
   return (
+
     <SafeAreaView style={styles.container}>
 
 
-      {/* <Text style={styles.textCont}>OngoingWorkoutScreen, type:</Text> */}
-
-      {/* {visible === true && (
-          <SurfaceComp></SurfaceComp>
-      )} */}
-      
       <SurfaceComp></SurfaceComp>
 
       <View style={styles.bottomContainer}>
         <BottomActions/>
       </View>
-        
+
 
     </SafeAreaView>
+
+
   )
 }
 

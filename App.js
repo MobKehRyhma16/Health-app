@@ -8,6 +8,8 @@ import InfoScreen from './Screens/InfoScreen';
 import HomeScreen from './Screens/HomeScreen';
 import OngoingWorkoutScreen from './Screens/OngoingWorkoutScreen';
 import { UserProvider } from './helpers/UserProvider';
+import DurationProvider from './Components/Duration';
+import PedometerStepsProvider from './Components/PedometerSteps';
 
 
 const Stack = createNativeStackNavigator();
@@ -47,30 +49,34 @@ const App = () => {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {user ? (
-          <>
+    <DurationProvider>
+      <PedometerStepsProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          {user ? (
+            <>
+              <Stack.Screen
+                name="Main"
+                component={MyTabs}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="OngoingWorkout"
+                component={OngoingWorkoutScreen}
+                options={{ headerShown: false }}
+              />
+            </>
+          ) : (
             <Stack.Screen
-              name="Main"
-              component={MyTabs}
+              name="Auth"
+              component={AuthNavigator}
               options={{ headerShown: false }}
             />
-            <Stack.Screen
-              name="OngoingWorkout"
-              component={OngoingWorkoutScreen}
-              options={{ headerShown: false }}
-            />
-          </>
-        ) : (
-          <Stack.Screen
-            name="Auth"
-            component={AuthNavigator}
-            options={{ headerShown: false }}
-          />
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+      </PedometerStepsProvider>
+    </DurationProvider>
   );
 };
 
