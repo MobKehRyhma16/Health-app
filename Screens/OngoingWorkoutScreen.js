@@ -9,10 +9,12 @@ import { usePedometer } from '../Components/PedometerSteps';
 
 const OngoingWorkoutScreen = ({navigation}) => {
 
-  const {currentStepCount} = usePedometer()
 
+  //Context variables 
+  const {currentStepCount, onPause , onResume, onReset, togglePedometer} = usePedometer()
   const {time, pauseStopwatch, startStopwatch, toggleStopwatch} = useDuration()
 
+  //Other variables
   const [speed,setSpeed] = useState(0)
   const [steps,setSteps] = useState(0)
   const [caloriesBurned, setCaloriesBurned] = useState(0)
@@ -29,6 +31,12 @@ const OngoingWorkoutScreen = ({navigation}) => {
   const quitWorkout = () => {
     pauseStopwatch()
     navigation.navigate('Workout')
+  }
+
+  const toggleWorkout = () => {
+    toggleStopwatch()
+    togglePedometer()
+
   }
 
 
@@ -51,7 +59,7 @@ const OngoingWorkoutScreen = ({navigation}) => {
             <Text>{time}</Text>  
             <Text>{currentStepCount}</Text>
         </Surface>
-        <Button onPress={() => toggleStopwatch()} size={50}  icon="pause-circle-outline"></Button>
+        <Button onPress={() => toggleWorkout()} size={50}  icon="pause-circle-outline"></Button>
 
       </>
       );
