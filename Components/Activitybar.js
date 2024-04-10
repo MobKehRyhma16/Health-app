@@ -6,6 +6,7 @@ import { View } from 'react-native';
 import { firestore, doc, updateDoc, getDoc, getAuth, db } from '../Firebase/Config';
 import { FontAwesome6 } from "@expo/vector-icons";
 import { LinearGradient } from 'expo-linear-gradient';
+import PedometerSteps from './PedometerSteps';
 
 export default function Activitybar() {
     const [steps, setSteps] = useState(0);
@@ -84,7 +85,7 @@ export default function Activitybar() {
                 colors={['#00FF00', '#FF0000']}
                 style={styles.container}>
                 <Text style={styles.title}>Todays Activity</Text>
-                <Stepcounter steps={steps} setSteps={setSteps} />
+                <PedometerSteps/>
                 <ActivityCalculator />
             </LinearGradient>
         );
