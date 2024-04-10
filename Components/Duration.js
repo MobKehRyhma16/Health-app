@@ -9,20 +9,22 @@ const DurationContext = createContext();
 
 export default function DurationProvider({children}) {
 
-    const [started, setStarted] = useState(false)
+    const [running, setRunning] = useState(false)
     const [time, setTime] = useState(0); 
     const intervalRef = useRef(null); 
     const startTimeRef = useRef(0); 
     
-    useEffect(() => {
-        if (started === false){
-            startStopwatch()
-            setStarted(false)
-        }
-    }, []);
+    // useEffect(() => {
+    //     if (started === false){
+    //         startStopwatch()
+    //         setStarted(true)
+    //     }
+    // }, []);
 
     // Function to start the stopwatch 
-    const startStopwatch = () => { 
+    const startStopwatch = () => {
+        console.log('Start stopwatch function')
+        setRunning(true)
         startTimeRef.current = Date.now() - time * 1000; 
         intervalRef.current = setInterval(() => { 
             setTime(Math.floor((Date.now() -  
@@ -32,9 +34,10 @@ export default function DurationProvider({children}) {
     }; 
 
     // Function to pause the stopwatch 
-    const pauseStopwatch = () => { 
+    const pauseStopwatch = () => {
+        console.log('Pause stopwatch function')
         clearInterval(intervalRef.current);
-        setStarted(false)
+        setRunning(false)
     }; 
 
     // Function to reset the stopwatch 
@@ -45,19 +48,29 @@ export default function DurationProvider({children}) {
     }; 
 
     // Function to resume the stopwatch 
-    const resumeStopwatch = () => { 
+    const resumeStopwatch = () => {
+        console.log('Resume stopwatch function')
+        setRunning(true)
         startTimeRef.current = Date.now() - time * 1000; 
         intervalRef.current = setInterval(() => { 
             setTime(Math.floor( 
                 (Date.now() - startTimeRef.current) / 1000)); 
         }, 1000); 
 
-    }; 
+    };
+
+    const toggleStopwatch = () => {
+        if (running){
+            pauseStopwatch()
+        } else{
+            resumeStopwatch()
+        }
+    }
   
 
     return (
         <DurationContext.Provider value={{
-            time
+            time, startStopwatch ,pauseStopwatch, resetStopwatch, resumeStopwatch, toggleStopwatch
             }}>
 
                 {children}

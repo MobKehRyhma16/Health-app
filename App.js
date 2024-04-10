@@ -49,30 +49,30 @@ const App = () => {
 
   return (
     <DurationProvider>
-    <NavigationContainer>
-      <Stack.Navigator>
-        {user ? (
-          <>
+      <NavigationContainer>
+        <Stack.Navigator>
+          {user ? (
+            <>
+              <Stack.Screen
+                name="Main"
+                component={MyTabs}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="OngoingWorkout"
+                component={OngoingWorkoutScreen}
+                options={{ headerShown: false }}
+              />
+            </>
+          ) : (
             <Stack.Screen
-              name="Main"
-              component={MyTabs}
+              name="Auth"
+              component={AuthNavigator}
               options={{ headerShown: false }}
             />
-            <Stack.Screen
-              name="OngoingWorkout"
-              component={OngoingWorkoutScreen}
-              options={{ headerShown: false }}
-            />
-          </>
-        ) : (
-          <Stack.Screen
-            name="Auth"
-            component={AuthNavigator}
-            options={{ headerShown: false }}
-          />
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
     </DurationProvider>
   );
 };

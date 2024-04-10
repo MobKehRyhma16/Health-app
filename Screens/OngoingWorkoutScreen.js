@@ -7,7 +7,8 @@ import DurationProvider, { useDuration } from '../Components/Duration';
 
 const OngoingWorkoutScreen = ({navigation}) => {
 
-  const {time} = useDuration()
+  const {time, pauseStopwatch, startStopwatch, toggleStopwatch} = useDuration()
+
   const [speed,setSpeed] = useState(0)
   const [steps,setSteps] = useState(0)
   const [caloriesBurned, setCaloriesBurned] = useState(0)
@@ -16,30 +17,39 @@ const OngoingWorkoutScreen = ({navigation}) => {
   const [modalVisible,setModalVisible] = useState(false)
 
 
+  useEffect(() => {
+    console.log('Ongoing workout started')
+    startStopwatch()
+  }, []);
+
+  const quitWorkout = () => {
+    pauseStopwatch()
+    navigation.navigate('Workout')
+  }
+
 
   const toggleVisibility = () => {
     setModalVisible(!modalVisible)
   }
 
-  
 
   const BottomActions = () => {
     return (
       <>
 
-        <Button textColor='red' size={50} onPress={() => navigation.navigate('Workout')} icon="cancel"></Button>
+        <Button textColor='red' size={50} onPress={() => quitWorkout()} icon="cancel"></Button>
 
 
-        {/* {modalVisible===false && ( */}
+
           <TouchableOpacity>
             <IconButton onPress={() => toggleVisibility()} size={35} mode='contained' icon='chevron-up'></IconButton>
           </TouchableOpacity>
 
-        {/* )} */}
 
-
-        
-        <Button onPress={() => console.log('Pause workout!')} size={50}  icon="pause-circle-outline"></Button>
+        <Surface>
+            <Text>{time}</Text>  
+        </Surface>
+        <Button onPress={() => toggleStopwatch()} size={50}  icon="pause-circle-outline"></Button>
 
       </>
       );
@@ -51,7 +61,7 @@ const OngoingWorkoutScreen = ({navigation}) => {
 
 
             <Modal
-              animationType="slide"
+              // animationType='fade'
               transparent={true}
               visible={modalVisible}
               // presentationStyle={'pageSheet'}
@@ -60,21 +70,18 @@ const OngoingWorkoutScreen = ({navigation}) => {
               }}
             style={styles.modalStyle}>
               <TouchableOpacity onPress={() => toggleVisibility()}>
-                  <Surface style={styles.surface} elevation={5}>
+              {/* <TouchableOpacity> */}
+                  <Surface onPress={() => toggleVisibility()} style={styles.surface} elevation={5}>
 
                     <View style={styles.cardStyle}>
                       <Text style={styles.modalTextStyle}>SPEED: {speed}</Text>
                       <Text style={styles.modalTextStyle}>DURATION: {toString(time).length > 0 ? (<>{time}</>) : (<>time empty</>)} </Text> 
-                      {/* <Text style={styles.modalTextStyle}>DURATION: <Duration time={time} setTime={setTime}/> </Text>  */}
-
                     </View>
 
                     <View style={styles.cardStyle}>
                       <Text style={styles.modalTextStyle}>CALORIES: {caloriesBurned}</Text>
                       <Text style={styles.modalTextStyle}>STEPS: {steps}</Text>
                     </View>
-
-                  
 
                       {/* <Button onPress={() => toggleVisibility()}>close</Button> */}
                   </Surface>
