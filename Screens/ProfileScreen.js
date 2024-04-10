@@ -23,16 +23,19 @@ const ProfileScreen = ({ navigation, route }) => {
     const [currentAvatar, setCurrentAvatar] = useState(null);
     const [description, setDescription] = useState('');
     const [totalWorkoutTypes, setTotalWorkoutTypes] = useState(0);
+    const [isSaving, setIsSaving] = useState(false);
+    const [isDescriptionChanged, setIsDescriptionChanged] = useState(false); // State to track if description has changed
+    const [showSaveButton, setShowSaveButton] = useState(true);
 
     const auth = getAuth();
     const user = auth.currentUser;
     const uid = user.uid;
 
-    const userId = uid; 
+    const userId = uid;
 
     const workOutTypes = getUserWorkoutTypes(userId)
 
-   
+
 
     useEffect(() => {
         fetchUserData();
@@ -89,6 +92,9 @@ const ProfileScreen = ({ navigation, route }) => {
                 if (userData.firstname) {
                     setFirstname(userData.firstname); // Set the username state here
                 }
+                if (userData.description) {
+                    setDescription(userData.description); // Set the description state here
+                }
             }
         } catch (error) {
             console.error("Error fetching user data from Firestore:", error);
@@ -117,10 +123,30 @@ const ProfileScreen = ({ navigation, route }) => {
         );
     };
 
-    const saveDescription = (text) => { // Accept text parameter
-        setDescription(text); // Update the description state with the entered text
+    const handleDescriptionChange = (text) => {
+        setDescription(text);
+        setIsDescriptionChanged(true); // Set description changed state to true when text changes
+        setShowSaveButton(true); // Show the save button when text changes
     };
 
+    const saveDescription = async () => {
+        if (description.trim() !== '') {
+            try {
+                setIsSaving(true);
+                const userDocRef = doc(firestore, 'users', uid);
+                await updateDoc(userDocRef, { description: description });
+                console.log("Description saved to Firestore:", description);
+                setIsSaving(false);
+                setIsDescriptionChanged(false);
+                setShowSaveButton(false); // Hide the save button after it's clicked
+            } catch (error) {
+                console.error("Error saving description to Firestore:", error);
+                setIsSaving(false);
+            }
+        } else {
+            console.log("Description is empty. Not saving to Firestore.");
+        }
+    };
 
     const navigateToCameraView = () => {
         navigation.navigate('CameraView', { currentAvatar: avatar });
@@ -156,22 +182,22 @@ const ProfileScreen = ({ navigation, route }) => {
 
     const DailyGoal = () => {
         const [dailyGoal, setDailyGoal] = useState('');
-    
+
         useEffect(() => {
             fetchUserGoal();
         }, []);
-    
+
         async function fetchUserGoal() {
             try {
-    
+
                 if (!user) {
                     console.log("No user signed in.");
                     return;
                 }
-    
+
                 const userDocRef = doc(db, "users", uid);
                 const docSnap = await getDoc(userDocRef);
-    
+
                 if (docSnap.exists()) {
                     const userData = docSnap.data();
                     setDailyGoal(userData.dailyGoal || '');
@@ -182,14 +208,14 @@ const ProfileScreen = ({ navigation, route }) => {
                 console.error("Error fetching user information:", error);
             }
         }
-    
+
         async function handleSave() {
             try {
                 if (!user) {
                     console.log("No user signed in.");
                     return;
                 }
-    
+
                 const uid = user.uid;
                 const userDocRef = doc(db, "users", uid);
                 await updateDoc(userDocRef, {
@@ -200,7 +226,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 console.error("Error updating user information:", error);
             }
         }
-    
+
         return (
             <View style={styles.columnContainer}>
                 <View style={styles.column}>
@@ -218,7 +244,7 @@ const ProfileScreen = ({ navigation, route }) => {
             </View>
         );
     };
-    
+
     return (
         <GradientBackground>
             <SafeAreaView style={styles.container}>
@@ -241,41 +267,51 @@ const ProfileScreen = ({ navigation, route }) => {
                 <View style={styles.descriptionContainer}>
                     <Text style={styles.heading}>Profile Description</Text>
                 </View>
-                <TextInput
-                    style={styles.input}
-                    value={description}
-                    onChangeText={saveDescription}
-                    placeholder="Enter your profile description"
-                    maxLength={120}
-                    textAlign="center"
-                    multiline={true}
-                    numberOfLines={3}
-                    textBreakStrategy="highQuality"
-                />
-                <View style={styles.columnContainer}>
-                    <View style={styles.column}>
-                        <Text style={styles.columnHeader}>Total Kilometers</Text>
-                        {/* Add your Total kilometers data here */}
-                        <Text style={{ color: '#ccc' }}>0</Text>
-                    </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TextInput
+                        style={[styles.input, { flex: 1 }]}
+                        value={description}
+                        onChangeText={handleDescriptionChange}
+                        placeholder="Enter your profile description"
+                        maxLength={120}
+                        textAlign="center"
+                        multiline={true}
+                        numberOfLines={3}
+                        textBreakStrategy="highQuality"
+                        blurOnSubmit={true}
+                    />
+                    
                 </View>
-
-                <View style={styles.divider} />
-
-                <View style={styles.columnContainer}>
-                    <View style={styles.column}>
-                        <Text style={styles.columnHeader}>Activities</Text>
-                        {/* Add your Activities data here */}
-                        <Text style={{ color: '#ccc' }}>{workOutTypes.totalWorkoutTypes}</Text>
-                    </View>
+                {showSaveButton && isDescriptionChanged && ( // Render the save button only if description has changed and showSaveButton is true
+                        <TouchableOpacity style={[styles.button, { alignSelf: 'flex-end' }]} onPress={saveDescription} disabled={isSaving}>
+                            <Text style={styles.buttonText}>{isSaving ? 'Saving...' : 'Save'}</Text>
+                        </TouchableOpacity>
+                    )}
+            
+            <View style={styles.columnContainer}>
+                <View style={styles.column}>
+                    <Text style={styles.columnHeader}>Total Kilometers</Text>
+                    {/* Add your Total kilometers data here */}
+                    <Text style={{ color: '#ccc' }}>0</Text>
                 </View>
+            </View>
 
-                <View style={styles.divider} />
-                <View>
-                    <DailyGoal />
+            <View style={styles.divider} />
+
+            <View style={styles.columnContainer}>
+                <View style={styles.column}>
+                    <Text style={styles.columnHeader}>Activities</Text>
+                    {/* Add your Activities data here */}
+                    <Text style={{ color: '#ccc' }}>{workOutTypes.totalWorkoutTypes}</Text>
                 </View>
-            </SafeAreaView>
-        </GradientBackground>
+            </View>
+
+            <View style={styles.divider} />
+            <View>
+                <DailyGoal />
+            </View>
+        </SafeAreaView>
+        </GradientBackground >
     );
 };
 
@@ -322,7 +358,7 @@ const CameraView = ({ navigation, route }) => {
                 const data = await cameraRef.current.takePictureAsync({
                     skipProcessing: true,
                 });
-    
+
                 let flippedImageUri = data.uri;
                 if (cameraType === Camera.Constants.Type.front) {
                     // Image taken with front camera, so flip horizontally
