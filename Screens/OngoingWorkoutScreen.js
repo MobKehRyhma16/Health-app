@@ -3,9 +3,13 @@ import React, { useContext, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Banner, Button, Card, IconButton, Surface } from 'react-native-paper';
 import DurationProvider, { useDuration } from '../Components/Duration';
+import { usePedometer } from '../Components/PedometerSteps';
+
 
 
 const OngoingWorkoutScreen = ({navigation}) => {
+
+  const {currentStepCount} = usePedometer()
 
   const {time, pauseStopwatch, startStopwatch, toggleStopwatch} = useDuration()
 
@@ -37,17 +41,15 @@ const OngoingWorkoutScreen = ({navigation}) => {
     return (
       <>
 
+
         <Button textColor='red' size={50} onPress={() => quitWorkout()} icon="cancel"></Button>
-
-
-
           <TouchableOpacity>
             <IconButton onPress={() => toggleVisibility()} size={35} mode='contained' icon='chevron-up'></IconButton>
           </TouchableOpacity>
 
-
         <Surface>
             <Text>{time}</Text>  
+            <Text>{currentStepCount}</Text>
         </Surface>
         <Button onPress={() => toggleStopwatch()} size={50}  icon="pause-circle-outline"></Button>
 

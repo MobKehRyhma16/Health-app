@@ -9,6 +9,7 @@ import HomeScreen from './Screens/HomeScreen';
 import OngoingWorkoutScreen from './Screens/OngoingWorkoutScreen';
 import { UserProvider } from './helpers/UserProvider';
 import DurationProvider from './Components/Duration';
+import PedometerStepsProvider from './Components/PedometerSteps';
 
 
 const Stack = createNativeStackNavigator();
@@ -49,6 +50,7 @@ const App = () => {
 
   return (
     <DurationProvider>
+      <PedometerStepsProvider>
       <NavigationContainer>
         <Stack.Navigator>
           {user ? (
@@ -73,6 +75,7 @@ const App = () => {
           )}
         </Stack.Navigator>
       </NavigationContainer>
+      </PedometerStepsProvider>
     </DurationProvider>
   );
 };

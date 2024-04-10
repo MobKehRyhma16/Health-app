@@ -1,13 +1,17 @@
-
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect, createContext, useContext } from 'react';
+import { StyleSheet, Text, View, Button } from 'react-native';
 import { Pedometer } from 'expo-sensors';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { createIconSet } from 'react-native-vector-icons';
 
-export default function PedometerSteps() {
+const PedometerContext = createContext()
+
+export default function PedometerStepsProvider({children}) {
+
   const [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
   const [currentStepCount, setCurrentStepCount] = useState(0);
   const [subscription, setSubscription] = useState(null); // State for the subscription
+  const [isPaused, setIsPaused] = useState(false);
 
   const subscribe = async () => {
     const isAvailable = await Pedometer.isAvailableAsync();
@@ -15,7 +19,9 @@ export default function PedometerSteps() {
 
     if (isAvailable) {
       const newSubscription = Pedometer.watchStepCount(result => {
-        setCurrentStepCount(result.steps);
+        if (!isPaused) {
+          setCurrentStepCount(result.steps);
+        }
       });
 
       setSubscription(newSubscription); // Store the subscription in state
@@ -33,7 +39,47 @@ export default function PedometerSteps() {
     };
   }, []);
 
-  return (
-      <Text>{currentStepCount}</Text>
-  );
+  const onPause = () => {
+    setIsPaused(true);
+  };
+
+  const onResume = () => {
+    setIsPaused(false);
+  };
+
+  const onReset = () => {
+    setCurrentStepCount(0);
+  };
+
+    return (
+        <PedometerContext.Provider value={{
+            currentStepCount, onPause , onResume, onReset
+            }}>
+
+                {children}
+        </PedometerContext.Provider>
+
+      );
 }
+
+export function usePedometer() {
+  return useContext(PedometerContext);
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  stepsText: {
+    fontSize: 20,
+    marginBottom: 20,
+  },
+});
+
+
+
+
+
+
