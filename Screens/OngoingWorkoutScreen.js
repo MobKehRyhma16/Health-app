@@ -4,12 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Banner, Button, Card, IconButton, Surface } from 'react-native-paper';
 import DurationProvider, { useDuration } from '../Components/Duration';
 import { usePedometer } from '../Components/PedometerSteps';
+import { useLocation } from '../Components/Location';
 
 const OngoingWorkoutScreen = ({ navigation }) => {
   // Context variables
   const { currentStepCount, onPause, onResume, onReset, subscribe } = usePedometer();
   const { time, pauseStopwatch, startStopwatch, resetStopwatch } = useDuration();
-
+  const { location, locationArray, startPolling, stopPolling, resumePolling } = useLocation();
   // Other variables
   const [speed, setSpeed] = useState(0);
   const [steps, setSteps] = useState(0);
@@ -62,10 +63,9 @@ const OngoingWorkoutScreen = ({ navigation }) => {
     return (
       <>
           <Button labelStyle={{fontSize: 30, padding: 5}} textColor='red' size={50} onPress={() => quitWorkout()} icon="cancel"></Button>
-          <TouchableOpacity>
-            <IconButton onPress={() => toggleVisibility()} size={35} mode='contained' icon='chevron-up'></IconButton>
-          </TouchableOpacity>
-          
+
+          <IconButton labelStyle={{padding: 10}} onPress={() => toggleVisibility()} size={35} mode='contained' icon='chevron-up'></IconButton>
+
           {!workoutIsPaused ? (
             <Button onPress={() => toggleWorkout()} labelStyle={{fontSize: 30, padding: 5}} icon="pause-circle-outline"></Button>
           ) : (
@@ -83,7 +83,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
         // <TouchableOpacity onPress={() => toggleVisibility()}>
           <Surface style={styles.surface} elevation={4}>
                 <View style={styles.cardStyle}>
-                  <Text style={styles.modalTextStyle}>SPEED: {speed}</Text>
+                  <Text style={styles.modalTextStyle}>SPEED: {location}</Text>
                   <Text style={styles.modalTextStyle}>DURATION: {time ? time : 'Time empty'}</Text>
                 </View>
                 <View style={styles.cardStyle}>
