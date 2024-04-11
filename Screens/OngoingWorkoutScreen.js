@@ -10,7 +10,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
   // Context variables
   const { currentStepCount, onPause, onResume, onReset, subscribe } = usePedometer();
   const { time, pauseStopwatch, startStopwatch, resetStopwatch } = useDuration();
-  const { location, locationArray, startPolling, stopPolling, resumePolling } = useLocation();
+  const { location, locationArray, startPolling, stopPolling, resumePolling, quitPolling } = useLocation();
   // Other variables
   const [speed, setSpeed] = useState(0);
   const [steps, setSteps] = useState(0);
@@ -24,6 +24,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
       setWorkoutIsPaused(false)
       startStopwatch()
       subscribe()
+      startPolling()
     }
   }, []);
 
@@ -37,6 +38,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
     resetStopwatch();
     setWorkoutIsPaused(true)
     onReset()
+    quitPolling()
     navigation.navigate('Workout');
   };
 
@@ -48,9 +50,12 @@ const OngoingWorkoutScreen = ({ navigation }) => {
         console.log('toggle workout - start stopwatch')
         startStopwatch()
         onResume()
+        resumePolling()
       } else {
         pauseStopwatch()
         onPause()
+        stopPolling()
+        
         console.log('toggle workout - pause stopwatch')
     }
   };
@@ -83,7 +88,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
         // <TouchableOpacity onPress={() => toggleVisibility()}>
           <Surface style={styles.surface} elevation={4}>
                 <View style={styles.cardStyle}>
-                  <Text style={styles.modalTextStyle}>SPEED: {location}</Text>
+                  <Text style={styles.modalTextStyle}>SPEED: {location ? location.latitude + ' ' + location.longitude : '-'}</Text>
                   <Text style={styles.modalTextStyle}>DURATION: {time ? time : 'Time empty'}</Text>
                 </View>
                 <View style={styles.cardStyle}>
@@ -100,6 +105,16 @@ const OngoingWorkoutScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View>
+        <Text>SIJAINTI</Text>
+        {locationArray && locationArray.map((loc, index) => (
+          <View key={`location-${index}`}>
+            <Text key={`latitude-${index}`}>{loc[0]}</Text>
+            <Text key={`longitude-${index}`}>{loc[1]}</Text>
+          </View>
+        ))}
+      </View>
+
       <View style={styles.actionsContainer}>
         {modalVisible ? (<SurfaceComp />
 
