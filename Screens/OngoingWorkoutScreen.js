@@ -5,6 +5,7 @@ import { Banner, Button, Card, IconButton, Surface } from 'react-native-paper';
 import DurationProvider, { useDuration } from '../Components/Duration';
 import { usePedometer } from '../Components/PedometerSteps';
 import { useLocation } from '../Components/Location';
+import { getDistance } from 'geolib';
 
 const OngoingWorkoutScreen = ({ navigation }) => {
   // Context variables
@@ -15,6 +16,25 @@ const OngoingWorkoutScreen = ({ navigation }) => {
   const [caloriesBurned, setCaloriesBurned] = useState(0);
   const [modalVisible, setModalVisible] = useState(true);
   const [workoutIsPaused, setWorkoutIsPaused] = useState(true)
+  const [distance,setDistance] = useState()
+
+  useEffect(() => {
+    if (locationArray.length > 1) {
+      let totalDistance = 0;
+      for (let i = 0; i < locationArray.length - 1; i++) {
+        const currentLocation = locationArray[i];
+        const nextLocation = locationArray[i + 1];
+        const distanceBetweenPoints = getDistance(
+          { latitude: currentLocation[0], longitude: currentLocation[1] },
+          { latitude: nextLocation[0], longitude: nextLocation[1] }
+        );
+        totalDistance += distanceBetweenPoints;
+      }
+      setDistance(totalDistance);
+    } else {
+      setDistance(0);
+    }
+  }, [locationArray]);
 
   useEffect(() => {
     console.log('Ongoing workout started');
@@ -94,7 +114,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
         // <TouchableOpacity onPress={() => toggleVisibility()}>
           <Surface style={styles.surface} elevation={4}>
                 <View style={styles.cardStyle}>
-                  <Text style={styles.modalTextStyle}>SPEED: {location ? location.latitude + ' ' + location.longitude : '-'}</Text>
+                  <Text style={styles.modalTextStyle}>Distance: {distance}</Text>
                   <Text style={styles.modalTextStyle}>DURATION: {time ? time : 'Time empty'}</Text>
                 </View>
                 <View style={styles.cardStyle}>

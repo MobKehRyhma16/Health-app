@@ -9,6 +9,8 @@ export default function LocationProvider({ children }) {
     const [locationArray, setLocationArray] = useState([]);
     const [pollingActive, setPollingActive] = useState(false);
     const [quitFlag, setQuitFlag] = useState(false)
+
+    //Todo expo disntance interval instead of time
   
     useEffect(() => {
         if(!quitFlag)
