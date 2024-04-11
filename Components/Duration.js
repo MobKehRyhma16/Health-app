@@ -6,7 +6,7 @@ import React, { createContext, useContext, useState, useRef, useEffect } from 'r
 const DurationContext = createContext();
 
 export default function DurationProvider({ children }) {
-  const [running, setRunning] = useState(false);
+//   const [running, setRunning] = useState(false);
   const [time, setTime] = useState(0);
   const intervalRef = useRef(null);
   const startTimeRef = useRef(0);
@@ -24,7 +24,7 @@ export default function DurationProvider({ children }) {
   };
 
   const startStopwatch = () => {
-    setRunning(true);
+    // setRunning(true);
     startTimeRef.current = Date.now() - time * 1000;
     intervalRef.current = setInterval(() => {
       setTime(Math.floor((Date.now() - startTimeRef.current) / 1000));
@@ -32,22 +32,11 @@ export default function DurationProvider({ children }) {
   };
 
   const pauseStopwatch = () => {
-    console.log('Pause stopwatch', running)
     clearInterval(intervalRef.current);
-    setRunning(false);
+    // setRunning(false);
   };
 
-//   useEffect(() => {
-//     if (running){
-//         pauseStopwatch()
-//     } else {
-//         startStopwatch()
-//     }
-//   }, [running]);
 
-//   useEffect(() => {
-//     clearInterval(intervalRef.current);
-//   }, [running]);
 
   const resetStopwatch = () => {
     clearInterval(intervalRef.current);
@@ -55,20 +44,20 @@ export default function DurationProvider({ children }) {
   };
 
   const resumeStopwatch = () => {
-    setRunning(true);
+    // setRunning(true);
     startTimeRef.current = Date.now() - time * 1000;
     intervalRef.current = setInterval(() => {
       setTime(Math.floor((Date.now() - startTimeRef.current) / 1000));
     }, 1000);
   };
 
-  const toggleStopwatch = () => {
-    if (running) {
-      pauseStopwatch();
-    } else {
-      resumeStopwatch();
-    }
-  };
+//   const toggleStopwatch = () => {
+//     if (running) {
+//       pauseStopwatch();
+//     } else {
+//       resumeStopwatch();
+//     }
+//   };
 
   return (
     <DurationContext.Provider
@@ -78,9 +67,6 @@ export default function DurationProvider({ children }) {
         pauseStopwatch,
         resetStopwatch,
         resumeStopwatch,
-        toggleStopwatch,
-        running,
-        setRunning
       }}
     >
       {children}

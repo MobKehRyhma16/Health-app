@@ -7,37 +7,50 @@ import { usePedometer } from '../Components/PedometerSteps';
 
 const OngoingWorkoutScreen = ({ navigation }) => {
   // Context variables
-  const { currentStepCount, onPause, onResume, onReset, togglePedometer, pedoRunning, setPedoRunning } = usePedometer();
-  const { time, pauseStopwatch, startStopwatch, toggleStopwatch, resetStopwatch, running, setRunning } = useDuration();
+  const { currentStepCount, onPause, onResume, onReset, subscribe } = usePedometer();
+  const { time, pauseStopwatch, startStopwatch, resetStopwatch } = useDuration();
 
   // Other variables
   const [speed, setSpeed] = useState(0);
   const [steps, setSteps] = useState(0);
   const [caloriesBurned, setCaloriesBurned] = useState(0);
   const [modalVisible, setModalVisible] = useState(true);
-  const [workoutIsPaused, setWorkoutIsPaused] = useState(false)
+  const [workoutIsPaused, setWorkoutIsPaused] = useState(true)
 
   useEffect(() => {
     console.log('Ongoing workout started');
-    startStopwatch();
-    setPedoRunning(true)
+    if(workoutIsPaused){
+      setWorkoutIsPaused(false)
+      startStopwatch()
+      subscribe()
+    }
   }, []);
+
+  useEffect(() => {
+    console.log('Workoutispaused state:',workoutIsPaused)
+  }, [workoutIsPaused]);
+
 
   const quitWorkout = () => {
     pauseStopwatch();
     resetStopwatch();
+    setWorkoutIsPaused(true)
     onReset()
     navigation.navigate('Workout');
   };
 
   const toggleWorkout = () => {
-    if (running && pedoRunning) {
-      console.log('Main toggle workout')
-      pauseStopwatch()
-      onPause()
-    } else{
-      startStopwatch()
-      onResume()
+    console.log('toggle workout!')
+
+      setWorkoutIsPaused(!workoutIsPaused)
+      if (workoutIsPaused){
+        console.log('toggle workout - start stopwatch')
+        startStopwatch()
+        onResume()
+      } else {
+        pauseStopwatch()
+        onPause()
+        console.log('toggle workout - pause stopwatch')
     }
   };
 
@@ -53,7 +66,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
             <IconButton onPress={() => toggleVisibility()} size={35} mode='contained' icon='chevron-up'></IconButton>
           </TouchableOpacity>
           
-          {running ? (
+          {!workoutIsPaused ? (
             <Button onPress={() => toggleWorkout()} labelStyle={{fontSize: 30, padding: 5}} icon="pause-circle-outline"></Button>
           ) : (
             <Button onPress={() => toggleWorkout()} labelStyle={{fontSize: 30, padding: 5}} icon="play-circle-outline"></Button>
