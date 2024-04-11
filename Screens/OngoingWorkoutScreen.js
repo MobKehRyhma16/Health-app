@@ -10,10 +10,8 @@ const OngoingWorkoutScreen = ({ navigation }) => {
   // Context variables
   const { currentStepCount, onPause, onResume, onReset, subscribe } = usePedometer();
   const { time, pauseStopwatch, startStopwatch, resetStopwatch } = useDuration();
-  const { location, locationArray, startPolling, stopPolling, resumePolling, quitPolling } = useLocation();
+  const { location, setLocation, locationArray, setLocationArray ,startPolling, stopPolling, resumePolling, quitPolling, quitFlag, setQuitFlag } = useLocation();
   // Other variables
-  const [speed, setSpeed] = useState(0);
-  const [steps, setSteps] = useState(0);
   const [caloriesBurned, setCaloriesBurned] = useState(0);
   const [modalVisible, setModalVisible] = useState(true);
   const [workoutIsPaused, setWorkoutIsPaused] = useState(true)
@@ -21,6 +19,9 @@ const OngoingWorkoutScreen = ({ navigation }) => {
   useEffect(() => {
     console.log('Ongoing workout started');
     if(workoutIsPaused){
+      // setLocation(null)
+      // setLocationArray([])
+      setQuitFlag(false)
       setWorkoutIsPaused(false)
       startStopwatch()
       subscribe()
@@ -67,14 +68,19 @@ const OngoingWorkoutScreen = ({ navigation }) => {
   const BottomActions = () => {
     return (
       <>
-          <Button labelStyle={{fontSize: 30, padding: 5}} textColor='red' size={50} onPress={() => quitWorkout()} icon="cancel"></Button>
+          <Button labelStyle={{fontSize: 30, padding: 2}} textColor='red' size={50} onPress={() => quitWorkout()} icon="cancel"></Button>
 
-          <IconButton labelStyle={{padding: 10}} onPress={() => toggleVisibility()} size={35} mode='contained' icon='chevron-up'></IconButton>
+          {modalVisible ? (
+            <Button onPress={() => toggleVisibility()} labelStyle={{fontSize: 30, padding: 2}} icon="chevron-down"></Button>
+          ): (
+            <Button onPress={() => toggleVisibility()} labelStyle={{fontSize: 30, padding: 2}} icon="chevron-up"></Button>
+          )}
+          
 
           {!workoutIsPaused ? (
-            <Button onPress={() => toggleWorkout()} labelStyle={{fontSize: 30, padding: 5}} icon="pause-circle-outline"></Button>
+            <Button onPress={() => toggleWorkout()} labelStyle={{fontSize: 30, padding: 2}} icon="pause-circle-outline"></Button>
           ) : (
-            <Button onPress={() => toggleWorkout()} labelStyle={{fontSize: 30, padding: 5}} icon="play-circle-outline"></Button>
+            <Button onPress={() => toggleWorkout()} labelStyle={{fontSize: 30, padding: 2}} icon="play-circle-outline"></Button>
           )}
     </>
 
@@ -134,6 +140,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'flex-end'
+  },
+  btnStyle: {
+    flex: 1,
+    justifyContent: 'center'
   },
   actionsContainer:{
     flex: 1,

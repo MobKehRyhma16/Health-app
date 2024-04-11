@@ -8,9 +8,11 @@ export default function LocationProvider({ children }) {
     const [location, setLocation] = useState(null);
     const [locationArray, setLocationArray] = useState([]);
     const [pollingActive, setPollingActive] = useState(false);
+    const [quitFlag, setQuitFlag] = useState(false)
   
     useEffect(() => {
-        console.log('polling active: ',pollingActive)
+        if(!quitFlag)
+        {console.log('polling active: ',pollingActive)
         const getLocation = async () => {
           try {
             const { status } = await Location.requestForegroundPermissionsAsync();
@@ -21,9 +23,12 @@ export default function LocationProvider({ children }) {
             
             if (pollingActive) {
               const { coords } = await Location.getCurrentPositionAsync({});
-              console.log('Location is', coords);
-              setLocation(coords);
-              setLocationArray(prevArray => [...prevArray, [coords.latitude, coords.longitude]]);
+              if (pollingActive) {
+                console.log('Location is', coords);
+                setLocation(coords);
+                setLocationArray(prevArray => [...prevArray, [coords.latitude, coords.longitude]]);
+              }
+
             }
           } catch (error) {
             console.error('Error fetching location:', error);
@@ -41,7 +46,7 @@ export default function LocationProvider({ children }) {
         // Clear interval when pollingActive changes to false
         return () => {
           clearInterval(intervalId);
-        };
+        };}
       }, [pollingActive]);
   
     const startPolling = () => {
@@ -49,10 +54,17 @@ export default function LocationProvider({ children }) {
       setPollingActive(true);
     };
 
+    useEffect(() => {
+        if(quitFlag){
+            setLocationArray([])
+        }
+    }, [location]);
+
     const quitPolling = () => {
         setPollingActive(false)
         setLocationArray([])
         setLocation(null)
+        setQuitFlag(true)
         console.log('quit polling', pollingActive, ' ', location)
     }
   
@@ -67,7 +79,7 @@ export default function LocationProvider({ children }) {
     };
   
     return (
-      <LocationContext.Provider value={{ location, locationArray, startPolling, stopPolling, resumePolling, quitPolling }}>
+      <LocationContext.Provider value={{ location, locationArray, startPolling, stopPolling, resumePolling, quitPolling, setLocation, setLocation, quitFlag, setQuitFlag }}>
         {children}
       </LocationContext.Provider>
     );
