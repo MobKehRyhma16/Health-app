@@ -6,49 +6,46 @@ const PedometerContext = createContext();
 export default function PedometerStepsProvider({ children }) {
   const [currentStepCount, setCurrentStepCount] = useState(0);
   const [subscription, setSubscription] = useState(null);
-  const [isPaused, setIsPaused] = useState(false);
 
   const subscribe = async () => {
     const isAvailable = await Pedometer.isAvailableAsync();
-    if (isAvailable && !subscription) {
+    if (isAvailable && !subscription) { // Ensure pedoRunning is true and subscription doesn't exist
       const newSubscription = Pedometer.watchStepCount(result => {
-        if (!isPaused) {
           setCurrentStepCount(result.steps);
-        }
       });
-
       setSubscription(newSubscription);
     }
   };
 
   useEffect(() => {
-    console.log('Subscribing...');
-    if (!isPaused) {
-      subscribe();
-    }
+    console.log('Subscription state: ', subscription)
+  }, [subscription]);
 
-    return () => {
-      console.log('Unsubscribing...');
-      if (subscription) {
-        subscription.remove();
-        setSubscription(null);
-      }
-    };
-  }, [isPaused]); // Subscribe/unsubscribe when isPaused changes
+  // useEffect(() => {
+  //   console.log('Subscribing...');
+  //   if (pedoRunning) {
+  //     subscribe();
+  //   }
+
+  //   return () => {
+  //     console.log('Unsubscribing...');
+  //     if (subscription) {
+  //       subscription.remove();
+  //       setSubscription(null);
+  //     }
+  //   };
+  // }, [pedoRunning]); // Subscribe/unsubscribe when isPaused changes
 
   const onPause = () => {
     console.log('Pausing...');
-    setIsPaused(true);
     if (subscription) {
-      subscription.remove();
+      subscription.remove(); // Remove subscription if it exists
       setSubscription(null);
     }
   };
 
   const onResume = () => {
     console.log('Resuming...');
-    setIsPaused(false);
-    // Subscribe to pedometer again
     subscribe();
   };
 
@@ -57,16 +54,14 @@ export default function PedometerStepsProvider({ children }) {
     setCurrentStepCount(0);
   };
 
-  const togglePedometer = () => {
-    if (isPaused) {
-      onResume();
-    } else {
-      onPause();
-    }
-  };
-
   return (
-    <PedometerContext.Provider value={{ currentStepCount, onPause, onResume, onReset, togglePedometer }}>
+    <PedometerContext.Provider value={{
+       currentStepCount,
+          onPause,
+          onResume,
+          onReset,
+          subscribe
+        }}>
       {children}
     </PedometerContext.Provider>
   );
