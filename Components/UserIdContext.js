@@ -37,9 +37,6 @@ export default function UserIdProvider({ children }) {
         getUserFromStorage();
     }, []);
 
-    useEffect(() => {
-        console.log('User id from context: ', userDocumentId);
-    }, [userDocumentId]);
 
     return (
         <UserIdContext.Provider value={{ userDocumentId, setUserDocumentId, setUser }}>

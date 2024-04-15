@@ -12,15 +12,15 @@ import { useUserId } from "../Components/UserIdContext";
 export default function HistoryScreen() {
     const {userDocumentId, setUserDocumentId, setUser} = useUserId()
 
-    const userId = 'W42ggGepN9fe4FCAmXgxoIA2C502'; // user id for testing
+
     const testRouteArray = [[69, 69], [70, 69], [70, 70]] //test array
 
     // const [workouts, setWorkouts] = useState(null); // State to store workouts
     const workouts = getWorkouts(userDocumentId)
 
-    useEffect(() => {
-        setUser(userId)
-    }, []);
+    // useEffect(() => {
+    //     setUser(userId)
+    // }, []);
 
     return (
         <SafeAreaView style={styles.container}>               

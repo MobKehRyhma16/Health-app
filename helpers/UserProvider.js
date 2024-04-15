@@ -2,6 +2,8 @@ import React, { createContext, useState, useContext } from 'react';
 
 export const UserContext = createContext();
 
+//outdated, new is UserIdContext
+
 export const UserProvider = ({ children }) => {
     const [userId, setUserId] = useState(null);
 
