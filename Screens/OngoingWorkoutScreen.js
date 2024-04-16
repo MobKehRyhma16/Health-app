@@ -25,8 +25,8 @@ const OngoingWorkoutScreen = ({ navigation }) => {
         const currentLocation = locationArray[i];
         const nextLocation = locationArray[i + 1];
         const distanceBetweenPoints = getDistance(
-          { latitude: currentLocation[0], longitude: currentLocation[1] },
-          { latitude: nextLocation[0], longitude: nextLocation[1] }
+          { latitude: currentLocation.latitude, longitude: currentLocation.longitude },
+          { latitude: nextLocation.latitude, longitude: nextLocation.longitude }
         );
         totalDistance += distanceBetweenPoints;
       }
@@ -135,8 +135,8 @@ const OngoingWorkoutScreen = ({ navigation }) => {
         <Text>SIJAINTI</Text>
         {locationArray && locationArray.map((loc, index) => (
           <View key={`location-${index}`}>
-            <Text key={`latitude-${index}`}>{loc[0]}</Text>
-            <Text key={`longitude-${index}`}>{loc[1]}</Text>
+            <Text key={`latitude-${index}`}>{loc.latitude}</Text>
+            <Text key={`longitude-${index}`}>{loc.longitude}</Text>
           </View>
         ))}
       </View>
