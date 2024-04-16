@@ -12,6 +12,8 @@ const Caloriecalculator = ({ steps }) => {
     const [sex] = useState('male');
     //using fixed values for testing
   
+
+    
  
 /*
     const [weight, setWeight] = useState(null);
@@ -69,7 +71,7 @@ const Caloriecalculator = ({ steps }) => {
     <React.Fragment>
       {estimatedCaloriesBurned !== null && (
         <>
-          <Text style={styles.caloriesLabel}>Estimated Calories Burned:</Text>
+          <Text style={styles.caloriesLabel}>Calories Burned:</Text>
           <Text style={styles.caloriesText}>
             {estimatedCaloriesBurned.toFixed(2)} calories 
           </Text>

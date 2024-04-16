@@ -6,17 +6,25 @@ import MyTabs from './Components/BottomTab';
 import LoginScreen from './Screens/LoginScreen';
 import InfoScreen from './Screens/InfoScreen';
 import HomeScreen from './Screens/HomeScreen';
+import OngoingWorkoutScreen from './Screens/OngoingWorkoutScreen';
+import { UserProvider } from './helpers/UserProvider';
+import DurationProvider from './Components/Duration';
+import PedometerStepsProvider from './Components/PedometerSteps';
+import LocationProvider from './Components/Location';
+
 
 const Stack = createNativeStackNavigator();
 
 // Define the AuthNavigator component outside of the App component
 const AuthNavigator = () => {
   return (
+    <UserProvider>
     <Stack.Navigator>
       <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Info" component={InfoScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
+    </UserProvider>
 
   );
 };
@@ -24,8 +32,6 @@ const AuthNavigator = () => {
 const App = () => {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(null);
-
-  // Get the authentication instance from your config
   const auth = getAuth();
 
   useEffect(() => {
@@ -36,18 +42,45 @@ const App = () => {
       }
     });
 
-    // Clean up subscription on unmount
     return unsubscribe;
   }, []);
 
   if (initializing) {
-    return null; // Render nothing while initializing
+    return null;
   }
 
   return (
-    <NavigationContainer>
-      {user ? <MyTabs /> : <AuthNavigator />}
-    </NavigationContainer>
+    <DurationProvider>
+      <LocationProvider>
+      <PedometerStepsProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          {user ? (
+            <>
+              <Stack.Screen
+                name="Main"
+                component={MyTabs}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="OngoingWorkout"
+                component={OngoingWorkoutScreen}
+                options={{ headerShown: false }}
+              />
+            </>
+          ) : (
+            <Stack.Screen
+              name="Auth"
+              component={AuthNavigator}
+              options={{ headerShown: false }}
+            />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+      </PedometerStepsProvider>
+      </LocationProvider>
+    </DurationProvider>
+
   );
 };
 

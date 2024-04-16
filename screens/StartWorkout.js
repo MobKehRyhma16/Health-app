@@ -23,6 +23,7 @@ const StartWorkoutScreen = ({ navigation }) => {
     })();
   }, []);
 
+<<<<<<< HEAD
   const startWorkout = (workoutType) => {
     setModalVisible(false); // Close the modal after navigation
     console.log("Navigating to Workout screen with workoutType:", workoutType);
@@ -31,6 +32,14 @@ const StartWorkoutScreen = ({ navigation }) => {
       params: { workoutType: workoutType },
     });
   };
+=======
+  const startWorkout = () => {
+    // Navigate to OngoingWorkoutScreen and pass workoutType as a parameter
+    setModalVisible(false)
+    navigation.navigate('OngoingWorkout');
+  }
+
+>>>>>>> 1de0265b9f150b09a47924b7683d1bada9577910
 
   return (
     <View style={styles.container}>
@@ -77,21 +86,21 @@ const StartWorkoutScreen = ({ navigation }) => {
           <View style={styles.modalView}>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={() => startWorkout("running")}
+              onPress={() => startWorkout()}
             >
               <FontAwesome6 name="person-running" size={24} color="white" />
               <Text style={styles.modalText}>Running</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={() => startWorkout("cycling")}
+              onPress={() => startWorkout()}
             >
               <Ionicons name="bicycle" size={24} color="white" />
               <Text style={styles.modalText}>Cycling</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={() => startWorkout("walking")}
+              onPress={() => startWorkout()}
             >
               <FontAwesome6 name="person-walking" size={24} color="white" />
               <Text style={styles.modalText}>Walking</Text>
