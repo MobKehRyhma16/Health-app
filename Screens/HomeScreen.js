@@ -3,8 +3,10 @@ import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from "react-n
 import Stepcounter from "../Components/Stepcounter";
 import GradientBackground from '../Components/LinearGradient';
 import Activitybar from "../Components/Activitybar";
+import { useUserId } from "../Components/UserIdContext";
 
 export default function HomeScreen() {
+    const {userDocumentId} = useUserId()
 
     return (
         <GradientBackground>
@@ -12,6 +14,7 @@ export default function HomeScreen() {
                 <View>
                     <Activitybar />
                     <Text style={styles.heading}>Home</Text>
+                    <Text>Current user id: {userDocumentId}</Text>
                 </View>
             </SafeAreaView>
         </GradientBackground>

@@ -4,10 +4,14 @@ import { auth } from '../../Firebase/Config'; // Assuming this is the path to yo
 import GradientBackground from '../LinearGradient';
 import Majakkalogo from '../../Images/MajakkaLogo2.png';
 import DrawerStyles from './DrawerStyles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 
 const Logout = () => {
   const handleLogout = async () => {
     try {
+      await AsyncStorage.removeItem('userId');
       await auth.signOut();
       console.log('User logged out successfully');
       // You can navigate to a different screen or update the UI as needed after logout

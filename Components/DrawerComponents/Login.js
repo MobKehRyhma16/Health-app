@@ -4,6 +4,7 @@ import { getAuth, signInWithEmailAndPassword } from '../../Firebase/Config';
 import DrawerStyles from './DrawerStyles';
 import Majakkalogo from '../../Images/MajakkaLogo2.png';
 import { UserContext } from '../../helpers/UserProvider';
+import { useUserId } from '../UserIdContext';
 
 export default function Login({ setLogin }) {
 
@@ -12,6 +13,7 @@ export default function Login({ setLogin }) {
     const [isError, setIsError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const { setUserContext } = useContext(UserContext); // Access setUserContext from context
+    const {userDocumentId, setUserDocumentId, setUser} = useUserId()
 
     const login = () => {
         return new Promise((resolve, reject) => {
@@ -19,7 +21,8 @@ export default function Login({ setLogin }) {
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    setUserContext(user.uid);
+                    // setUserContext(user.uid);
+                    setUser(user.uid)
                     console.log("User is logged in")
                     console.log('User ID saved into context:', user.uid); // Add console log
                     resolve(true);
