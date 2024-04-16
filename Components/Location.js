@@ -13,46 +13,42 @@ export default function LocationProvider({ children }) {
     //Todo expo disntance interval instead of time
   
     useEffect(() => {
-        if(!quitFlag){
-
-            console.log('polling active: ',pollingActive)
-            const getLocation = async () => {
-            try {
-                const { status } = await Location.requestForegroundPermissionsAsync();
-                if (status !== 'granted') {
-                console.log('Permission to access location was denied');
-                return;
-                }
-                
-                if (pollingActive) {
-                const { coords } = await Location.getCurrentPositionAsync({});
-                if (pollingActive) {
-                    console.log('Location is', coords);
-                    console.log('Latitude Longitude: ',coords.latitude, ' ', coords.longitude)
-                    setLocation(coords);
-                    setLocationArray(prevArray => [...prevArray, [coords.latitude, coords.longitude]]);
-                }
-
-                }
-            } catch (error) {
-                console.error('Error fetching location:', error);
+        if(!quitFlag)
+        {console.log('polling active: ',pollingActive)
+        const getLocation = async () => {
+          try {
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+              console.log('Permission to access location was denied');
+              return;
             }
-            };
-        
-            getLocation(); // Always fetch location initially
             
-            // Start polling and set interval if polling is active
-            // let intervalId;
-            // if (pollingActive) {
-            //     intervalId = setInterval(getLocation, 5000);
-            // }
+            if (pollingActive) {
+              const { coords } = await Location.getCurrentPositionAsync({});
+              if (pollingActive) {
+                console.log('Location is', coords);
+                setLocation(coords);
+                setLocationArray(prevArray => [...prevArray, [coords.latitude, coords.longitude]]);
+              }
+
+            }
+          } catch (error) {
+            console.error('Error fetching location:', error);
+          }
+        };
+      
+        getLocation(); // Always fetch location initially
         
-            // Clear interval when pollingActive changes to false
-            return () => {
-            // clearInterval(intervalId);
-                
-            };
+        // Start polling and set interval if polling is active
+        let intervalId;
+        if (pollingActive) {
+          intervalId = setInterval(getLocation, 5000);
         }
+      
+        // Clear interval when pollingActive changes to false
+        return () => {
+          clearInterval(intervalId);
+        };}
       }, [pollingActive]);
   
     const startPolling = () => {
