@@ -39,7 +39,10 @@ const OngoingWorkoutScreen = ({ navigation }) => {
         const currentLocation = locationArray[i];
         const nextLocation = locationArray[i + 1];
         const distanceBetweenPoints = getDistance(
-          { latitude: currentLocation.latitude, longitude: currentLocation.longitude },
+          {
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude,
+          },
           { latitude: nextLocation.latitude, longitude: nextLocation.longitude }
         );
         totalDistance += distanceBetweenPoints;
@@ -167,14 +170,15 @@ const OngoingWorkoutScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View>
+        {location && (
         <MapView
           style={styles.mapView} // Add styles for the mapview
           initialRegion={{
             // Set your initial region here
-            latitude: 65.05297927191033,
-            longitude: 25.47147944485184,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.1,
           }}
         >
           {locationArray.length > 1 && (
@@ -185,14 +189,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
             />
           )}
         </MapView>
-        {/*<Text>SIJAINTI</Text>*/}
-        {locationArray &&
-          locationArray.map((loc, index) => (
-            <View key={`location-${index}`}>
-              {/*<Text key={`latitude-${index}`}>{loc[0]}</Text>
-              <Text key={`longitude-${index}`}>{loc[1]}</Text>*/}
-            </View>
-          ))}
+        )}
       </View>
 
       <View style={styles.actionsContainer}>
