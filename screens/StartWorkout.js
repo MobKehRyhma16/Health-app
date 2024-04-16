@@ -23,23 +23,12 @@ const StartWorkoutScreen = ({ navigation }) => {
     })();
   }, []);
 
-<<<<<<< HEAD
-  const startWorkout = (workoutType) => {
-    setModalVisible(false); // Close the modal after navigation
-    console.log("Navigating to Workout screen with workoutType:", workoutType);
-    navigation.navigate("Workout", {
-      screen: "CurrentWorkout",
-      params: { workoutType: workoutType },
-    });
-  };
-=======
   const startWorkout = () => {
     // Navigate to OngoingWorkoutScreen and pass workoutType as a parameter
     setModalVisible(false)
     navigation.navigate('OngoingWorkout');
   }
 
->>>>>>> 1de0265b9f150b09a47924b7683d1bada9577910
 
   return (
     <View style={styles.container}>
