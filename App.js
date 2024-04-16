@@ -11,6 +11,7 @@ import { UserProvider } from './helpers/UserProvider';
 import DurationProvider from './Components/Duration';
 import PedometerStepsProvider from './Components/PedometerSteps';
 import LocationProvider from './Components/Location';
+import UserIdProvider from './Components/UserIdContext';
 
 
 const Stack = createNativeStackNavigator();
@@ -19,11 +20,13 @@ const Stack = createNativeStackNavigator();
 const AuthNavigator = () => {
   return (
     <UserProvider>
+      <UserIdProvider>
     <Stack.Navigator>
       <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Info" component={InfoScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
+      </UserIdProvider>
     </UserProvider>
 
   );
@@ -50,6 +53,7 @@ const App = () => {
   }
 
   return (
+    <UserIdProvider>
     <DurationProvider>
       <LocationProvider>
       <PedometerStepsProvider>
@@ -80,6 +84,7 @@ const App = () => {
       </PedometerStepsProvider>
       </LocationProvider>
     </DurationProvider>
+    </UserIdProvider>
 
   );
 };

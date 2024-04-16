@@ -28,7 +28,7 @@ export default function LocationProvider({ children }) {
               if (pollingActive) {
                 console.log('Location is', coords);
                 setLocation(coords);
-                setLocationArray(prevArray => [...prevArray, [coords.latitude, coords.longitude]]);
+                setLocationArray(prevArray => [...prevArray, { latitude: coords.latitude, longitude: coords.longitude }]);
               }
 
             }

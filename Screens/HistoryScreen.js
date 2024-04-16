@@ -5,24 +5,36 @@ import { Foundation, FontAwesome5 } from '@expo/vector-icons';
 import { Button, List, Divider, IconButton, Colors } from "react-native-paper";
 import GradientBackground from "../Components/LinearGradient";
 import HistoryChart from '../Components/HistoryChart'
+import { WORKOUTS } from "../Firebase/Config";
+import { useUserId } from "../Components/UserIdContext";
 
 
 export default function HistoryScreen() {
-    const userId = 'VlxwyuiQTxRE1w5eii4kcReqhTU2'; // user id for testing
+    const {userDocumentId, setUserDocumentId, setUser} = useUserId()
+
+
     const testRouteArray = [[69, 69], [70, 69], [70, 70]] //test array
 
-    const workouts = getWorkouts(userId);
+    // const [workouts, setWorkouts] = useState(null); // State to store workouts
+    const workouts = getWorkouts(userDocumentId)
 
+    // useEffect(() => {
+    //     setUser(userId)
+    // }, []);
 
     return (
         <SafeAreaView style={styles.container}>               
             {/* <Button mode="contained" onPress={() => saveWorkout(userId, 400, 200, 2000, 'walking', testRouteArray)}>TEST SAVE</Button> */}
 
             <View style={styles.graphContainer}>
-                    <HistoryChart workouts={workouts}></HistoryChart>
+                    {workouts && workouts.length > 0 && (
+                        <HistoryChart workouts={workouts}></HistoryChart>
+                    )}
+
             </View>
             <ScrollView style={styles.workoutsContainer}>
-                {workouts.length > 0 ? (
+
+                {workouts && workouts.length > 0 ? (
                     workouts.map((workout, index) => (
                         <WorkoutItem key={index} workout={workout} />
                     ))

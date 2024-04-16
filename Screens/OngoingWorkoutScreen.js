@@ -39,8 +39,8 @@ const OngoingWorkoutScreen = ({ navigation }) => {
         const currentLocation = locationArray[i];
         const nextLocation = locationArray[i + 1];
         const distanceBetweenPoints = getDistance(
-          { latitude: currentLocation[0], longitude: currentLocation[1] },
-          { latitude: nextLocation[0], longitude: nextLocation[1] }
+          { latitude: currentLocation.latitude, longitude: currentLocation.longitude },
+          { latitude: nextLocation.latitude, longitude: nextLocation.longitude }
         );
         totalDistance += distanceBetweenPoints;
       }
@@ -179,12 +179,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
         >
           {locationArray.length > 1 && (
             <Polyline
-              coordinates={[
-                { latitude: 65.05297927191033, longitude: 25.47147944485184 },
-                { latitude: 65.0530208832652, longitude: 25.471192268832226 },
-                { latitude: 65.05317927191033, longitude: 25.47087944485184 },
-                { latitude: 65.0532208832652, longitude: 25.470292268832226 },
-              ]}
+              coordinates={locationArray}
               strokeColor="#0099cc" // adjust stroke color as desired
               strokeWidth={2}
             />
