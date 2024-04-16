@@ -27,20 +27,14 @@ function MyTabs() {
       />
       <Tab.Screen
         name="Workout"
+        component={StartWorkoutScreen}
         options={{
           tabBarLabel: "Workout",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="map-outline" size={size} color={color} />
           ),
         }}
-      >
-        {() => (
-          <Stack.Navigator>
-            <Stack.Screen name="Start Workout" component={StartWorkoutScreen} />
-            <Stack.Screen name="Workout" component={WorkoutScreen} />
-          </Stack.Navigator>
-        )}
-      </Tab.Screen>
+      />
       <Tab.Screen
         name="History"
         component={HistoryScreen}

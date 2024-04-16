@@ -5,7 +5,6 @@ import * as Location from "expo-location";
 import { FontAwesome6, Ionicons, AntDesign } from "@expo/vector-icons";
 
 const StartWorkoutScreen = ({ navigation }) => {
-
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -26,8 +25,11 @@ const StartWorkoutScreen = ({ navigation }) => {
 
   const startWorkout = (workoutType) => {
     setModalVisible(false); // Close the modal after navigation
-    console.log('Navigating to Workout screen with workoutType:', workoutType);
-    navigation.navigate('Workout', { screen: 'CurrentWorkout', params: { workoutType: workoutType } });
+    console.log("Navigating to Workout screen with workoutType:", workoutType);
+    navigation.navigate("Workout", {
+      screen: "CurrentWorkout",
+      params: { workoutType: workoutType },
+    });
   };
 
   return (
@@ -38,8 +40,8 @@ const StartWorkoutScreen = ({ navigation }) => {
           initialRegion={{
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
           }}
           showsCompass={true}
           userInterfaceStyle="light"
@@ -96,7 +98,7 @@ const StartWorkoutScreen = ({ navigation }) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={()=>setModalVisible(!modalVisible)}
+              onPress={() => setModalVisible(!modalVisible)}
             >
               <AntDesign name="closecircle" size={24} color="white" />
             </TouchableOpacity>
