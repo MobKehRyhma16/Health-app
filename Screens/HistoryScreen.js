@@ -1,22 +1,68 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, SafeAreaView, ScrollView} from "react-native";
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Modal} from "react-native";
 import { getWorkouts, saveWorkout } from "../Firebase/workouts";
 import { Foundation, FontAwesome5 } from '@expo/vector-icons';
-import { Button, List, Divider, IconButton, Colors } from "react-native-paper";
+import { Button, List, Divider, IconButton, Colors, Card} from "react-native-paper";
 import GradientBackground from "../Components/LinearGradient";
 import HistoryChart from '../Components/HistoryChart'
 import { WORKOUTS } from "../Firebase/Config";
 import { useUserId } from "../Components/UserIdContext";
+import { parseArrayToCoordinates } from "../helpers/Functions";
+import MapView, { Marker, Polyline } from "react-native-maps";
 
 
 export default function HistoryScreen() {
 
     const {userDocumentId } = useUserId()
     const user = userDocumentId
-
-    const testRouteArray = [[69, 69], [70, 69], [70, 70]] //test array
-
     const workouts = getWorkouts(user)
+
+    const [modalVisible, setModalVisible] = useState(false)
+
+
+    useEffect(() => {
+        console.log('Modal modal visible state: ', modalVisible)
+    }, [modalVisible]);
+
+
+    const MapModal = () => {
+        return (
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              setModalVisible(false);
+            }}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.mapContainer}>
+                <MapView
+                  style={styles.map}
+                  initialRegion={{
+                    latitude: 25.5,
+                    longitude: 25.5,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
+                  }}
+                />
+
+            </View>
+                <View style={styles.buttonContainer}>
+                <Button 
+                onPress={() => setModalVisible(false)} 
+                style={styles.closeButton}
+                labelStyle={styles.closeButtonText}
+                >
+                CLOSE
+                </Button>
+            </View>
+
+            </View>
+          </Modal>
+        );
+      };
+
 
     return (
         <SafeAreaView style={styles.container}>               
@@ -33,17 +79,20 @@ export default function HistoryScreen() {
 
                 {workouts && workouts.length > 0 ? (
                     workouts.map((workout, index) => (
-                        <WorkoutItem key={index} workout={workout} />
+                        <WorkoutItem key={index} workout={workout} setModalVisible={setModalVisible} />
                     ))
                 ) : (
                     <Text style={styles.noWorkoutsText}>No workouts available</Text>
                 )}
             </ScrollView>
+
+            <MapModal></MapModal>
+            
          </SafeAreaView>
     );
 }
 
-export const WorkoutItem = ({ workout }) => {
+export const WorkoutItem = ({ workout, setModalVisible }) => {
     return (
         <View style={styles.workoutItem}>
 
@@ -71,7 +120,7 @@ export const WorkoutItem = ({ workout }) => {
             </View>
 
             <Text style={styles.createdAtText}>{workout.created_at}</Text>
-            <Button icon="map-marker-distance" mode="contained" onPress={() => console.log('Pressed')} buttonColor="lightcoral">
+            <Button icon="map-marker-distance" mode="contained" onPress={() => setModalVisible(true)} buttonColor="lightcoral">
                 ROUTE
             </Button>
 
@@ -81,6 +130,37 @@ export const WorkoutItem = ({ workout }) => {
 };
 
 const styles = StyleSheet.create({
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      },
+      mapContainer: {
+        width: '90%',
+        height: '60%',
+        backgroundColor: 'white',
+        borderRadius: 10,
+        overflow: 'hidden',
+      },
+      map: {
+        flex: 1,
+      },
+    buttonContainer: {
+        marginTop: 20,
+        alignItems: 'center',
+    },
+    closeButton: {
+        backgroundColor: '#FF5733', // Set your desired color
+        paddingHorizontal: 5,
+        paddingVertical: 5,
+        borderRadius: 5,
+    },
+    closeButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
     onTop: {
         flex: 1,
         flexDirection: 'column',

@@ -26,3 +26,10 @@ export function parseDurationToSeconds(durationString) {
 
     return totalSeconds;
 }
+
+export const parseArrayToCoordinates = (arrayOfPairs) => {
+    return arrayOfPairs.map(pair => ({
+      latitude: pair[0],
+      longitude: pair[1]
+    }));
+};
