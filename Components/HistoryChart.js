@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View,Text } from 'react-native';
 import { BarChart } from 'react-native-gifted-charts';
 import { ToggleButton } from 'react-native-paper';
+import { parseDurationToSeconds } from '../helpers/Functions';
 
 const HistoryChart = ({ workouts }) => {
-  const [type, setType] = useState('');
-  const dataDuration = workouts.map(workout => ({ value: workout.duration / 60 }));
-  const dataCalories = workouts.map(workout => ({ value: workout.calories }));
+  const [type, setType] = useState('duration');
+
+  const dataDistance = workouts.map(workout => ({ value: workout.distance }));
+  const dataDuration = workouts.map(workout => ({ value: parseDurationToSeconds(workout.duration) }));
   
   const updateType = inputType => {
     setType(inputType);
@@ -33,7 +35,7 @@ const HistoryChart = ({ workouts }) => {
           noOfSections={3}
           barBorderRadius={4}
           frontColor="lightcoral"
-          data={dataCalories}
+          data={dataDistance}
           yAxisThickness={0}
           xAxisThickness={0}
         />

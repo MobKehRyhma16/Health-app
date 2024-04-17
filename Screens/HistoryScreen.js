@@ -23,10 +23,10 @@ export default function HistoryScreen() {
             {/* <Button mode="contained" onPress={() => saveWorkout(userId, 400, 200, 2000, 'walking', testRouteArray)}>TEST SAVE</Button> */}
 
             <View style={styles.graphContainer}>
-                    {workouts > 0 && (
+
+                    {workouts.length > 0 && (
                         <HistoryChart workouts={workouts}></HistoryChart>
                     )}
-                    <Text>chart</Text>
 
             </View>
             <ScrollView style={styles.workoutsContainer}>
@@ -64,8 +64,10 @@ export const WorkoutItem = ({ workout }) => {
 
                 <View style={styles.timeContainer}>
                     <Text style={styles.timeText}>{workout.duration}</Text>
+                    <Text>{workout.distance} m</Text>
                     <Text >{workout.workout_type}</Text>
                 </View>
+
             </View>
 
             <Text style={styles.createdAtText}>{workout.created_at}</Text>

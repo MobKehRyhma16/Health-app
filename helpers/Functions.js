@@ -16,3 +16,13 @@ export const convertFirebaseTimeStampToJS = (time) => {
         ); 
     }
 }
+
+export function parseDurationToSeconds(durationString) {
+    // Split the duration string into hours, minutes, and seconds
+    const [hours, minutes, seconds] = durationString.split(':').map(Number);
+
+    // Calculate the total duration in seconds
+    const totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
+
+    return totalSeconds;
+}
