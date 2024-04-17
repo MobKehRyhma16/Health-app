@@ -10,26 +10,23 @@ import { useUserId } from "../Components/UserIdContext";
 
 
 export default function HistoryScreen() {
-    const {userDocumentId, setUserDocumentId, setUser} = useUserId()
 
+    const {userDocumentId } = useUserId()
+    const user = userDocumentId
 
     const testRouteArray = [[69, 69], [70, 69], [70, 70]] //test array
 
-    // const [workouts, setWorkouts] = useState(null); // State to store workouts
-    const workouts = getWorkouts(userDocumentId)
-
-    // useEffect(() => {
-    //     setUser(userId)
-    // }, []);
+    const workouts = getWorkouts(user)
 
     return (
         <SafeAreaView style={styles.container}>               
             {/* <Button mode="contained" onPress={() => saveWorkout(userId, 400, 200, 2000, 'walking', testRouteArray)}>TEST SAVE</Button> */}
 
             <View style={styles.graphContainer}>
-                    {workouts && workouts.length > 0 && (
+                    {workouts > 0 && (
                         <HistoryChart workouts={workouts}></HistoryChart>
                     )}
+                    <Text>chart</Text>
 
             </View>
             <ScrollView style={styles.workoutsContainer}>
@@ -66,7 +63,7 @@ export const WorkoutItem = ({ workout }) => {
                 </View>
 
                 <View style={styles.timeContainer}>
-                    <Text style={styles.timeText}>{(workout.duration / 60).toFixed()} MIN</Text>
+                    <Text style={styles.timeText}>{workout.duration}</Text>
                     <Text >{workout.workout_type}</Text>
                 </View>
             </View>
