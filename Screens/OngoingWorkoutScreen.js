@@ -1,16 +1,21 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Banner, Button, Card, IconButton, Surface } from "react-native-paper";
+import { Banner, Button, Card, IconButton, Modal, Surface } from "react-native-paper";
 import DurationProvider, { useDuration } from "../Components/Duration";
 import { usePedometer } from "../Components/PedometerSteps";
 import { getDistance } from "geolib";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
-import { set } from "firebase/database";
+import { saveWorkout } from "../Firebase/workouts";
+import { useUserId } from "../Components/UserIdContext";
 
-const OngoingWorkoutScreen = ({ navigation }) => {
 
+const OngoingWorkoutScreen = ({ navigation, route }) => {
+
+  const {userDocumentId, setUserDocumentId, setUser} = useUserId()
+
+  const { workoutType } = route.params;
 
   // Context variables
   const { currentStepCount, onPause, onResume, onReset, subscribe } =
@@ -21,6 +26,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
   // Other variables
   const [caloriesBurned, setCaloriesBurned] = useState(0);
   const [modalVisible, setModalVisible] = useState(true);
+  const [savingModalVisible,setSavingModalVisible] = useState(false)
   const [workoutIsPaused, setWorkoutIsPaused] = useState(true);
   const [distance, setDistance] = useState();
 
@@ -34,6 +40,10 @@ const OngoingWorkoutScreen = ({ navigation }) => {
   const [subscription, setSubscription] = useState(null);
   const [watchLocation, setWatchLocation] = useState(null);
   const [watchLocationArray, setWatchLocationArray] = useState([])
+
+
+  const mapViewRef = useRef(null);
+  
 
   const startWatchingLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -52,8 +62,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
 
         const { latitude, longitude } = location.coords;
         const locationObject = { latitude, longitude };
-        console.log('Whole location object: ', JSON.stringify(location.coords))
-        console.log('Got location:', locationObject);
+
         setWatchLocation(locationObject);
       }
     );
@@ -72,16 +81,11 @@ const OngoingWorkoutScreen = ({ navigation }) => {
     };
   }, []);
 
-  useEffect(() => {
-    console.log('watch location array:');
-    watchLocationArray.forEach((location, index) => {
-      console.log(`Location ${index + 1}: Latitude ${location.latitude}, Longitude ${location.longitude}`);
-    });
-  }, [watchLocationArray]);
 
   useEffect(() => {
-    console.log('watch location is now', watchLocation);
-    if (watchLocation) {
+    console.log('Watch location is: ', watchLocation)
+
+    if (watchLocation && !workoutIsPaused) {
       // Check if the new location is different from the last one
       const lastLocation = watchLocationArray[watchLocationArray.length - 1];
       if (!lastLocation || (lastLocation.latitude !== watchLocation.latitude || lastLocation.longitude !== watchLocation.longitude)) {
@@ -90,26 +94,6 @@ const OngoingWorkoutScreen = ({ navigation }) => {
       }
     }
   }, [watchLocation]);
-
-  // useEffect(() => {
-  //   (() => {
-  //     Location.watchPositionAsync({
-  //       accuracy: "high",
-  //       distanceInterval: 100,
-  //       timeInterval: 10000
-  //     }, ({coords}) => {
-  //       console.log({coords})
-  //       setLocation(coords);
-  //     }).then((locationWatcher) => {
-  //       setWatcher(locationWatcher);
-  //     }).catch((err) => {
-  //       console.log(err)
-  //     })
-  //   })()
-  // }, [])
-
-
-
 
 
   useEffect(() => {
@@ -159,6 +143,24 @@ const OngoingWorkoutScreen = ({ navigation }) => {
     navigation.navigate("Workout");
   };
 
+  const quitAndSave = async () => {
+    // const saveWorkout = async (calories, steps, duration, distance, workout_type, routeArray) => {
+      pauseStopwatch();
+      onPause();
+      setWorkoutIsPaused(true);
+
+
+      await saveWorkout(userDocumentId, caloriesBurned, currentStepCount, time, distance, workoutType, watchLocationArray)
+       
+      
+      onReset();
+      resetStopwatch();
+
+      navigation.navigate("Workout");
+
+
+  }
+
   const toggleWorkout = () => {
     console.log("toggle workout!");
 
@@ -181,6 +183,54 @@ const OngoingWorkoutScreen = ({ navigation }) => {
     setModalVisible(!modalVisible);
   };
 
+  const showQuitConfirmationAlert = () => {
+    Alert.alert(
+      'Quit Workout',
+      'Are you sure you want to quit the workout?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Quit and Save',
+          onPress: () => quitAndSave()
+        },
+        {
+          text: 'Quit Without Saving',
+          onPress: () => quitWorkout(),
+        }
+
+      ],
+      { cancelable: false }
+    );
+  };
+
+  useEffect(() => {
+    if (watchLocation) {
+      const { latitude, longitude } = watchLocation;
+      const delta = 0.01; // Adjust this value as needed for zoom level
+      mapViewRef.current?.animateToRegion({
+        latitude,
+        longitude,
+        latitudeDelta: delta,
+        longitudeDelta: delta
+      }, 1000);
+    }
+  }, [watchLocation]);
+
+  const handleCenter = () => {
+    if (watchLocation) {
+      const { latitude, longitude, latitudeDelta, longitudeDelta } = watchLocation;
+      mapViewRef.current?.animateToRegion({
+        latitude,
+        longitude,
+        latitudeDelta,
+        longitudeDelta
+      });
+    }
+  };
+
   const BottomActions = () => {
     return (
       <>
@@ -188,7 +238,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
           labelStyle={{ fontSize: 30, padding: 2 }}
           textColor="red"
           size={50}
-          onPress={() => quitWorkout()}
+          onPress={() => showQuitConfirmationAlert()}
           icon="cancel"
         ></Button>
 
@@ -240,9 +290,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
         </View>
       </Surface>
     );
-    // } else {
-    //   return null;
-    // }
+
   };
 
 
@@ -251,15 +299,16 @@ const OngoingWorkoutScreen = ({ navigation }) => {
 
       <View style={{ flex: 1, flexGrow: 2 }}>
         {watchLocation && (
-          <MapView
-            style={{ flex: 1 }} // Add styles for the mapview
-            initialRegion={{
-              latitude: watchLocation.latitude,
-              longitude: watchLocation.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            }}
-          >
+              <MapView
+                ref={mapViewRef}
+                style={{flex: 1}}
+                initialRegion={{
+                  latitude: watchLocation.latitude,
+                  longitude: watchLocation.longitude,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+              }}
+            >
             {watchLocationArray.length > 1 && (
               <Polyline
                 coordinates={watchLocationArray}

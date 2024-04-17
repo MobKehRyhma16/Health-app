@@ -2,35 +2,42 @@ import { firestore, collection, query, where, onSnapshot, WORKOUTS, GeoPoint, or
 import { convertFirebaseTimeStampToJS } from "../helpers/Functions";
 import { useEffect, useState } from "react";
 import { addDoc, doc } from 'firebase/firestore'; // Import the 'doc' function
+import { useUserId } from "../Components/UserIdContext";
 
 
 //saveWorkout(userId,101,201,3000,'running',[[x,x],[x,x],[x,x].....]
-export const saveWorkout  = async (userid ,calories, steps, duration, workout_type, routeArray) => {
+export const saveWorkout = async (user,calories, steps, duration, distance ,workout_type, routeArray) => {
+
+    console.log('Save workout got these: ', user, calories, steps, duration, workout_type, routeArray)
+
     
-    const geoPointsArray = []
+    const geoPointsArray = [];
 
-    //Convert to geopoint array from [[xx,xx],[xx,xx]]
+    // Convert coordinates to the required format and push them into geoPointsArray
     routeArray.forEach(geopoint => {
-        geoPointsArray.push(new GeoPoint(geopoint[0],geopoint[1]))
-    })
+        const { latitude, longitude } = geopoint;
+        const geoPointInstance = new GeoPoint(latitude, longitude);
+        geoPointsArray.push(geoPointInstance);
+    });
 
-    const userDocRef = doc(firestore, "users", userid);
+    const userDocRef = doc(firestore, "users", user);
 
-    try{
-        const docRef = await addDoc(collection(firestore,WORKOUTS), {
+    try {
+        console.log('geoPointsArray is now :',geoPointsArray)
+        const docRef = await addDoc(collection(firestore, WORKOUTS), {
             calories: calories,
             steps: steps,
             duration: duration,
+            distance: distance,
             created_at: new Date(),
             route: geoPointsArray,
             user_id: userDocRef,
             workout_type: workout_type
-    })
-    } catch(error){
-        console.log(error)
+        });
+    } catch (error) {
+        console.log(error);
     }
-}
- 
+};
 
 
 export const getWorkouts = (userId) => {
@@ -63,16 +70,14 @@ export const getWorkouts = (userId) => {
 
                 const workoutObject = {
                     id: doc.id,
-                    calories: doc.data().calories,
-                    created_at: convertFirebaseTimeStampToJS(doc.data().created_at),
-                    duration: doc.data().duration,
-                    user_id: doc.data().user_id.id,
-                    steps: doc.data().steps,
-                    workout_type: doc.data().workout_type,
-
-                    // route: JSON.stringify(routeArray)
+                    calories: doc.data()?.calories ?? 0, // If calories doesn't exist, default to 0
+                    created_at: convertFirebaseTimeStampToJS(doc.data()?.created_at),
+                    duration: doc.data()?.duration ?? 0, // If duration doesn't exist, default to 0
+                    distance: doc.data()?.distance ?? 0, // If distance doesn't exist, default to 0
+                    user_id: doc.data()?.user_id?.id, // Safely access nested property
+                    steps: doc.data()?.steps ?? 0, // If steps doesn't exist, default to 0
+                    workout_type: doc.data()?.workout_type,
                     route: routeArray
-
                 };
 
                 // workoutObject.route.forEach(points => {
