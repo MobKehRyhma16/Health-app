@@ -27,9 +27,13 @@ export function parseDurationToSeconds(durationString) {
     return totalSeconds;
 }
 
-export const parseArrayToCoordinates = (arrayOfPairs) => {
-    return arrayOfPairs.map(pair => ({
-      latitude: pair[0],
-      longitude: pair[1]
-    }));
+export const parseArrayToCoordinates = async (arrayOfPairsInput) => {
+    const resultArray = arrayOfPairsInput.map(coords => {
+        return {
+            latitude: coords[0],
+            longitude: coords[1]
+        };
+    });
+
+    return resultArray;
 };

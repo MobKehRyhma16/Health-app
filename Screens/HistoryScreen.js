@@ -19,50 +19,27 @@ export default function HistoryScreen() {
 
     const [modalVisible, setModalVisible] = useState(false)
 
+    const [selectedWorkout, setSelectedWorkout] = useState({})
+
+
+    const handleWorkout = (workout) => {
+        console.log(JSON.stringify(workout.route))
+        setSelectedWorkout(workout.route);
+        setModalVisible(true);
+      };
+    
+      const handleCloseModal = () => {
+        setSelectedWorkout(null);
+        setModalVisible(false);
+      };
+
 
     useEffect(() => {
         console.log('Modal modal visible state: ', modalVisible)
     }, [modalVisible]);
 
 
-    const MapModal = () => {
-        return (
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-              setModalVisible(false);
-            }}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.mapContainer}>
-                <MapView
-                  style={styles.map}
-                  initialRegion={{
-                    latitude: 25.5,
-                    longitude: 25.5,
-                    latitudeDelta: 0.01,
-                    longitudeDelta: 0.01,
-                  }}
-                />
-
-            </View>
-                <View style={styles.buttonContainer}>
-                <Button 
-                onPress={() => setModalVisible(false)} 
-                style={styles.closeButton}
-                labelStyle={styles.closeButtonText}
-                >
-                CLOSE
-                </Button>
-            </View>
-
-            </View>
-          </Modal>
-        );
-      };
-
+  
 
     return (
         <SafeAreaView style={styles.container}>               
@@ -79,20 +56,105 @@ export default function HistoryScreen() {
 
                 {workouts && workouts.length > 0 ? (
                     workouts.map((workout, index) => (
-                        <WorkoutItem key={index} workout={workout} setModalVisible={setModalVisible} />
+                        <WorkoutItem key={index} workout={workout} setModalVisible={setModalVisible} handleShowWorkout={handleWorkout} />
                     ))
                 ) : (
                     <Text style={styles.noWorkoutsText}>No workouts available</Text>
                 )}
             </ScrollView>
 
-            <MapModal></MapModal>
+            <MapModal modalVisible={modalVisible} setModalVisible={setModalVisible} selectedWorkout={selectedWorkout}></MapModal>
             
          </SafeAreaView>
     );
 }
 
-export const WorkoutItem = ({ workout, setModalVisible }) => {
+const MapModal = ({ modalVisible, setModalVisible, selectedWorkout }) => {
+    const [finalRouteObject, setFinalRouteObject] = useState([])
+
+    useEffect(() => {
+        console.log('Map modal mounted: ', JSON.stringify(finalRouteObject))
+    }, [finalRouteObject]);
+
+    useEffect(() => {
+        const fetchRoute = async () => {
+            if (selectedWorkout) {
+                const parsedRouteArray = await parseArrayToCoordinates(selectedWorkout);
+                setFinalRouteObject(parsedRouteArray);
+                console.log('Output was: ', parsedRouteArray);
+            }
+        };
+        fetchRoute();
+    }, [selectedWorkout]);
+
+    return (
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+                setModalVisible(false);
+            }}
+        >
+            <View style={styles.modalContainer}>
+                {finalRouteObject && (
+               <View style={styles.mapContainer}>
+                {finalRouteObject && finalRouteObject.length > 0 && (
+
+                    <MapView
+                            style={styles.map}
+                                initialRegion={{
+                                    latitude: finalRouteObject[finalRouteObject.length-1].latitude,
+                                    longitude:finalRouteObject[finalRouteObject.length-1].longitude,
+                                    latitudeDelta: 0.01,
+                                    longitudeDelta: 0.01,
+                                }}
+                                >
+
+                            {finalRouteObject.length > 1 && (
+
+                            <Polyline
+                                coordinates={finalRouteObject}
+                                strokeColor="#0099cc"
+                                strokeWidth={2}
+                                />
+                            )}
+                            {/* Marker for current location */}
+                            <Marker
+                                coordinate={{
+                                latitude: finalRouteObject[finalRouteObject.length-1].latitude,
+                                longitude: finalRouteObject[finalRouteObject.length-1].longitude,
+                                }}
+                                    title="Current Location"
+                                    description="This is your current location"
+                            />
+                    </MapView>
+
+
+                )}
+
+           </View>
+
+
+                )}
+ 
+                <View style={styles.buttonContainer}>
+                    <Button
+                        onPress={() => setModalVisible(false)}
+                        style={styles.closeButton}
+                        labelStyle={styles.closeButtonText}
+                    >
+                        CLOSE
+                    </Button>
+                </View>
+            </View>
+        </Modal>
+    );
+};
+
+export const WorkoutItem = ({ workout, handleShowWorkout }) => {
+
+
     return (
         <View style={styles.workoutItem}>
 
@@ -120,7 +182,7 @@ export const WorkoutItem = ({ workout, setModalVisible }) => {
             </View>
 
             <Text style={styles.createdAtText}>{workout.created_at}</Text>
-            <Button icon="map-marker-distance" mode="contained" onPress={() => setModalVisible(true)} buttonColor="lightcoral">
+            <Button icon="map-marker-distance" mode="contained" onPress={() => handleShowWorkout(workout)} buttonColor="lightcoral">
                 ROUTE
             </Button>
 
