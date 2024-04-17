@@ -52,8 +52,8 @@ const OngoingWorkoutScreen = ({ navigation }) => {
 
         const { latitude, longitude } = location.coords;
         const locationObject = { latitude, longitude };
-        console.log('Whole location object: ', JSON.stringify(location.coords))
-        console.log('Got location:', locationObject);
+        // console.log('Whole location object: ', JSON.stringify(location.coords))
+        // console.log('Got location:', locationObject);
         setWatchLocation(locationObject);
       }
     );
@@ -72,16 +72,16 @@ const OngoingWorkoutScreen = ({ navigation }) => {
     };
   }, []);
 
-  useEffect(() => {
-    console.log('watch location array:');
-    watchLocationArray.forEach((location, index) => {
-      console.log(`Location ${index + 1}: Latitude ${location.latitude}, Longitude ${location.longitude}`);
-    });
-  }, [watchLocationArray]);
+  // useEffect(() => {
+  //   // console.log('watch location array:');
+  //   watchLocationArray.forEach((location, index) => {
+  //     console.log(`Location ${index + 1}: Latitude ${location.latitude}, Longitude ${location.longitude}`);
+  //   });
+  // }, [watchLocationArray]);
 
   useEffect(() => {
-    console.log('watch location is now', watchLocation);
-    if (watchLocation) {
+
+    if (watchLocation && !workoutIsPaused) {
       // Check if the new location is different from the last one
       const lastLocation = watchLocationArray[watchLocationArray.length - 1];
       if (!lastLocation || (lastLocation.latitude !== watchLocation.latitude || lastLocation.longitude !== watchLocation.longitude)) {
