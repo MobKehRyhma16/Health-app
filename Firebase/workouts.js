@@ -2,22 +2,29 @@ import { firestore, collection, query, where, onSnapshot, WORKOUTS, GeoPoint, or
 import { convertFirebaseTimeStampToJS } from "../helpers/Functions";
 import { useEffect, useState } from "react";
 import { addDoc, doc } from 'firebase/firestore'; // Import the 'doc' function
+import { useUserId } from "../Components/UserIdContext";
 
 
 //saveWorkout(userId,101,201,3000,'running',[[x,x],[x,x],[x,x].....]
-export const saveWorkout  = async (userid ,calories, steps, duration, workout_type, routeArray) => {
+export const saveWorkout = async (user,calories, steps, duration, workout_type, routeArray) => {
+
+    console.log('Save workout got these: ', user, calories, steps, duration, workout_type, routeArray)
+
     
-    const geoPointsArray = []
+    const geoPointsArray = [];
 
-    //Convert to geopoint array from [[xx,xx],[xx,xx]]
+    // Convert coordinates to the required format and push them into geoPointsArray
     routeArray.forEach(geopoint => {
-        geoPointsArray.push(new GeoPoint(geopoint[0],geopoint[1]))
-    })
+        const { latitude, longitude } = geopoint;
+        const geoPointInstance = new GeoPoint(latitude, longitude);
+        geoPointsArray.push(geoPointInstance);
+    });
 
-    const userDocRef = doc(firestore, "users", userid);
+    const userDocRef = doc(firestore, "users", user);
 
-    try{
-        const docRef = await addDoc(collection(firestore,WORKOUTS), {
+    try {
+        console.log('geoPointsArray is now :',geoPointsArray)
+        const docRef = await addDoc(collection(firestore, WORKOUTS), {
             calories: calories,
             steps: steps,
             duration: duration,
@@ -25,12 +32,11 @@ export const saveWorkout  = async (userid ,calories, steps, duration, workout_ty
             route: geoPointsArray,
             user_id: userDocRef,
             workout_type: workout_type
-    })
-    } catch(error){
-        console.log(error)
+        });
+    } catch (error) {
+        console.log(error);
     }
-}
- 
+};
 
 
 export const getWorkouts = (userId) => {

@@ -7,9 +7,13 @@ import { usePedometer } from "../Components/PedometerSteps";
 import { getDistance } from "geolib";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
+import { saveWorkout } from "../Firebase/workouts";
+import { useUserId } from "../Components/UserIdContext";
 
 
 const OngoingWorkoutScreen = ({ navigation, route }) => {
+
+  const {userDocumentId, setUserDocumentId, setUser} = useUserId()
 
   const { workoutType } = route.params;
 
@@ -146,6 +150,24 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
     navigation.navigate("Workout");
   };
 
+  const quitAndSave = async () => {
+    // const saveWorkout = async (calories, steps, duration, workout_type, routeArray) => {
+      pauseStopwatch();
+      onPause();
+      setWorkoutIsPaused(true);
+
+
+      await saveWorkout(userDocumentId, caloriesBurned, currentStepCount, time, workoutType, watchLocationArray)
+      
+      
+      onReset();
+      resetStopwatch();
+
+      navigation.navigate("Workout");
+
+
+  }
+
   const toggleWorkout = () => {
     console.log("toggle workout!");
 
@@ -179,7 +201,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
         },
         {
           text: 'Quit and Save',
-          onPress: () => quitWorkout()
+          onPress: () => quitAndSave()
         },
         {
           text: 'Quit Without Saving',
