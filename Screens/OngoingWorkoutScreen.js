@@ -7,10 +7,11 @@ import { usePedometer } from "../Components/PedometerSteps";
 import { getDistance } from "geolib";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
-import { set } from "firebase/database";
 
-const OngoingWorkoutScreen = ({ navigation }) => {
 
+const OngoingWorkoutScreen = ({ navigation, route }) => {
+
+  const { workoutType } = route.params;
 
   // Context variables
   const { currentStepCount, onPause, onResume, onReset, subscribe } =
