@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Banner, Button, Card, IconButton, Surface } from "react-native-paper";
+import { Banner, Button, Card, IconButton, Modal, Surface } from "react-native-paper";
 import DurationProvider, { useDuration } from "../Components/Duration";
 import { usePedometer } from "../Components/PedometerSteps";
 import { getDistance } from "geolib";
@@ -21,6 +21,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
   // Other variables
   const [caloriesBurned, setCaloriesBurned] = useState(0);
   const [modalVisible, setModalVisible] = useState(true);
+  const [savingModalVisible,setSavingModalVisible] = useState(false)
   const [workoutIsPaused, setWorkoutIsPaused] = useState(true);
   const [distance, setDistance] = useState();
 
@@ -96,26 +97,6 @@ const OngoingWorkoutScreen = ({ navigation }) => {
     }
   }, [watchLocation]);
 
-  // useEffect(() => {
-  //   (() => {
-  //     Location.watchPositionAsync({
-  //       accuracy: "high",
-  //       distanceInterval: 100,
-  //       timeInterval: 10000
-  //     }, ({coords}) => {
-  //       console.log({coords})
-  //       setLocation(coords);
-  //     }).then((locationWatcher) => {
-  //       setWatcher(locationWatcher);
-  //     }).catch((err) => {
-  //       console.log(err)
-  //     })
-  //   })()
-  // }, [])
-
-
-
-
 
   useEffect(() => {
     if (watchLocationArray.length > 1) {
@@ -186,6 +167,29 @@ const OngoingWorkoutScreen = ({ navigation }) => {
     setModalVisible(!modalVisible);
   };
 
+  const showQuitConfirmationAlert = () => {
+    Alert.alert(
+      'Quit Workout',
+      'Are you sure you want to quit the workout?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Quit and Save',
+          onPress: () => quitWorkout()
+        },
+        {
+          text: 'Quit Without Saving',
+          onPress: () => quitWorkout(),
+        }
+
+      ],
+      { cancelable: false }
+    );
+  };
+
   useEffect(() => {
     if (watchLocation) {
       const { latitude, longitude } = watchLocation;
@@ -218,7 +222,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
           labelStyle={{ fontSize: 30, padding: 2 }}
           textColor="red"
           size={50}
-          onPress={() => quitWorkout()}
+          onPress={() => showQuitConfirmationAlert()}
           icon="cancel"
         ></Button>
 
@@ -274,6 +278,25 @@ const OngoingWorkoutScreen = ({ navigation }) => {
     //   return null;
     // }
   };
+
+  const SaveModal = () => {
+    return(
+    <View>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+
+      </Modal>
+
+    </View>
+    )
+  }
 
 
   return (
