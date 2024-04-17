@@ -28,12 +28,20 @@ export function parseDurationToSeconds(durationString) {
 }
 
 export const parseArrayToCoordinates = async (arrayOfPairsInput) => {
-    const resultArray = arrayOfPairsInput.map(coords => {
-        return {
-            latitude: coords[0],
-            longitude: coords[1]
-        };
-    });
+    if (arrayOfPairsInput && arrayOfPairsInput.length > 0){
+        try {
+            const resultArray = await arrayOfPairsInput.map(coords => {
+                return {
+                    latitude: coords[0],
+                    longitude: coords[1]
+                };
+            });
+            return resultArray;
+        } catch (error) {
+            console.error('Error parsing array to coordinates:', error);
+            throw error; // Rethrow the error to be caught by the caller
+        }
 
-    return resultArray;
+    }
+
 };

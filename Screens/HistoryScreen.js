@@ -72,16 +72,24 @@ export default function HistoryScreen() {
 const MapModal = ({ modalVisible, setModalVisible, selectedWorkout }) => {
     const [finalRouteObject, setFinalRouteObject] = useState([])
 
-    useEffect(() => {
-        console.log('Map modal mounted: ', JSON.stringify(finalRouteObject))
-    }, [finalRouteObject]);
+    let parsedRouteArray = []
 
     useEffect(() => {
         const fetchRoute = async () => {
             if (selectedWorkout) {
-                const parsedRouteArray = await parseArrayToCoordinates(selectedWorkout);
-                setFinalRouteObject(parsedRouteArray);
-                console.log('Output was: ', parsedRouteArray);
+                try {
+                    parsedRouteArray = await parseArrayToCoordinates(selectedWorkout);
+                    if (parsedRouteArray && parsedRouteArray.length > 0) {
+                        setFinalRouteObject(parsedRouteArray);
+                        console.log('Output was: ', parsedRouteArray);
+                    } else {
+                        // Handle the case where parsedRouteArray is null or empty
+                        console.log('Parsed route array is null or empty');
+                    }
+                } catch (error) {
+                    // Handle any errors that occur during parsing
+                    console.error('Error parsing route:', error);
+                }
             }
         };
         fetchRoute();
