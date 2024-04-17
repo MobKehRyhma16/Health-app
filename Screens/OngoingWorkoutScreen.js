@@ -4,65 +4,137 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Banner, Button, Card, IconButton, Surface } from "react-native-paper";
 import DurationProvider, { useDuration } from "../Components/Duration";
 import { usePedometer } from "../Components/PedometerSteps";
-import { useLocation } from "../Components/Location";
 import { getDistance } from "geolib";
 import MapView, { Polyline } from "react-native-maps";
+import * as Location from "expo-location";
+import { set } from "firebase/database";
 
 const OngoingWorkoutScreen = ({ navigation }) => {
+
+
   // Context variables
   const { currentStepCount, onPause, onResume, onReset, subscribe } =
     usePedometer();
   const { time, pauseStopwatch, startStopwatch, resetStopwatch } =
     useDuration();
-  const {
-    location,
-    setLocation,
-    locationArray,
-    setLocationArray,
-    startPolling,
-    stopPolling,
-    resumePolling,
-    quitPolling,
-    quitFlag,
-    setQuitFlag,
-  } = useLocation();
+
   // Other variables
   const [caloriesBurned, setCaloriesBurned] = useState(0);
   const [modalVisible, setModalVisible] = useState(true);
   const [workoutIsPaused, setWorkoutIsPaused] = useState(true);
   const [distance, setDistance] = useState();
 
-  useEffect(() => {
-    if (locationArray.length > 1) {
-      let totalDistance = 0;
-      for (let i = 0; i < locationArray.length - 1; i++) {
-        const currentLocation = locationArray[i];
-        const nextLocation = locationArray[i + 1];
-        const distanceBetweenPoints = getDistance(
-          {
-            latitude: currentLocation.latitude,
-            longitude: currentLocation.longitude,
-          },
-          { latitude: nextLocation.latitude, longitude: nextLocation.longitude }
-        );
-        totalDistance += distanceBetweenPoints;
-      }
-      setDistance(totalDistance);
-    } else {
-      setDistance(0);
+
+  //Watch user location
+  const [location, setLocation] = useState(null)
+  const [locationArray, setLocationArray] = useState([])
+  const [statusState, setStatusState] = useState('')
+
+
+  const [subscription, setSubscription] = useState(null);
+  const [watchLocation, setWatchLocation] = useState(null);
+  const [watchLocationArray, setWatchLocationArray] = useState([])
+
+  const startWatchingLocation = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      setStatusState(status)
+      return;
     }
-  }, [locationArray]);
+
+    const sub = await Location.watchPositionAsync(
+      {
+        accuracy: Location.Accuracy.High,
+        timeInterval: 1000,
+        distanceInterval: 1,
+      },
+      location => {
+
+        const { latitude, longitude } = location.coords;
+        const locationObject = { latitude, longitude };
+        console.log('Whole location object: ', JSON.stringify(location.coords))
+        console.log('Got location:', locationObject);
+        setWatchLocation(locationObject);
+      }
+    );
+
+    setSubscription(sub);
+  };
+
+  useEffect(() => {
+    startWatchingLocation();
+
+    // Clean up subscription when component unmounts
+    return () => {
+      if (subscription) {
+        subscription.remove();
+      }
+    };
+  }, []);
+
+
+  useEffect(() => {
+    console.log('watch location is now', watchLocation);
+    if (watchLocation) {
+      // Check if the new location is different from the last one
+      const lastLocation = watchLocationArray[watchLocationArray.length - 1];
+      if (!lastLocation || (lastLocation.latitude !== watchLocation.latitude || lastLocation.longitude !== watchLocation.longitude)) {
+        // Add the new location to the array only if it's different
+        setWatchLocationArray(prevLocations => [...prevLocations, watchLocation]);
+      }
+    }
+  }, [watchLocation]);
+
+  // useEffect(() => {
+  //   (() => {
+  //     Location.watchPositionAsync({
+  //       accuracy: "high",
+  //       distanceInterval: 100,
+  //       timeInterval: 10000
+  //     }, ({coords}) => {
+  //       console.log({coords})
+  //       setLocation(coords);
+  //     }).then((locationWatcher) => {
+  //       setWatcher(locationWatcher);
+  //     }).catch((err) => {
+  //       console.log(err)
+  //     })
+  //   })()
+  // }, [])
+
+
+
+
+  //Distance update
+  // useEffect(() => {
+  //   if (locationArray.length > 1) {
+  //     let totalDistance = 0;
+  //     for (let i = 0; i < locationArray.length - 1; i++) {
+  //       const currentLocation = locationArray[i];
+  //       const nextLocation = locationArray[i + 1];
+  //       const distanceBetweenPoints = getDistance(
+  //         {
+  //           latitude: currentLocation.latitude,
+  //           longitude: currentLocation.longitude,
+  //         },
+  //         { latitude: nextLocation.latitude, longitude: nextLocation.longitude }
+  //       );
+  //       totalDistance += distanceBetweenPoints;
+  //     }
+  //     setDistance(totalDistance);
+  //   } else {
+  //     setDistance(0);
+  //   }
+  // }, [locationArray]);
 
   useEffect(() => {
     console.log("Ongoing workout started");
     if (workoutIsPaused) {
       // setLocation(null)
       // setLocationArray([])
-      setQuitFlag(false);
       setWorkoutIsPaused(false);
       startStopwatch();
       subscribe();
-      startPolling();
     }
   }, []);
 
@@ -75,7 +147,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
     resetStopwatch();
     setWorkoutIsPaused(true);
     onReset();
-    quitPolling();
+
     navigation.navigate("Workout");
   };
 
@@ -87,11 +159,11 @@ const OngoingWorkoutScreen = ({ navigation }) => {
       console.log("toggle workout - start stopwatch");
       startStopwatch();
       onResume();
-      resumePolling();
+
     } else {
       pauseStopwatch();
       onPause();
-      stopPolling();
+
 
       console.log("toggle workout - pause stopwatch");
     }
@@ -165,12 +237,11 @@ const OngoingWorkoutScreen = ({ navigation }) => {
     // }
   };
 
-  console.log(locationArray);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View>
-        {location && (
+        {/* {location && (
         <MapView
           style={styles.mapView} // Add styles for the mapview
           initialRegion={{
@@ -189,7 +260,12 @@ const OngoingWorkoutScreen = ({ navigation }) => {
             />
           )}
         </MapView>
-        )}
+        )} */}
+
+        {watchLocationArray.map((loc, index) => (
+          <Text key={index}>{loc.latitude}, {loc.longitude}</Text>
+        ))}
+
       </View>
 
       <View style={styles.actionsContainer}>
@@ -199,7 +275,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
           <BottomActions />
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
