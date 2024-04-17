@@ -5,7 +5,7 @@ import { ToggleButton } from 'react-native-paper';
 import { parseDurationToSeconds } from '../helpers/Functions';
 
 export const HistoryChart = ({ workouts }) => {
-  const [type, setType] = useState('duration');
+  const [type, setType] = useState('distance');
 
   const dataDistance = workouts.map(workout => ({ value: workout.distance }));
   const dataDuration = workouts.map(workout => ({ value: parseDurationToSeconds(workout.duration)/60 }));
@@ -61,7 +61,7 @@ export const HistoryChart = ({ workouts }) => {
 };
 
 const ToggleSwitch = ({ updateType }) => {
-  const [value, setValue] = React.useState('duration'); // Initialize value
+  const [value, setValue] = React.useState('distance'); // Initialize value
 
   useEffect(() => {
     updateType(value);
