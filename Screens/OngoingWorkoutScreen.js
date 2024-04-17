@@ -151,14 +151,14 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
   };
 
   const quitAndSave = async () => {
-    // const saveWorkout = async (calories, steps, duration, workout_type, routeArray) => {
+    // const saveWorkout = async (calories, steps, duration, distance, workout_type, routeArray) => {
       pauseStopwatch();
       onPause();
       setWorkoutIsPaused(true);
 
 
-      await saveWorkout(userDocumentId, caloriesBurned, currentStepCount, time, workoutType, watchLocationArray)
-      
+      await saveWorkout(userDocumentId, caloriesBurned, currentStepCount, time, distance, workoutType, watchLocationArray)
+       
       
       onReset();
       resetStopwatch();
