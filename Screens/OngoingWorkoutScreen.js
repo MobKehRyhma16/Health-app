@@ -62,8 +62,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
 
         const { latitude, longitude } = location.coords;
         const locationObject = { latitude, longitude };
-        // console.log('Whole location object: ', JSON.stringify(location.coords))
-        // console.log('Got location:', locationObject);
+
         setWatchLocation(locationObject);
       }
     );
@@ -82,12 +81,6 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   // console.log('watch location array:');
-  //   watchLocationArray.forEach((location, index) => {
-  //     console.log(`Location ${index + 1}: Latitude ${location.latitude}, Longitude ${location.longitude}`);
-  //   });
-  // }, [watchLocationArray]);
 
   useEffect(() => {
     console.log('Watch location is: ', watchLocation)
@@ -297,29 +290,8 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
         </View>
       </Surface>
     );
-    // } else {
-    //   return null;
-    // }
+
   };
-
-  const SaveModal = () => {
-    return(
-    <View>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
-
-      </Modal>
-
-    </View>
-    )
-  }
 
 
   return (

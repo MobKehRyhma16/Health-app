@@ -45,7 +45,7 @@ const HistoryChart = ({ workouts }) => {
 };
 
 const ToggleSwitch = ({ updateType }) => {
-  const [value, setValue] = React.useState('duration');
+  const [value, setValue] = React.useState('');
 
   useEffect(() => {
     updateType(value);
@@ -54,7 +54,7 @@ const ToggleSwitch = ({ updateType }) => {
   return (
     <ToggleButton.Row onValueChange={value => setValue(value)} value={value}>
       <ToggleButton onValueChange='' icon="clock" value="duration" />
-      <ToggleButton  icon="fire" value="calories" />
+      <ToggleButton  icon="ruler" value="distance" />
     </ToggleButton.Row>
   );
 };
