@@ -105,27 +105,29 @@ const OngoingWorkoutScreen = ({ navigation }) => {
 
 
 
-  //Distance update
-  // useEffect(() => {
-  //   if (locationArray.length > 1) {
-  //     let totalDistance = 0;
-  //     for (let i = 0; i < locationArray.length - 1; i++) {
-  //       const currentLocation = locationArray[i];
-  //       const nextLocation = locationArray[i + 1];
-  //       const distanceBetweenPoints = getDistance(
-  //         {
-  //           latitude: currentLocation.latitude,
-  //           longitude: currentLocation.longitude,
-  //         },
-  //         { latitude: nextLocation.latitude, longitude: nextLocation.longitude }
-  //       );
-  //       totalDistance += distanceBetweenPoints;
-  //     }
-  //     setDistance(totalDistance);
-  //   } else {
-  //     setDistance(0);
-  //   }
-  // }, [locationArray]);
+
+  useEffect(() => {
+    if (watchLocationArray.length > 1) {
+      let totalDistance = 0;
+      for (let i = 0; i < watchLocationArray.length - 1; i++) {
+        const currentLocation = watchLocationArray[i];
+        const nextLocation = watchLocationArray[i + 1];
+        const distanceBetweenPoints = getDistance(
+          {
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude,
+          },
+          { latitude: nextLocation.latitude, longitude: nextLocation.longitude }
+        );
+        totalDistance += distanceBetweenPoints;
+      }
+      setDistance(totalDistance);
+    } else {
+      setDistance(0);
+    }
+  }, [watchLocationArray]);
+
+
 
   useEffect(() => {
     console.log("Ongoing workout started");
@@ -239,32 +241,32 @@ const OngoingWorkoutScreen = ({ navigation }) => {
 
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View>
-        {/* {location && (
+        {watchLocation && (
         <MapView
           style={styles.mapView} // Add styles for the mapview
           initialRegion={{
             // Set your initial region here
-            latitude: 50.5,
-            longitude: 50.5,
-            latitudeDelta: 0.1,
-            longitudeDelta: 0.1,
+            latitude: watchLocation.latitude,
+            longitude: watchLocation.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
           }}
         >
-          {locationArray.length > 1 && (
+          {watchLocationArray.length > 1 && (
             <Polyline
-              coordinates={locationArray}
+              coordinates={watchLocationArray}
               strokeColor="#0099cc" // adjust stroke color as desired
               strokeWidth={2}
             />
           )}
         </MapView>
-        )} */}
+        )}
 
-        {watchLocationArray.map((loc, index) => (
+        {/* {watchLocationArray.map((loc, index) => (
           <Text key={index}>{loc.latitude}, {loc.longitude}</Text>
-        ))}
+        ))} */}
 
       </View>
 
@@ -275,7 +277,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
           <BottomActions />
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
