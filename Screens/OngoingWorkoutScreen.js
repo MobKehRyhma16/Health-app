@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Banner, Button, Card, IconButton, Surface } from "react-native-paper";
 import DurationProvider, { useDuration } from "../Components/Duration";
@@ -34,6 +34,10 @@ const OngoingWorkoutScreen = ({ navigation }) => {
   const [subscription, setSubscription] = useState(null);
   const [watchLocation, setWatchLocation] = useState(null);
   const [watchLocationArray, setWatchLocationArray] = useState([])
+
+
+  const mapViewRef = useRef(null);
+  
 
   const startWatchingLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -80,6 +84,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
   // }, [watchLocationArray]);
 
   useEffect(() => {
+    console.log('Watch location is: ', watchLocation)
 
     if (watchLocation && !workoutIsPaused) {
       // Check if the new location is different from the last one
@@ -181,6 +186,31 @@ const OngoingWorkoutScreen = ({ navigation }) => {
     setModalVisible(!modalVisible);
   };
 
+  useEffect(() => {
+    if (watchLocation) {
+      const { latitude, longitude } = watchLocation;
+      const delta = 0.01; // Adjust this value as needed for zoom level
+      mapViewRef.current?.animateToRegion({
+        latitude,
+        longitude,
+        latitudeDelta: delta,
+        longitudeDelta: delta
+      }, 1000);
+    }
+  }, [watchLocation]);
+
+  const handleCenter = () => {
+    if (watchLocation) {
+      const { latitude, longitude, latitudeDelta, longitudeDelta } = watchLocation;
+      mapViewRef.current?.animateToRegion({
+        latitude,
+        longitude,
+        latitudeDelta,
+        longitudeDelta
+      });
+    }
+  };
+
   const BottomActions = () => {
     return (
       <>
@@ -251,15 +281,16 @@ const OngoingWorkoutScreen = ({ navigation }) => {
 
       <View style={{ flex: 1, flexGrow: 2 }}>
         {watchLocation && (
-          <MapView
-            style={{ flex: 1 }} // Add styles for the mapview
-            initialRegion={{
-              latitude: watchLocation.latitude,
-              longitude: watchLocation.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            }}
-          >
+              <MapView
+                ref={mapViewRef}
+                style={{flex: 1}}
+                initialRegion={{
+                  latitude: watchLocation.latitude,
+                  longitude: watchLocation.longitude,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+              }}
+            >
             {watchLocationArray.length > 1 && (
               <Polyline
                 coordinates={watchLocationArray}
