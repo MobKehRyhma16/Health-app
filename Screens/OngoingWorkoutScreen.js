@@ -5,7 +5,7 @@ import { Banner, Button, Card, IconButton, Surface } from "react-native-paper";
 import DurationProvider, { useDuration } from "../Components/Duration";
 import { usePedometer } from "../Components/PedometerSteps";
 import { getDistance } from "geolib";
-import MapView, { Polyline } from "react-native-maps";
+import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import { set } from "firebase/database";
 
@@ -72,6 +72,12 @@ const OngoingWorkoutScreen = ({ navigation }) => {
     };
   }, []);
 
+  useEffect(() => {
+    console.log('watch location array:');
+    watchLocationArray.forEach((location, index) => {
+      console.log(`Location ${index + 1}: Latitude ${location.latitude}, Longitude ${location.longitude}`);
+    });
+  }, [watchLocationArray]);
 
   useEffect(() => {
     console.log('watch location is now', watchLocation);
@@ -241,27 +247,36 @@ const OngoingWorkoutScreen = ({ navigation }) => {
 
 
   return (
-    <View style={styles.container}>
-      <View>
+    <SafeAreaView style={styles.container}>
+
+      <View style={{ flex: 1, flexGrow: 2 }}>
         {watchLocation && (
-        <MapView
-          style={styles.mapView} // Add styles for the mapview
-          initialRegion={{
-            // Set your initial region here
-            latitude: watchLocation.latitude,
-            longitude: watchLocation.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          }}
-        >
-          {watchLocationArray.length > 1 && (
-            <Polyline
-              coordinates={watchLocationArray}
-              strokeColor="#0099cc" // adjust stroke color as desired
-              strokeWidth={2}
+          <MapView
+            style={{ flex: 1 }} // Add styles for the mapview
+            initialRegion={{
+              latitude: watchLocation.latitude,
+              longitude: watchLocation.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            }}
+          >
+            {watchLocationArray.length > 1 && (
+              <Polyline
+                coordinates={watchLocationArray}
+                strokeColor="#0099cc"
+                strokeWidth={2}
+              />
+            )}
+            {/* Marker for current location */}
+            <Marker
+              coordinate={{
+                latitude: watchLocation.latitude,
+                longitude: watchLocation.longitude,
+              }}
+              title="Current Location"
+              description="This is your current location"
             />
-          )}
-        </MapView>
+          </MapView>
         )}
 
         {/* {watchLocationArray.map((loc, index) => (
@@ -277,7 +292,7 @@ const OngoingWorkoutScreen = ({ navigation }) => {
           <BottomActions />
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
