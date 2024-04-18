@@ -132,11 +132,10 @@ const MapModal = ({ modalVisible, setModalVisible, selectedWorkout }) => {
  
                 <View style={styles.buttonContainer}>
                     <Button
-                        onPress={() => 
-
-                            setModalVisible(false)
-                        
-                        }
+                        onPress={() => {
+                            setFinalRouteObject([]);
+                            setModalVisible(false);
+                        }}
                         style={styles.closeButton}
                         labelStyle={styles.closeButtonText}
                     >
