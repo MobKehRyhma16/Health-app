@@ -62,8 +62,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
 
         const { latitude, longitude } = location.coords;
         const locationObject = { latitude, longitude };
-        // console.log('Whole location object: ', JSON.stringify(location.coords))
-        // console.log('Got location:', locationObject);
+
         setWatchLocation(locationObject);
       }
     );
@@ -82,15 +81,8 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   // console.log('watch location array:');
-  //   watchLocationArray.forEach((location, index) => {
-  //     console.log(`Location ${index + 1}: Latitude ${location.latitude}, Longitude ${location.longitude}`);
-  //   });
-  // }, [watchLocationArray]);
 
   useEffect(() => {
-    console.log('Watch location is: ', watchLocation)
 
     if (watchLocation && !workoutIsPaused) {
       // Check if the new location is different from the last one
@@ -127,7 +119,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
 
 
   useEffect(() => {
-    console.log("Ongoing workout started");
+
     if (workoutIsPaused) {
       // setLocation(null)
       // setLocationArray([])
@@ -138,7 +130,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
   }, []);
 
   useEffect(() => {
-    console.log("Workoutispaused state:", workoutIsPaused);
+
   }, [workoutIsPaused]);
 
   const quitWorkout = () => {
@@ -169,11 +161,10 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
   }
 
   const toggleWorkout = () => {
-    console.log("toggle workout!");
 
     setWorkoutIsPaused(!workoutIsPaused);
     if (workoutIsPaused) {
-      console.log("toggle workout - start stopwatch");
+
       startStopwatch();
       onResume();
 
@@ -182,7 +173,6 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
       onPause();
 
 
-      console.log("toggle workout - pause stopwatch");
     }
   };
 
@@ -297,29 +287,8 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
         </View>
       </Surface>
     );
-    // } else {
-    //   return null;
-    // }
+
   };
-
-  const SaveModal = () => {
-    return(
-    <View>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
-
-      </Modal>
-
-    </View>
-    )
-  }
 
 
   return (
