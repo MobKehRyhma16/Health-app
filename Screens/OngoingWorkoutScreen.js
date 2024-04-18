@@ -83,7 +83,6 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
 
 
   useEffect(() => {
-    console.log('Watch location is: ', watchLocation)
 
     if (watchLocation && !workoutIsPaused) {
       // Check if the new location is different from the last one
@@ -120,7 +119,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
 
 
   useEffect(() => {
-    console.log("Ongoing workout started");
+
     if (workoutIsPaused) {
       // setLocation(null)
       // setLocationArray([])
@@ -131,7 +130,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
   }, []);
 
   useEffect(() => {
-    console.log("Workoutispaused state:", workoutIsPaused);
+
   }, [workoutIsPaused]);
 
   const quitWorkout = () => {
@@ -162,11 +161,10 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
   }
 
   const toggleWorkout = () => {
-    console.log("toggle workout!");
 
     setWorkoutIsPaused(!workoutIsPaused);
     if (workoutIsPaused) {
-      console.log("toggle workout - start stopwatch");
+
       startStopwatch();
       onResume();
 
@@ -175,7 +173,6 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
       onPause();
 
 
-      console.log("toggle workout - pause stopwatch");
     }
   };
 

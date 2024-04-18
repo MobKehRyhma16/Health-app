@@ -23,7 +23,6 @@ export default function HistoryScreen() {
 
 
     const handleWorkout = (workout) => {
-        console.log(JSON.stringify(workout.route))
         setSelectedWorkout(workout.route);
         setModalVisible(true);
       };
@@ -32,12 +31,6 @@ export default function HistoryScreen() {
         setSelectedWorkout(null);
         setModalVisible(false);
       };
-
-
-    useEffect(() => {
-        console.log('Modal modal visible state: ', modalVisible)
-    }, [modalVisible]);
-
 
   
 
@@ -77,18 +70,9 @@ const MapModal = ({ modalVisible, setModalVisible, selectedWorkout }) => {
     useEffect(() => {
         const fetchRoute = async () => {
             if (selectedWorkout) {
-                try {
-                    parsedRouteArray = await parseArrayToCoordinates(selectedWorkout);
-                    if (parsedRouteArray && parsedRouteArray.length > 0) {
-                        setFinalRouteObject(parsedRouteArray);
-                        console.log('Output was: ', parsedRouteArray);
-                    } else {
-                        // Handle the case where parsedRouteArray is null or empty
-                        console.log('Parsed route array is null or empty');
-                    }
-                } catch (error) {
-                    // Handle any errors that occur during parsing
-                    console.error('Error parsing route:', error);
+                let parsedRouteArray = await parseArrayToCoordinates(selectedWorkout);
+                if (parsedRouteArray && parsedRouteArray.length > 0) {
+                    setFinalRouteObject(parsedRouteArray);
                 }
             }
         };
@@ -148,7 +132,11 @@ const MapModal = ({ modalVisible, setModalVisible, selectedWorkout }) => {
  
                 <View style={styles.buttonContainer}>
                     <Button
-                        onPress={() => setModalVisible(false)}
+                        onPress={() => 
+
+                            setModalVisible(false)
+                        
+                        }
                         style={styles.closeButton}
                         labelStyle={styles.closeButtonText}
                     >
