@@ -8,6 +8,7 @@ import { getAuth } from '../../Firebase/Config';
 import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { UserProvider } from '../../helpers/UserProvider';
+import Achievements from './Achievement';
 
 const Drawer = createDrawerNavigator();
 const auth = getAuth();
@@ -65,6 +66,7 @@ function ProfileDrawer() {
         <Drawer.Screen name="Login" component={LoginScreen} />
       )}
       <Drawer.Screen name="My Information" component={Info} />
+      <Drawer.Screen name="Achievements" component={Achievements} />
     </Drawer.Navigator>
     </UserProvider >
   );
