@@ -42,7 +42,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     const burnedCalories = CaloriinaCalculator({workoutType, time, distance })
-    console.log('uef burned calories: ', burnedCalories)
+
     if (burnedCalories.length>0){
       setCalories(burnedCalories)
     }
