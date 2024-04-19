@@ -447,19 +447,21 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     emptyAvatar: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        borderWidth: 1,
+        width: 104, // Increased size to accommodate the border
+        height: 104, // Increased size to accommodate the border
+        borderRadius: 52, // Half of the increased size
+        borderWidth: 2, // Border width
         borderColor: '#ccc',
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 8,
+        position: 'relative', // Position relative for overlaying the border
     },
     avatarImage: {
         width: 100,
         height: 100,
         borderRadius: 50,
+        position: 'absolute', // Position absolute to overlay on top of the border
     },
     username: {
         fontSize: 20,
