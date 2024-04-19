@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Modal} from "react-native";
 import { getWorkouts, saveWorkout } from "../Firebase/workouts";
 import { Foundation, FontAwesome5 } from '@expo/vector-icons';
@@ -22,8 +22,9 @@ export default function HistoryScreen() {
     const [selectedWorkout, setSelectedWorkout] = useState({})
 
 
+
+
     const handleWorkout = (workout) => {
-        console.log(JSON.stringify(workout.route))
         setSelectedWorkout(workout.route);
         setModalVisible(true);
       };
@@ -32,12 +33,6 @@ export default function HistoryScreen() {
         setSelectedWorkout(null);
         setModalVisible(false);
       };
-
-
-    useEffect(() => {
-        console.log('Modal modal visible state: ', modalVisible)
-    }, [modalVisible]);
-
 
   
 
@@ -56,44 +51,47 @@ export default function HistoryScreen() {
 
                 {workouts && workouts.length > 0 ? (
                     workouts.map((workout, index) => (
-                        <WorkoutItem key={index} workout={workout} setModalVisible={setModalVisible} handleShowWorkout={handleWorkout} />
+                        <WorkoutItem key={index} workout={workout} setModalVisible={setModalVisible} handleShowWorkout={handleWorkout}  />
                     ))
                 ) : (
                     <Text style={styles.noWorkoutsText}>No workouts available</Text>
                 )}
             </ScrollView>
 
-            <MapModal modalVisible={modalVisible} setModalVisible={setModalVisible} selectedWorkout={selectedWorkout}></MapModal>
+            <MapModal modalVisible={modalVisible} setModalVisible={setModalVisible} selectedWorkout={selectedWorkout} handleCloseModal={handleCloseModal}></MapModal>
             
          </SafeAreaView>
     );
 }
 
-const MapModal = ({ modalVisible, setModalVisible, selectedWorkout }) => {
-    const [finalRouteObject, setFinalRouteObject] = useState([])
-
-    let parsedRouteArray = []
+const MapModal = ({ modalVisible, setModalVisible, selectedWorkout, handleCloseModal }) => {
+    const [finalRouteObject, setFinalRouteObject] = useState([]);
 
     useEffect(() => {
         const fetchRoute = async () => {
             if (selectedWorkout) {
-                try {
-                    parsedRouteArray = await parseArrayToCoordinates(selectedWorkout);
-                    if (parsedRouteArray && parsedRouteArray.length > 0) {
-                        setFinalRouteObject(parsedRouteArray);
-                        console.log('Output was: ', parsedRouteArray);
-                    } else {
-                        // Handle the case where parsedRouteArray is null or empty
-                        console.log('Parsed route array is null or empty');
-                    }
-                } catch (error) {
-                    // Handle any errors that occur during parsing
-                    console.error('Error parsing route:', error);
+                let parsedRouteArray = await parseArrayToCoordinates(selectedWorkout);
+                if (parsedRouteArray && parsedRouteArray.length > 0) {
+                    setFinalRouteObject(parsedRouteArray);
                 }
             }
         };
         fetchRoute();
-    }, [selectedWorkout]);
+    }, [modalVisible, selectedWorkout]); // Update when modalVisible or selectedWorkout changes
+
+    // Update initialRegion whenever finalRouteObject changes
+    const initialRegion = useMemo(() => {
+        if (finalRouteObject.length > 0) {
+            const lastCoordinate = finalRouteObject[finalRouteObject.length - 1];
+            return {
+                latitude: lastCoordinate.latitude,
+                longitude: lastCoordinate.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+            };
+        }
+        return null;
+    }, [finalRouteObject]);
 
     return (
         <Modal
@@ -105,50 +103,40 @@ const MapModal = ({ modalVisible, setModalVisible, selectedWorkout }) => {
             }}
         >
             <View style={styles.modalContainer}>
-                {finalRouteObject && (
-               <View style={styles.mapContainer}>
-                {finalRouteObject && finalRouteObject.length > 0 && (
-
-                    <MapView
+                <View style={styles.mapContainer}>
+                    {finalRouteObject.length > 0 && (
+                        <MapView
                             style={styles.map}
-                                initialRegion={{
-                                    latitude: finalRouteObject[finalRouteObject.length-1].latitude,
-                                    longitude:finalRouteObject[finalRouteObject.length-1].longitude,
-                                    latitudeDelta: 0.01,
-                                    longitudeDelta: 0.01,
-                                }}
-                                >
-
+                            initialRegion={initialRegion}
+                        >
                             {finalRouteObject.length > 1 && (
-
-                            <Polyline
-                                coordinates={finalRouteObject}
-                                strokeColor="#0099cc"
-                                strokeWidth={2}
+                                <Polyline
+                                    coordinates={finalRouteObject}
+                                    strokeColor="#0099cc"
+                                    strokeWidth={2}
                                 />
                             )}
                             {/* Marker for current location */}
                             <Marker
                                 coordinate={{
-                                latitude: finalRouteObject[finalRouteObject.length-1].latitude,
-                                longitude: finalRouteObject[finalRouteObject.length-1].longitude,
+                                    latitude: finalRouteObject[finalRouteObject.length - 1].latitude,
+                                    longitude: finalRouteObject[finalRouteObject.length - 1].longitude,
                                 }}
-                                    title="Current Location"
-                                    description="This is your current location"
+                                title="Current Location"
+                                description="This is your current location"
                             />
-                    </MapView>
+                        </MapView>
+                    )}
+                </View>
 
-
-                )}
-
-           </View>
-
-
-                )}
- 
                 <View style={styles.buttonContainer}>
                     <Button
-                        onPress={() => setModalVisible(false)}
+                        onPress={() => (
+                        handleCloseModal(),
+                        setFinalRouteObject([])
+                        
+                        )}
+
                         style={styles.closeButton}
                         labelStyle={styles.closeButtonText}
                     >
@@ -160,8 +148,9 @@ const MapModal = ({ modalVisible, setModalVisible, selectedWorkout }) => {
     );
 };
 
-export const WorkoutItem = ({ workout, handleShowWorkout }) => {
+export const WorkoutItem = ({ workout, handleShowWorkout}) => {
 
+    const workoutObj = workout
 
     return (
         <View style={styles.workoutItem}>
@@ -190,7 +179,7 @@ export const WorkoutItem = ({ workout, handleShowWorkout }) => {
             </View>
 
             <Text style={styles.createdAtText}>{workout.created_at}</Text>
-            <Button icon="map-marker-distance" mode="contained" onPress={() => handleShowWorkout(workout)} buttonColor="lightcoral">
+            <Button icon="map-marker-distance" mode="contained" onPress={() => handleShowWorkout(workoutObj)} buttonColor="lightcoral">
                 ROUTE
             </Button>
 

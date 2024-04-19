@@ -8,8 +8,6 @@ import { useUserId } from "../Components/UserIdContext";
 //saveWorkout(userId,101,201,3000,'running',[[x,x],[x,x],[x,x].....]
 export const saveWorkout = async (user,calories, steps, duration, distance ,workout_type, routeArray) => {
 
-    console.log('Save workout got these: ', user, calories, steps, duration, workout_type, routeArray)
-
     
     const geoPointsArray = [];
 
@@ -23,7 +21,6 @@ export const saveWorkout = async (user,calories, steps, duration, distance ,work
     const userDocRef = doc(firestore, "users", user);
 
     try {
-        console.log('geoPointsArray is now :',geoPointsArray)
         const docRef = await addDoc(collection(firestore, WORKOUTS), {
             calories: calories,
             steps: steps,
@@ -79,10 +76,6 @@ export const getWorkouts = (userId) => {
                     workout_type: doc.data()?.workout_type,
                     route: routeArray
                 };
-
-                // workoutObject.route.forEach(points => {
-                //     console.log('GEOPOINT',points)
-                // })
 
 
                 tempWorkouts.push(workoutObject);

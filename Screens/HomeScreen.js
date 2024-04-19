@@ -14,7 +14,6 @@ export default function HomeScreen() {
                 <View>
                     <Activitybar />
                     <Text style={styles.heading}>Home</Text>
-                    <Text>Current user id: {userDocumentId}</Text>
                 </View>
             </SafeAreaView>
         </GradientBackground>

@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { View, Text, StyleSheet, Alert } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Banner, Button, Card, IconButton, Modal, Surface } from "react-native-paper";
-import DurationProvider, { useDuration } from "../Components/Duration";
+import { Button, Surface } from "react-native-paper";
+import { useDuration } from "../Components/Duration";
 import { usePedometer } from "../Components/PedometerSteps";
 import { getDistance } from "geolib";
 import MapView, { Marker, Polyline } from "react-native-maps";
@@ -32,16 +32,12 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
 
 
   //Watch user location
-  const [location, setLocation] = useState(null)
-  const [locationArray, setLocationArray] = useState([])
-  const [statusState, setStatusState] = useState('')
-
-
   const [subscription, setSubscription] = useState(null);
   const [watchLocation, setWatchLocation] = useState(null);
   const [watchLocationArray, setWatchLocationArray] = useState([])
 
 
+  //Used to center map to user location
   const mapViewRef = useRef(null);
   
 
@@ -83,7 +79,6 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
 
 
   useEffect(() => {
-    console.log('Watch location is: ', watchLocation)
 
     if (watchLocation && !workoutIsPaused) {
       // Check if the new location is different from the last one
@@ -120,7 +115,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
 
 
   useEffect(() => {
-    console.log("Ongoing workout started");
+
     if (workoutIsPaused) {
       // setLocation(null)
       // setLocationArray([])
@@ -131,7 +126,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
   }, []);
 
   useEffect(() => {
-    console.log("Workoutispaused state:", workoutIsPaused);
+
   }, [workoutIsPaused]);
 
   const quitWorkout = () => {
@@ -162,11 +157,10 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
   }
 
   const toggleWorkout = () => {
-    console.log("toggle workout!");
 
     setWorkoutIsPaused(!workoutIsPaused);
     if (workoutIsPaused) {
-      console.log("toggle workout - start stopwatch");
+
       startStopwatch();
       onResume();
 
@@ -175,7 +169,6 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
       onPause();
 
 
-      console.log("toggle workout - pause stopwatch");
     }
   };
 
