@@ -7,15 +7,16 @@ export default function Achievements() {
         distance: { uri: require('./AchImg/distance.png'), text: 'From Marathon to Athens: Run in total 42 kilometers' },
         speed: { uri: require('./AchImg/speed.png'), text: 'The Speed Demon: Have a running speed of 16km per hour' },
         workout: { uri: require('./AchImg/workout.png'), text: 'Workout Warrior: Complete 10 workouts' },
+        ProfAch: { uri: require('./AchImg/ProfAch.png'), text: 'Profile Picasso: Set up your profile' },
+        Stepgoal: { uri: require('./AchImg/Stepgoal.png'), text: 'Step Slayer: Complete your daily step goal' },
     };
 
     const data = [
         { id: '1', image: images.distance, achieved: false },
         { id: '2', image: images.speed, achieved: false },
         { id: '3', image: images.workout, achieved: false },
-        { id: '4', image: images.workout, achieved: false },
-        { id: '5', image: images.workout, achieved: false },
-        { id: '6', image: images.workout, achieved: true },
+        { id: '4', image: images.ProfAch, achieved: false },
+        { id: '5', image: images.Stepgoal, achieved: false },
     ];
 
     const [modalVisible, setModalVisible] = useState(false);
@@ -40,7 +41,7 @@ export default function Achievements() {
     return (
         <GradientBackground>
             <SafeAreaView style={styles.container}>
-                <Text>Achieved Achievements</Text>
+                <Text style={styles.heading}>Achieved Achievements</Text>
                 <View style={styles.gridContainer}>
                     <FlatList
                         data={data.filter(item => item.achieved)}
@@ -49,7 +50,7 @@ export default function Achievements() {
                         numColumns={3}
                     />
                 </View>
-                <Text>Locked Achievements</Text>
+                <Text style={styles.heading}>Locked Achievements</Text>
                 <View style={styles.gridContainer}>
                     <FlatList
                         data={data.filter(item => !item.achieved)}
@@ -91,6 +92,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 10,
+    },
+    heading: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginVertical: 10,
     },
     gridContainer: {
         flexDirection: 'row',
