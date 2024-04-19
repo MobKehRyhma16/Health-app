@@ -10,6 +10,7 @@ import * as Location from "expo-location";
 import { saveWorkout } from "../Firebase/workouts";
 import { useUserId } from "../Components/UserIdContext";
 import { Foundation, FontAwesome5 } from '@expo/vector-icons';
+import CaloriinaCalculator from "../Components/Caloriina";
 
 
 const OngoingWorkoutScreen = ({ navigation, route }) => {
@@ -36,6 +37,16 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
   const [subscription, setSubscription] = useState(null);
   const [watchLocation, setWatchLocation] = useState(null);
   const [watchLocationArray, setWatchLocationArray] = useState([])
+
+  const [calories, setCalories] = useState()
+
+  useEffect(() => {
+    const burnedCalories = CaloriinaCalculator({workoutType, time, distance })
+    console.log('uef burned calories: ', burnedCalories)
+    if (burnedCalories.length>0){
+      setCalories(burnedCalories)
+    }
+  }, [distance]);
 
 
   //Used to center map to user location
@@ -146,7 +157,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
       setWorkoutIsPaused(true);
 
 
-      await saveWorkout(userDocumentId, caloriesBurned, currentStepCount, time, distance, workoutType, watchLocationArray)
+      await saveWorkout(userDocumentId, calories, currentStepCount, time, distance, workoutType, watchLocationArray)
        
       
       onReset();
@@ -296,7 +307,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
             <Text style={surfaceCompStyles.labelTextStyle}>Calories</Text>
           </View>
           <View style={surfaceCompStyles.valueContainer}>
-            <Text style={surfaceCompStyles.valueTextStyle}>{caloriesBurned}</Text>
+            <Text style={surfaceCompStyles.valueTextStyle}>{calories}</Text>
           </View>
         </View>
       </View>
