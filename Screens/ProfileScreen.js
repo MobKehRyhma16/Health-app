@@ -7,11 +7,9 @@ import * as MediaLibrary from 'expo-media-library';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as ImagePicker from 'expo-image-picker';
 import { firestore, doc, updateDoc, getDoc, getAuth, db } from '../Firebase/Config';
-import { getUserWorkoutTypes } from "../Firebase/profile";
+import { getUserWorkoutData } from '../Firebase/profile';
 import { UserContext } from "../helpers/UserProvider";
 import * as ImageManipulator from 'expo-image-manipulator';
-
-
 
 const Stack = createStackNavigator();
 
@@ -24,23 +22,19 @@ const ProfileScreen = ({ navigation, route }) => {
     const [description, setDescription] = useState('');
     const [totalWorkoutTypes, setTotalWorkoutTypes] = useState(0);
     const [isSaving, setIsSaving] = useState(false);
-    const [isDescriptionChanged, setIsDescriptionChanged] = useState(false); // State to track if description has changed
+    const [isDescriptionChanged, setIsDescriptionChanged] = useState(false);
     const [showSaveButton, setShowSaveButton] = useState(true);
 
     const auth = getAuth();
     const user = auth.currentUser;
     const uid = user.uid;
-
     const userId = uid;
-
-    const workOutTypes = getUserWorkoutTypes(userId)
-
-
+    const workOutTypes = getUserWorkoutData(userId)
 
     useEffect(() => {
         fetchUserData();
-
-        console.log("Total Workout Types:", workOutTypes.totalWorkoutTypes);
+        console.log("Total Workout Types:", workOutTypes.totalWorkoutCount);
+        console.log("Total Distance:", workOutTypes.totalDistance);
     }, []);
 
     useEffect(() => {
@@ -60,11 +54,10 @@ const ProfileScreen = ({ navigation, route }) => {
     }, [route.params]);
 
     useEffect(() => {
-        console.log("Avatar state when picking image:", avatar);
-        // Upload avatar path to Firestore when avatar state changes
+        // console.log("Avatar state when picking image:", avatar);
         const updateUserAvatar = async () => {
             try {
-                const userDocRef = doc(firestore, 'users', uid); // Replace 'USER_DOCUMENT_ID' with the actual document ID of the user
+                const userDocRef = doc(firestore, 'users', uid);
                 await updateDoc(userDocRef, { avatar: avatar });
                 console.log("Avatar path updated in Firestore");
             } catch (error) {
@@ -72,16 +65,20 @@ const ProfileScreen = ({ navigation, route }) => {
             }
         };
 
-        // Check if the new avatar path is different from the current avatar path
         if (avatar && avatar !== currentAvatar) {
             setCurrentAvatar(avatar); // Update the current avatar path
             updateUserAvatar(); // Update the avatar in Firestore
         }
     }, [avatar])
 
+    function roundUp(roundedDistance, precision) {
+        const factor = Math.pow(10, precision)
+        return Math.ceil(roundedDistance * factor) / factor;
+    }
+
+    // Fetches userdata from Firestore (username, avatar, description)
     const fetchUserData = async () => {
         try {
-
             const userDocRef = doc(firestore, 'users', uid);
             const userDocSnapshot = await getDoc(userDocRef);
             if (userDocSnapshot.exists()) {
@@ -90,10 +87,10 @@ const ProfileScreen = ({ navigation, route }) => {
                     setAvatar(userData.avatar);
                 }
                 if (userData.firstname) {
-                    setFirstname(userData.firstname); // Set the username state here
+                    setFirstname(userData.firstname);
                 }
                 if (userData.description) {
-                    setDescription(userData.description); // Set the description state here
+                    setDescription(userData.description);
                 }
             }
         } catch (error) {
@@ -125,8 +122,8 @@ const ProfileScreen = ({ navigation, route }) => {
 
     const handleDescriptionChange = (text) => {
         setDescription(text);
-        setIsDescriptionChanged(true); // Set description changed state to true when text changes
-        setShowSaveButton(true); // Show the save button when text changes
+        setIsDescriptionChanged(true);
+        setShowSaveButton(true);
     };
 
     const saveDescription = async () => {
@@ -138,7 +135,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 console.log("Description saved to Firestore:", description);
                 setIsSaving(false);
                 setIsDescriptionChanged(false);
-                setShowSaveButton(false); // Hide the save button after it's clicked
+                setShowSaveButton(false);
             } catch (error) {
                 console.error("Error saving description to Firestore:", error);
                 setIsSaving(false);
@@ -263,7 +260,6 @@ const ProfileScreen = ({ navigation, route }) => {
                     </TouchableOpacity>
                     <Text style={styles.username}>{firstname ? firstname : 'Loading...'}</Text>
                 </View>
-                {/* Profile Description */}
                 <View style={styles.descriptionContainer}>
                     <Text style={styles.heading}>Profile Description</Text>
                 </View>
@@ -280,48 +276,46 @@ const ProfileScreen = ({ navigation, route }) => {
                         textBreakStrategy="highQuality"
                         blurOnSubmit={true}
                     />
-                    
-                </View>
-                {showSaveButton && isDescriptionChanged && ( // Render the save button only if description has changed and showSaveButton is true
-                        <TouchableOpacity style={[styles.button, { alignSelf: 'flex-end' }]} onPress={saveDescription} disabled={isSaving}>
-                            <Text style={styles.buttonText}>{isSaving ? 'Saving...' : 'Save'}</Text>
-                        </TouchableOpacity>
-                    )}
-            
-            <View style={styles.columnContainer}>
-                <View style={styles.column}>
-                    <Text style={styles.columnHeader}>Total Kilometers</Text>
-                    {/* Add your Total kilometers data here */}
-                    <Text style={{ color: '#ccc' }}>0</Text>
-                </View>
-            </View>
 
-            <View style={styles.divider} />
-
-            <View style={styles.columnContainer}>
-                <View style={styles.column}>
-                    <Text style={styles.columnHeader}>Activities</Text>
-                    {/* Add your Activities data here */}
-                    <Text style={{ color: '#ccc' }}>{workOutTypes.totalWorkoutTypes}</Text>
                 </View>
-            </View>
+                {showSaveButton && isDescriptionChanged && (
+                    <TouchableOpacity style={[styles.button, { alignSelf: 'flex-end' }]} onPress={saveDescription} disabled={isSaving}>
+                        <Text style={styles.buttonText}>{isSaving ? 'Saving...' : 'Save'}</Text>
+                    </TouchableOpacity>
+                )}
 
-            <View style={styles.divider} />
-            <View>
-                <DailyGoal />
-            </View>
-        </SafeAreaView>
+                <View style={styles.columnContainer}>
+                    <View style={styles.column}>
+                        <Text style={styles.columnHeader}>Total Kilometers</Text>
+                        <Text style={{ color: '#ccc' }}>{roundUp(workOutTypes.totalDistance, 2)}</Text>
+                    </View>
+                </View>
+
+                <View style={styles.divider} />
+
+                <View style={styles.columnContainer}>
+                    <View style={styles.column}>
+                        <Text style={styles.columnHeader}>Activities</Text>
+                        <Text style={{ color: '#ccc' }}>{workOutTypes.totalWorkoutCount}</Text>
+                    </View>
+                </View>
+
+                <View style={styles.divider} />
+                <View>
+                    <DailyGoal />
+                </View>
+            </SafeAreaView>
         </GradientBackground >
     );
 };
 
-
+// Camera 
 const CameraView = ({ navigation, route }) => {
     const cameraRef = useRef(null);
     const [avatar, setAvatar] = useState(route.params.avatar || null);
     const [isCameraReady, setIsCameraReady] = useState(false); // 
     const [hasCameraPermission, setHasCameraPermission] = useState(null);
-    const [cameraType, setCameraType] = useState(Camera.Constants.Type.back); // Default to back camera
+    const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
 
 
     useEffect(() => {
@@ -345,6 +339,7 @@ const CameraView = ({ navigation, route }) => {
         });
     }, [navigation]);
 
+    // Checks camera type if it's back or front and toggles it
     const toggleCameraType = () => {
         setCameraType(
             cameraType === Camera.Constants.Type.back
@@ -352,6 +347,8 @@ const CameraView = ({ navigation, route }) => {
                 : Camera.Constants.Type.back
         );
     };
+
+    // Takes a picture and saves it to the library
     const takePicture = async () => {
         if (cameraRef.current) {
             try {
@@ -361,7 +358,7 @@ const CameraView = ({ navigation, route }) => {
 
                 let flippedImageUri = data.uri;
                 if (cameraType === Camera.Constants.Type.front) {
-                    // Image taken with front camera, so flip horizontally
+                    // Image taken with front camera, so flip the image horizontally
                     const flippedImage = await ImageManipulator.manipulateAsync(
                         data.uri,
                         [{ flip: ImageManipulator.FlipType.Horizontal }],
@@ -395,7 +392,7 @@ const CameraView = ({ navigation, route }) => {
 
     useEffect(() => {
         if (avatar !== null) {
-            console.log('Avatar state inside camera view:', avatar);
+            // console.log('Avatar state inside camera view:', avatar);
             navigation.goBack();
         }
     }, [avatar, navigation]);
@@ -438,7 +435,7 @@ const styles = StyleSheet.create({
     },
     avatarContainer: {
         alignItems: 'center',
-        marginBottom: 20, // Added to provide spacing between avatar and columns
+        marginBottom: 20,
     },
 
     capturedImage: {
@@ -447,19 +444,21 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     emptyAvatar: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        borderWidth: 1,
+        width: 104,
+        height: 104,
+        borderRadius: 52,
+        borderWidth: 2,
         borderColor: '#ccc',
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 8,
+        position: 'relative',
     },
     avatarImage: {
         width: 100,
         height: 100,
         borderRadius: 50,
+        position: 'absolute',
     },
     username: {
         fontSize: 20,
@@ -480,14 +479,14 @@ const styles = StyleSheet.create({
     takePictureButton: {
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Black color with 50% transparency
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         position: 'absolute',
         borderRadius: 50,
         width: 100,
         height: 100,
-        bottom: 20, // Adjust bottom spacing as needed
-        left: '50%', // Center the button horizontally
-        marginLeft: -50, // Offset by half of the button width to center it
+        bottom: 20,
+        left: '50%',
+        marginLeft: -50,
     },
     takePictureText: {
         fontSize: 20,
@@ -516,13 +515,13 @@ const styles = StyleSheet.create({
     },
     columnContainer: {
         flexDirection: 'row',
-        justifyContent: 'flex-start', // Adjusted to align columns to the left
+        justifyContent: 'flex-start',
         alignItems: 'center',
-        width: '100%', // Added to ensure columns span the width of the screen
-        paddingHorizontal: 20, // Added for spacing between columns and edges
+        width: '100%',
+        paddingHorizontal: 20,
     },
     column: {
-        flex: 1, // Added to allow columns to occupy full width
+        flex: 1,
     },
     columnHeader: {
         fontSize: 18,
@@ -557,7 +556,7 @@ const styles = StyleSheet.create({
         width: 75,
     },
 });
-
+// Enables navigation between ProfileScreen and CameraView
 export default function ProfileScreenWithNavigation() {
     return (
         <Stack.Navigator>
@@ -572,9 +571,7 @@ export default function ProfileScreenWithNavigation() {
                 options={{
                     title: 'Back',
                     headerTransparent: true,
-
                 }}
-
             />
         </Stack.Navigator>
     );

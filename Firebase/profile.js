@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore'; // Import necessary Firestore functions
 import { firestore } from "./Config"; // Import the firestore instance from your Config.js
 
-export const getUserWorkoutTypes = (userId) => {
-    const [workoutTypes, setWorkoutTypes] = useState([]);
-    const [totalWorkoutTypes, setTotalWorkoutTypes] = useState(0); // State to store total count of workout types
+export const getUserWorkoutData = (userId) => {
+    const [totalWorkoutCount, setTotalWorkoutCount] = useState(0);
+    const [totalDistance, setTotalDistance] = useState(0);
 
     useEffect(() => {
-        const userDocRef = doc(collection(firestore, 'users'), userId); // Construct user document reference
+        const userDocRef = doc(collection(firestore, 'users'), userId);
 
         const q = query(
             collection(firestore, 'workouts'),
@@ -15,17 +15,17 @@ export const getUserWorkoutTypes = (userId) => {
         );
 
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
-            const tempWorkoutTypes = new Set();
+            let count = 0;
+            let distance = 0;
 
             querySnapshot.forEach((doc) => {
                 const workoutData = doc.data();
-                const workoutType = workoutData.workout_type;
-                tempWorkoutTypes.add(workoutType);
+                count++; // Increment count for each workout document
+                distance += workoutData.distance || 0; // Accumulate distance
             });
-            
 
-            setWorkoutTypes(Array.from(tempWorkoutTypes)); // Convert Set to Array
-            setTotalWorkoutTypes(tempWorkoutTypes.size); // Set total count of workout types
+            setTotalWorkoutCount(count);
+            setTotalDistance(distance / 1000); // Convert distance to kilometers
         });
 
         return () => {
@@ -33,5 +33,5 @@ export const getUserWorkoutTypes = (userId) => {
         };
     }, [userId, firestore]);
 
-    return { totalWorkoutTypes }; // Return both workout types and total count
+    return { totalWorkoutCount, totalDistance };
 };

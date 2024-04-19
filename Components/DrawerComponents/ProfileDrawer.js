@@ -44,7 +44,7 @@ function ProfileDrawer() {
           let iconName;
 
           // Set the appropriate icon name based on the route name
-          if (route.name === 'Profile') {
+          if (route.name === 'My Profile') {
             iconName = 'person-outline';
           } else if (route.name === 'Logout') {
             iconName = 'log-out-outline';
@@ -52,6 +52,8 @@ function ProfileDrawer() {
             iconName = 'log-in-outline';
           } else if (route.name === 'My Information') {
             iconName = 'information-circle-outline';
+          } else if (route.name === 'Achievements') {
+            iconName = 'trophy-outline';
           }
 
           // Return the Ionicons component with the specified icon name
@@ -59,7 +61,7 @@ function ProfileDrawer() {
         },
       })}
     >
-      <Drawer.Screen name="Profile" component={ProfileScreen} />
+      <Drawer.Screen name="My Profile" component={ProfileScreen} />
       {user ? (
         <Drawer.Screen name="Logout" component={Logout} />
       ) : (
