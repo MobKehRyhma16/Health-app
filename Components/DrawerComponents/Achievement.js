@@ -1,5 +1,5 @@
-import React from 'react';
-import { SafeAreaView, View, FlatList, StyleSheet, Image, Text } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, StyleSheet, FlatList, Modal, TouchableWithoutFeedback, SafeAreaView } from 'react-native';
 import GradientBackground from '../../Components/LinearGradient';
 
 export default function Achievements() {
@@ -22,14 +22,23 @@ export default function Achievements() {
     ];
     const achievedData = data.filter(item => item.achieved);
     const lockedData = data.filter(item => !item.achieved);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const handleImagePress = (imageUrl) => {
+        setSelectedImage(imageUrl);
+        setModalVisible(true);
+    };
 
     const renderItem = ({ item }) => (
-        <View style={[styles.item, item.achieved ? styles.achievedItem : styles.lockedItem]}>
-            <Image
-                source={item.imageUrl}
-                style={styles.image}
-            />
-        </View>
+        <TouchableWithoutFeedback onPress={() => handleImagePress(item.imageUrl)}>
+            <View style={[styles.item, item.achieved ? styles.achievedItem : styles.lockedItem]}>
+                <Image
+                    source={item.imageUrl}
+                    style={styles.image}
+                />
+            </View>
+        </TouchableWithoutFeedback>
     );
 
     return (
@@ -38,7 +47,7 @@ export default function Achievements() {
                 <Text>Achieved Achievements</Text>
                 <View style={styles.gridContainer}>
                     <FlatList
-                        data={achievedData}
+                        data={data.filter(item => item.achieved)}
                         renderItem={renderItem}
                         keyExtractor={(item) => item.id}
                         numColumns={3}
@@ -47,16 +56,34 @@ export default function Achievements() {
                 <Text>Locked Achievements</Text>
                 <View style={styles.gridContainer}>
                     <FlatList
-                        data={lockedData}
+                        data={data.filter(item => !item.achieved)}
                         renderItem={renderItem}
                         keyExtractor={(item) => item.id}
                         numColumns={3}
                     />
                 </View>
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible}
+                    onRequestClose={() => setModalVisible(false)}
+                >
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalView}>
+                            <Image
+                                source={selectedImage}
+                                style={styles.modalImage}
+                            />
+                            <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                                <Text style={styles.closeText}>Close</Text>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </View>
+                </Modal>
             </SafeAreaView>
         </GradientBackground>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -68,17 +95,17 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
     },
     item: {
-        width: '33.333%', 
+        width: '33.333%',
         aspectRatio: 1,
-        justifyContent: 'center', 
-        alignItems: 'center', 
+        justifyContent: 'center',
+        alignItems: 'center',
         borderWidth: 1,
-        borderColor: 'transparent', 
+        borderColor: 'transparent',
     },
     image: {
         flex: 1,
-        aspectRatio: 1, 
-        resizeMode: 'contain', 
+        aspectRatio: 1,
+        resizeMode: 'contain',
         width: '100%',
     },
     achievedItem: {
@@ -86,5 +113,36 @@ const styles = StyleSheet.create({
     },
     lockedItem: {
         opacity: 0.3,
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 22,
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    modalImage: {
+        width: 200,
+        height: 200,
+        resizeMode: 'contain',
+    },
+    closeText: {
+        marginTop: 10,
+        color: 'blue',
+        fontWeight: 'bold',
     },
 });
