@@ -10,7 +10,6 @@ import OngoingWorkoutScreen from './Screens/OngoingWorkoutScreen';
 import { UserProvider } from './helpers/UserProvider';
 import DurationProvider from './Components/Duration';
 import PedometerStepsProvider from './Components/PedometerSteps';
-import LocationProvider from './Components/Location';
 import UserIdProvider from './Components/UserIdContext';
 
 
@@ -55,7 +54,6 @@ const App = () => {
   return (
     <UserIdProvider>
     <DurationProvider>
-      <LocationProvider>
       <PedometerStepsProvider>
       <NavigationContainer>
         <Stack.Navigator>
@@ -82,7 +80,6 @@ const App = () => {
         </Stack.Navigator>
       </NavigationContainer>
       </PedometerStepsProvider>
-      </LocationProvider>
     </DurationProvider>
     </UserIdProvider>
 
