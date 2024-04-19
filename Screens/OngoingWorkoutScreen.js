@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Surface } from "react-native-paper";
@@ -9,6 +9,7 @@ import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import { saveWorkout } from "../Firebase/workouts";
 import { useUserId } from "../Components/UserIdContext";
+import { Foundation, FontAwesome5 } from '@expo/vector-icons';
 
 
 const OngoingWorkoutScreen = ({ navigation, route }) => {
@@ -268,16 +269,43 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
 
   const SurfaceComp = () => {
     return (
-      <Surface style={surfaceCompStyles.surface} elevation={4}>
-        <View style={surfaceCompStyles.cardStyle}>
-          <Text style={surfaceCompStyles.modalTextStyle}>Distance: {distance}</Text>
-          <Text style={surfaceCompStyles.modalTextStyle}>Steps: {currentStepCount}</Text>
-          <Text style={surfaceCompStyles.modalTextStyle}>Calories Burned: {caloriesBurned}</Text>
+      
+    <TouchableOpacity style={surfaceCompStyles.surface} elevation={4} onPress={() => toggleVisibility()}>
+      <View style={surfaceCompStyles.cardContainer}>
+        <View style={surfaceCompStyles.rowContainer}>
+          <View style={surfaceCompStyles.labelContainer}>
+            <FontAwesome5 name="ruler" size={20} color="darkblue" style={surfaceCompStyles.iconStyle} />
+            <Text style={surfaceCompStyles.labelTextStyle}>Distance (m)</Text>
+          </View>
+          <View style={surfaceCompStyles.valueContainer}>
+            <Text style={surfaceCompStyles.valueTextStyle}>{distance}</Text>
+          </View>
         </View>
-        <View style={surfaceCompStyles.durationContainer}>
-          <Text style={surfaceCompStyles.durationText}>{time}</Text>
+        <View style={surfaceCompStyles.rowContainer}>
+          <View style={surfaceCompStyles.labelContainer}>
+            <FontAwesome5 name="shoe-prints" size={20} color="darkgreen" style={surfaceCompStyles.iconStyle} />
+            <Text style={surfaceCompStyles.labelTextStyle}>Steps</Text>
+          </View>
+          <View style={surfaceCompStyles.valueContainer}>
+            <Text style={surfaceCompStyles.valueTextStyle}>{currentStepCount}</Text>
+          </View>
         </View>
-      </Surface>
+        <View style={surfaceCompStyles.rowContainer}>
+          <View style={surfaceCompStyles.labelContainer}>
+            <FontAwesome5 name="fire-alt" size={20} color="red" style={surfaceCompStyles.iconStyle} />
+            <Text style={surfaceCompStyles.labelTextStyle}>Calories</Text>
+          </View>
+          <View style={surfaceCompStyles.valueContainer}>
+            <Text style={surfaceCompStyles.valueTextStyle}>{caloriesBurned}</Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={surfaceCompStyles.durationContainer}>
+        <Text style={surfaceCompStyles.durationText}>{time}</Text>
+      </View>
+      <Text style={{fontSize: 9}}>tap to close</Text>
+    </TouchableOpacity>
     );
   };
   
@@ -350,23 +378,46 @@ const surfaceCompStyles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    width: '80%',
+    width: '85%',
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     opacity: 0.9,
     flexDirection: "column",
-    justifyContent: "space-around",
     alignItems: "center",
   },
-  cardStyle: {
-    alignItems: "center",
+  cardContainer: {
     marginBottom: 15,
   },
-  modalTextStyle: {
+  rowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#F0F0F0', // Add background color to the row container
+    borderRadius: 10, // Add border radius to round the corners
+    paddingHorizontal: 15, // Add horizontal padding for spacing
+    marginBottom: 15, // Adjust margin bottom as needed
+    width: '100%',
+  },
+  labelContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  labelTextStyle: {
     fontSize: 20,
     color: "#333333",
-    marginBottom: 10,
     textAlign: "center",
+    marginLeft: 5, // Add spacing between icon and text
+  },
+  valueContainer: {
+    flex: 1,
+    marginLeft: 8,
+    padding: 5,
+  },
+  valueTextStyle: {
+    fontSize: 20,
+    color: "#333333",
+    textAlign: "right",
   },
   durationContainer: {
     backgroundColor: "#F0F0F0",
@@ -379,17 +430,10 @@ const surfaceCompStyles = StyleSheet.create({
     color: "#333333",
     textAlign: "center",
   },
-  timerContainer: {
-    justifyContent: "center",
-    alignItems: "center",
+  iconStyle: {
+    marginRight: 5, // Add spacing between icon and text
   },
-  timerText: {
-    fontSize: 24,
-    color: "#333333",
-    textAlign: "center",
-  },
-
-})
+});
 
 const styles = StyleSheet.create({
   container: {
