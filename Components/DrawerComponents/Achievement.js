@@ -3,38 +3,34 @@ import { View, Text, Image, StyleSheet, FlatList, Modal, TouchableWithoutFeedbac
 import GradientBackground from '../../Components/LinearGradient';
 
 export default function Achievements() {
-
     const images = {
-        distance: require('./AchImg/distance.png'),
-        speed: require('./AchImg/speed.png'),
-        workout: require('./AchImg/workout.png'),
-
+        distance: { uri: require('./AchImg/distance.png'), text: 'From Marathon to Athens: Run in total 42 kilometers' },
+        speed: { uri: require('./AchImg/speed.png'), text: 'The Speed Demon: Have a running speed of 16km per hour' },
+        workout: { uri: require('./AchImg/workout.png'), text: 'Workout Warrior: Complete 10 workouts' },
     };
-    // Sample data for the images
-    const data = [
-        { id: '1', imageUrl: images.distance, achieved: false },
-        { id: '2', imageUrl: images.speed, achieved: false },
-        { id: '3', imageUrl: images.workout, achieved: false },
-        { id: '4', imageUrl: images.workout, achieved: false },
-        { id: '5', imageUrl: images.workout, achieved: false },
-        { id: '5', imageUrl: images.workout, achieved: true },
 
+    const data = [
+        { id: '1', image: images.distance, achieved: false },
+        { id: '2', image: images.speed, achieved: false },
+        { id: '3', image: images.workout, achieved: false },
+        { id: '4', image: images.workout, achieved: false },
+        { id: '5', image: images.workout, achieved: false },
+        { id: '6', image: images.workout, achieved: true },
     ];
-    const achievedData = data.filter(item => item.achieved);
-    const lockedData = data.filter(item => !item.achieved);
+
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
 
-    const handleImagePress = (imageUrl) => {
-        setSelectedImage(imageUrl);
+    const handleImagePress = (image) => {
+        setSelectedImage(image);
         setModalVisible(true);
     };
 
     const renderItem = ({ item }) => (
-        <TouchableWithoutFeedback onPress={() => handleImagePress(item.imageUrl)}>
+        <TouchableWithoutFeedback onPress={() => handleImagePress(item.image)}>
             <View style={[styles.item, item.achieved ? styles.achievedItem : styles.lockedItem]}>
                 <Image
-                    source={item.imageUrl}
+                    source={item.image.uri}
                     style={styles.image}
                 />
             </View>
@@ -70,10 +66,15 @@ export default function Achievements() {
                 >
                     <View style={styles.centeredView}>
                         <View style={styles.modalView}>
-                            <Image
-                                source={selectedImage}
-                                style={styles.modalImage}
-                            />
+                            {selectedImage && (
+                                <>
+                                    <Image
+                                        source={selectedImage.uri}
+                                        style={styles.modalImage}
+                                    />
+                                    <Text style={styles.modalText}>{selectedImage.text}</Text>
+                                </>
+                            )}
                             <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
                                 <Text style={styles.closeText}>Close</Text>
                             </TouchableWithoutFeedback>
@@ -84,6 +85,7 @@ export default function Achievements() {
         </GradientBackground>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: {
@@ -122,7 +124,7 @@ const styles = StyleSheet.create({
     },
     modalView: {
         margin: 20,
-        backgroundColor: 'white',
+        backgroundColor: 'lightblue',
         borderRadius: 20,
         padding: 35,
         alignItems: 'center',
@@ -139,10 +141,17 @@ const styles = StyleSheet.create({
         width: 200,
         height: 200,
         resizeMode: 'contain',
+        marginBottom: 20,
     },
     closeText: {
         marginTop: 10,
         color: 'blue',
+        fontWeight: 'bold',
+    },
+    modalText: {
+        marginBottom: 10,
+        textAlign: 'center',
+        fontSize: 18, 
         fontWeight: 'bold',
     },
 });
