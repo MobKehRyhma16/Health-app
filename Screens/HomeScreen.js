@@ -13,7 +13,6 @@ export default function HomeScreen() {
             <SafeAreaView style={styles.container}>
                 <View>
                     <Activitybar />
-                    <Text style={styles.heading}>Home</Text>
                 </View>
             </SafeAreaView>
         </GradientBackground>
