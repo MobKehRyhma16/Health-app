@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { StyleSheet, View, TouchableOpacity, Text, Modal } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
@@ -9,6 +9,7 @@ const StartWorkoutScreen = ({ navigation }) => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
+  const mapRef = useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -34,6 +35,7 @@ const StartWorkoutScreen = ({ navigation }) => {
       {location && (
         <MapView
           style={styles.map}
+          ref={mapRef}
           initialRegion={{
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
@@ -54,7 +56,17 @@ const StartWorkoutScreen = ({ navigation }) => {
       )}
       <View style={styles.overlayTopContainer}>
         <View style={styles.topBox}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => {
+          if (location) {
+            const region = {
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            };
+            mapRef.current.animateToRegion(region);
+          }
+        }}>
             <Ionicons name="compass-sharp" size={48}/>
           </TouchableOpacity>
         </View>
