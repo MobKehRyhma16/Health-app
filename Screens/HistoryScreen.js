@@ -165,6 +165,9 @@ export const MapModal = ({ modalVisible, setModalVisible, selectedWorkout, handl
 };
 
 export const WorkoutItem = ({ workout, handleShowWorkout, id}) => {
+    // useEffect(() => {
+    //     console.log(JSON.stringify(workout), 'At workout item!!', id)
+    // }, []);
 
     const handleDelete = async (id) => {
         Alert.alert(

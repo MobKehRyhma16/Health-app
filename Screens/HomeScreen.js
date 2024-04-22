@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, SafeAreaView } from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, SafeAreaView, ActivityIndicator } from "react-native";
 import Stepcounter from "../Components/Stepcounter";
 import GradientBackground from '../Components/LinearGradient';
 import Activitybar from "../Components/Activitybar";
@@ -9,31 +9,33 @@ import { getLatestWorkout } from "../Firebase/workouts";
 
 export default function HomeScreen() {
 
-    const {userDocumentId } = useUserId()
-    const user = userDocumentId
-    let latestWorkout = null
+    const { userDocumentId } = useUserId();
+    const user = userDocumentId;
+    const [workout, setWorkout] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedWorkout, setSelectedWorkout] = useState(null); // Initialize with null
 
-    const [modalVisible, setModalVisible] = useState(false)
-    const [selectedWorkout, setSelectedWorkout] = useState({})
-    
-
-    const fetchLatest = async() => {
-        try{
-            if(user && user.length>0){
-                latestWorkout = await getLatestWorkout(user)
-                console.log('Latest workout fetched: ', JSON.stringify(latestWorkout))
-            }
-        } catch (error){
-            console.log('Error fetching workouts at history')
-        }
-    }
 
     useEffect(() => {
-        fetchLatest()
-    }, []);
-     
 
+            const fetchData = async () => {
+                if (user.length>0) {
+                try {
+                    const latestWorkoutData = await getLatestWorkout(user);
+                    setWorkout(latestWorkoutData); // Update latestWorkout state
+                    console.log('Homescreen workout: ', JSON.stringify(latestWorkoutData));
+                   
+                } catch (error) {
+                    console.log('Error fetching workouts at history');
+                }
+            }
+            };
 
+        
+
+            
+        fetchData(); // Call the async function
+    }, [user]);
 
     const handleWorkout = () => {
         setSelectedWorkout(latestWorkout.route);
@@ -53,14 +55,23 @@ export default function HomeScreen() {
             <SafeAreaView style={styles.container}>
                 <View>
                     <Activitybar />
+                    
+                    {workout && JSON.stringify(workout).length > 0 ? (
+                        <View>
+                            <Text>Your latest workout</Text>
+                            <WorkoutItem workout={workout} handleShowWorkout={handleWorkout} id={workout.id}></WorkoutItem>
+                        </View>
 
-                        {latestWorkout.length > 0 && (
-                            <WorkoutItem workout={latestWorkout} handleShowWorkout={handleWorkout} id={userDocumentId}/>
-                        )}
-                        <WorkoutItem workout={latestWorkout} handleShowWorkout={handleWorkout} id={userDocumentId}/>
-      
-                    <MapModal modalVisible={modalVisible} setModalVisible={setModalVisible} selectedWorkout={selectedWorkout} handleCloseModal={handleCloseModal}></MapModal>
-                
+                       
+
+                    ): (
+                        <Text>No workouts yet!</Text>
+
+                    )}
+
+                  
+
+
                 </View>
             </SafeAreaView>
         </GradientBackground>
