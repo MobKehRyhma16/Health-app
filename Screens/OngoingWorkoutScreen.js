@@ -395,6 +395,7 @@ const surfaceCompStyles = StyleSheet.create({
     opacity: 0.9,
     flexDirection: "column",
     alignItems: "center",
+    
   },
   cardContainer: {
     marginBottom: 15,
@@ -459,17 +460,26 @@ const styles = StyleSheet.create({
   actionsContainer: {
     flex: 1,
     justifyContent: "flex-end",
-    alignItems: 'center'
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 35, // Adjust the bottom position as needed
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    zIndex: 2, // Set a higher zIndex to ensure the buttons are rendered above the map
   },
 
   mapContainer: {
     flex: 1,
     flexGrow: 2,
-    ...StyleSheet.absoluteFillObject
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1, // Add a zIndex to ensure the map is rendered above other elements
+    
   },
 
   mapView: {
-    ...StyleSheet.absoluteFillObject
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1, // Add a zIndex to ensure the map is rendered above other elements
   },
 
 

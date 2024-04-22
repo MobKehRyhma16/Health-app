@@ -76,7 +76,10 @@ export default function HomeScreen({navigation}) {
                        
 
                     ): (
-                        <Text style={latestWorkoutStyles.headerText}>No workouts yet!</Text>
+                        <View style={latestWorkoutStyles.container}>
+                            <Text style={latestWorkoutStyles.headerText}>No workouts yet!</Text>
+                        </View>
+                        
 
                     )}
 
@@ -91,6 +94,8 @@ export default function HomeScreen({navigation}) {
 const latestWorkoutStyles = StyleSheet.create({
     container: {
         marginTop: 50,
+        justifyContent: 'space-around',
+        textAlign: 'center'
     },
     header: {
         flexDirection: 'row',
@@ -107,6 +112,7 @@ const latestWorkoutStyles = StyleSheet.create({
         fontWeight: '500',
         color: 'white',
         marginRight: 10,
+        alignSelf:'center'
     },
     workoutItemContainer: {
         marginTop: 10,
