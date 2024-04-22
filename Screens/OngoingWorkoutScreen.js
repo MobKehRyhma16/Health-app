@@ -286,10 +286,10 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
         <View style={surfaceCompStyles.rowContainer}>
           <View style={surfaceCompStyles.labelContainer}>
             <FontAwesome5 name="ruler" size={20} color="darkblue" style={surfaceCompStyles.iconStyle} />
-            <Text style={surfaceCompStyles.labelTextStyle}>Distance (m)</Text>
+            <Text style={surfaceCompStyles.labelTextStyle}>Distance</Text>
           </View>
           <View style={surfaceCompStyles.valueContainer}>
-            <Text style={surfaceCompStyles.valueTextStyle}>{distance}</Text>
+            <Text style={surfaceCompStyles.valueTextStyle}>{distance/1000} km</Text>
           </View>
         </View>
         <View style={surfaceCompStyles.rowContainer}>
@@ -307,7 +307,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
             <Text style={surfaceCompStyles.labelTextStyle}>Calories</Text>
           </View>
           <View style={surfaceCompStyles.valueContainer}>
-            <Text style={surfaceCompStyles.valueTextStyle}>{calories}</Text>
+            <Text style={surfaceCompStyles.valueTextStyle}>{calories} cal</Text>
           </View>
         </View>
       </View>
