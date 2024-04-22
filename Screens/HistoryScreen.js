@@ -200,6 +200,7 @@ export const WorkoutItem = ({ workout, handleShowWorkout, id}) => {
                         <View style={workoutItemStyles.row}>
                             <FontAwesome5 name="shoe-prints" size={20} color="black" />
                             <Text style={workoutItemStyles.detailText}>{workout.steps}</Text>
+                            <Text> steps</Text>
                         </View>
                     )}
                     <View style={workoutItemStyles.row}>
@@ -241,8 +242,17 @@ const workoutItemStyles = StyleSheet.create({
         marginBottom: 15,
         elevation: 3,
         gap: 15,
-        margin: 10
+        margin: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
+
     durationContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -269,6 +279,8 @@ const workoutItemStyles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 5,
+        justifyContent:'space-between',
+        maxWidth: '70%'
     },
     leftColumn: {
         flex: 1,
