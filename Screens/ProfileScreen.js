@@ -10,6 +10,7 @@ import { firestore, doc, updateDoc, getDoc, getAuth, db } from '../Firebase/Conf
 import { getUserWorkoutData } from '../Firebase/profile';
 import { UserContext } from "../helpers/UserProvider";
 import * as ImageManipulator from 'expo-image-manipulator';
+import { ActivityIndicator } from 'react-native';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,7 @@ const ProfileScreen = ({ navigation, route }) => {
     const [isSaving, setIsSaving] = useState(false);
     const [isDescriptionChanged, setIsDescriptionChanged] = useState(false);
     const [showSaveButton, setShowSaveButton] = useState(true);
+    const [loading, setLoading] = useState(true);
 
     const auth = getAuth();
     const user = auth.currentUser;
@@ -92,9 +94,11 @@ const ProfileScreen = ({ navigation, route }) => {
                 if (userData.description) {
                     setDescription(userData.description);
                 }
+                setLoading(false); // Set loading to false when data is fetched
             }
         } catch (error) {
             console.error("Error fetching user data from Firestore:", error);
+            setLoading(false); // Set loading to false in case of error
         }
     };
 
@@ -244,6 +248,9 @@ const ProfileScreen = ({ navigation, route }) => {
 
     return (
         <GradientBackground>
+        {loading ? (
+            <ActivityIndicator size="large" color="#ccc" />
+        ) : (
             <SafeAreaView style={styles.container}>
                 <View style={styles.avatarContainer}>
                     <TouchableOpacity onPress={openAvatarOptions}>
@@ -258,7 +265,7 @@ const ProfileScreen = ({ navigation, route }) => {
                             )}
                         </View>
                     </TouchableOpacity>
-                    <Text style={styles.username}>{firstname ? firstname : 'Loading...'}</Text>
+                    <Text style={styles.username}>{firstname ? firstname : ''}</Text>
                 </View>
                 <View style={styles.descriptionContainer}>
                     <Text style={styles.heading}>Profile Description</Text>
@@ -276,36 +283,32 @@ const ProfileScreen = ({ navigation, route }) => {
                         textBreakStrategy="highQuality"
                         blurOnSubmit={true}
                     />
-
                 </View>
                 {showSaveButton && isDescriptionChanged && (
                     <TouchableOpacity style={[styles.button, { alignSelf: 'flex-end' }]} onPress={saveDescription} disabled={isSaving}>
                         <Text style={styles.buttonText}>{isSaving ? 'Saving...' : 'Save'}</Text>
                     </TouchableOpacity>
                 )}
-
                 <View style={styles.columnContainer}>
                     <View style={styles.column}>
                         <Text style={styles.columnHeader}>Total Kilometers</Text>
                         <Text style={{ color: '#ccc' }}>{roundUp(workOutTypes.totalDistance, 2)}</Text>
                     </View>
                 </View>
-
                 <View style={styles.divider} />
-
                 <View style={styles.columnContainer}>
                     <View style={styles.column}>
                         <Text style={styles.columnHeader}>Activities</Text>
                         <Text style={{ color: '#ccc' }}>{workOutTypes.totalWorkoutCount}</Text>
                     </View>
                 </View>
-
                 <View style={styles.divider} />
                 <View>
                     <DailyGoal />
                 </View>
             </SafeAreaView>
-        </GradientBackground >
+        )}
+    </GradientBackground>
     );
 };
 
