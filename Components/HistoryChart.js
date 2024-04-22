@@ -44,7 +44,7 @@ export const HistoryChart = ({ workouts }) => {
           data={dataDistance}
           yAxisThickness={0}
           xAxisThickness={0}
-    />
+      />
     );
   }
    
@@ -83,7 +83,8 @@ export default HistoryChart;
 const styles = StyleSheet.create({
   chartContainer: {
     alignItems: 'center',
-    flexGrow: 2
+    flexGrow: 2,
+    gap: 12
   },
   chart: {
     width: '100%',

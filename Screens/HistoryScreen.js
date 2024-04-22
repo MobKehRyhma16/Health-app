@@ -50,20 +50,26 @@ export default function HistoryScreen() {
                     )}
 
             </View>
-            <ScrollView style={styles.workoutsContainer}>
+            
 
-                {workouts && workouts.length > 0 ? (
-                    workouts.map((workout, index) => (
-                        <WorkoutItem  key={index} workout={workout} setModalVisible={setModalVisible} handleShowWorkout={handleWorkout} id={workout.id} />
-                    ))
-                ) : (
-                    <Text style={styles.noWorkoutsText}>No workouts available</Text>
-                )}
-            </ScrollView>
+            
+                <ScrollView style={styles.workoutsContainer}>
+                <GradientBackground>
+                    {workouts && workouts.length > 0 ? (
+                        workouts.map((workout, index) => (
+                            <WorkoutItem  key={index} workout={workout} setModalVisible={setModalVisible} handleShowWorkout={handleWorkout} id={workout.id} />
+                        ))
+                    ) : (
+                        <Text style={styles.noWorkoutsText}>No workouts available</Text>
+                    )}
+                                </GradientBackground>
+                </ScrollView>
 
             <MapModal modalVisible={modalVisible} setModalVisible={setModalVisible} selectedWorkout={selectedWorkout} handleCloseModal={handleCloseModal}></MapModal>
             
          </SafeAreaView>
+         
+
     );
 }
 
@@ -173,6 +179,7 @@ export const WorkoutItem = ({ workout, handleShowWorkout, id}) => {
     }
 
     return (
+
         <View style={workoutItemStyles.container}>
             <View style={workoutItemStyles.header}>
                 <View style={{flexDirection: 'row', flex:1, gap: 15}}>
@@ -231,6 +238,7 @@ export const WorkoutItem = ({ workout, handleShowWorkout, id}) => {
 
             </View>
         </View>
+
     );
 };
 
@@ -356,13 +364,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-        backgroundColor: '#f0f0f0',
+        backgroundColor: '#F5F5F5',
         
 
     },
     workoutsContainer: {
         flex: 1,
         height: 15,
+        borderRadius: 5
     },
     iconButtonContainer:{
         alignItems:'center',
