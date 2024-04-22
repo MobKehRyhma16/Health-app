@@ -49,11 +49,17 @@ const StartWorkoutScreen = ({ navigation }) => {
               longitude: location.coords.longitude,
             }}
             title="Your Location"
-          >
-          </Marker>
+          ></Marker>
         </MapView>
       )}
-      <View style={styles.overlayContainer}>
+      <View style={styles.overlayTopContainer}>
+        <View style={styles.topBox}>
+        <TouchableOpacity>
+            <Ionicons name="compass-sharp" size={48}/>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.overlayBottomContainer}>
         <View style={styles.bottomBox}>
           <TouchableOpacity
             style={styles.button}
@@ -114,9 +120,17 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
   },
-  overlayContainer: {
-    position: 'absolute',
+  overlayBottomContainer: {
+    position: "absolute",
     bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  overlayTopContainer: {
+    position: "absolute",
+    top: 0,
     left: 0,
     right: 0,
     justifyContent: "flex-end",
@@ -129,6 +143,10 @@ const styles = StyleSheet.create({
     width: "80%",
     position: "absolute",
     bottom: 40,
+  },
+  topBox: {
+    paddingTop: 65,
+    left: "35%"
   },
   button: {
     backgroundColor: "red",
