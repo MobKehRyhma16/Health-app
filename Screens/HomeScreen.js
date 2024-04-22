@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, SafeAreaView, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, SafeAreaView, TouchableOpacity, ac } from "react-native";
 import Stepcounter from "../Components/Stepcounter";
 import GradientBackground from '../Components/LinearGradient';
 import Activitybar from "../Components/Activitybar";
@@ -7,6 +7,7 @@ import { useUserId } from "../Components/UserIdContext";
 import { MapModal, WorkoutItem } from "./HistoryScreen";
 import { getLatestWorkout } from "../Firebase/workouts";
 import {FontAwesome5} from '@expo/vector-icons';
+import { ActivityIndicator } from "react-native-paper";
 
 
 export default function HomeScreen({navigation}) {
@@ -75,12 +76,21 @@ export default function HomeScreen({navigation}) {
 
                        
 
-                    ): (
-                        <View style={latestWorkoutStyles.container}>
-                            <Text style={latestWorkoutStyles.headerText}>No workouts yet!</Text>
-                        </View>
-                        
+                    ): (<>
+                        {JSON.stringify(workout).length < 0 ? (
+                            <View style={latestWorkoutStyles.container}>
+                                <Text style={latestWorkoutStyles.headerText}>No workouts yet!</Text>
+                            </View>
 
+                        ) : (
+                            <View style={latestWorkoutStyles.container}>
+                                <ActivityIndicator size="medium" color="white" />
+                            </View>
+
+                        )} 
+
+                        
+                        </>      
                     )}
 
 
