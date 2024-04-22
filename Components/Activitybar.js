@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, StyleSheet, TextInput, Animated, Alert } from 'react-native';
 import ActivityCalculator from './ActivityCalculator';
-import Stepcounter from './Stepcounter';
 import { View } from 'react-native';
 import { firestore, doc, updateDoc, getDoc, getAuth, db } from '../Firebase/Config';
 import { FontAwesome6 } from "@expo/vector-icons";
@@ -44,8 +43,11 @@ export default function Activitybar() {
     
     
     const steps = todaysWorkouts.reduce((totalSteps, workout) => totalSteps + (workout.steps || 0), 0);
-
     console.log("Total steps for today:", steps);
+
+    const totalCalories = todaysWorkouts.reduce((totalCalories, workout) => totalCalories + parseFloat(workout.calories || 0), 0);
+    const roundedCalories = Math.ceil(totalCalories * 100) / 100; // Round up to two decimal places    console.log("Total calories burned for today:", calories);
+    console.log("Total calories burned for today:", roundedCalories.toFixed(2));
 
     const DailyGoal = ({ steps }) => {
         const [dailyGoal, setDailyGoal] = useState('');
@@ -115,13 +117,13 @@ export default function Activitybar() {
 
     const activityWindow = () => {
         return (
-            <LinearGradient
-                colors={['#00FF00', '#FF0000']}
+            <View
+                backgroundColor='lightcoral'
                 style={styles.container}>
                 <Text style={styles.title}>Todays Activity</Text>
-                <PedometerSteps/>
-                <ActivityCalculator />
-            </LinearGradient>
+                <Text style={styles.values}>Steps: {steps}</Text>
+                <Text style={styles.values}>Calories Burned: {roundedCalories}</Text>
+            </View>
         );
     }
 
@@ -147,6 +149,9 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         color: 'white',
         textTransform: 'uppercase',
+    },
+    values: {
+        color: 'white',
     },
     bar: {
         width: 280,
