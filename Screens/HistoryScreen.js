@@ -204,11 +204,13 @@ export const WorkoutItem = ({ workout, handleShowWorkout, id}) => {
                     )}
                     <View style={workoutItemStyles.row}>
                         <FontAwesome5 name="fire-alt" size={20} color="black" />
-                        <Text style={workoutItemStyles.detailText}>{workout.calories} cal</Text>
+                        <Text style={workoutItemStyles.detailText}>{workout.calories}</Text>
+                        <Text> cal</Text>
                     </View>
                     <View style={workoutItemStyles.row}>
                         <FontAwesome5 name="ruler" size={20} color="black" />
-                        <Text style={workoutItemStyles.detailText}>{workout.distance / 1000} km</Text>
+                        <Text style={workoutItemStyles.detailText}>{workout.distance / 1000}</Text> 
+                        <Text> km</Text>
                     </View>
                     
                 </View>
@@ -217,14 +219,15 @@ export const WorkoutItem = ({ workout, handleShowWorkout, id}) => {
                         <FontAwesome5 name="clock" size={20} color="black" />
                         <Text style={[workoutItemStyles.detailText, workoutItemStyles.duration]}>{workout.duration}</Text>
                     </View>
+                    <Button icon="map-marker-distance" mode="contained" onPress={() => handleShowWorkout(workout)} buttonColor="lightcoral">
+                            ROUTE
+                    </Button>
                 </View>
             </View>
             <View style={workoutItemStyles.footer}>
 
                 
-                <Button icon="map-marker-distance" mode="contained" onPress={() => handleShowWorkout(workout)} buttonColor="lightcoral">
-                    ROUTE
-                </Button>
+
             </View>
         </View>
     );
@@ -269,13 +272,15 @@ const workoutItemStyles = StyleSheet.create({
     },
     leftColumn: {
         flex: 1,
-        gap: 10
+        gap: 10,
+        justifyContent: 'center'
     },
     rightColumn: {
         marginTop: '5%',
-        flexDirection: 'row',
+        flexDirection: 'column',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        gap: 13
     },
     detailText: {
         marginLeft: 12,
