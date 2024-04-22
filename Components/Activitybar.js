@@ -1,18 +1,53 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, StyleSheet, TextInput, Animated, Alert } from 'react-native';
 import ActivityCalculator from './ActivityCalculator';
-import Stepcounter from './Stepcounter';
 import { View } from 'react-native';
 import { firestore, doc, updateDoc, getDoc, getAuth, db } from '../Firebase/Config';
 import { FontAwesome6 } from "@expo/vector-icons";
 import { LinearGradient } from 'expo-linear-gradient';
 import PedometerSteps from './PedometerSteps';
+import { getWorkouts } from '../Firebase/workouts';
 
 export default function Activitybar() {
-    const [steps, setSteps] = useState(0);
     const auth = getAuth();
     const user = auth.currentUser;
-    const uid = user ? user.uid : null; // Check if user is defined
+    const uid = user.uid;
+    const userId = uid;
+
+    const today = new Date().toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '.');
+    console.log("Today's date:", today);
+    
+    const workouts = getWorkouts(userId);
+    
+    const todaysWorkouts = workouts.filter(workout => {
+        if (workout.created_at && workout.created_at.toDate) {
+            const createdAt = workout.created_at.toDate();
+            const workoutDate = createdAt.toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '.');
+            const formattedWorkoutDate = workoutDate.split(' ')[0]; // Take only the date part
+            if (formattedWorkoutDate === today) {
+                return true;
+            }
+            return false;
+        } else if (workout.created_at) {
+            let workoutDate = workout.created_at.split(' ')[0]; // Take only the date part
+            // Ensure day part is two digits by padding with leading zeros if necessary
+            workoutDate = workoutDate.split('.').map(part => part.padStart(2, '0')).join('.');
+            if (workoutDate === today) {
+                return true;
+            }
+            return false;
+        }
+    });
+    
+    console.log("Todays Workouts:", todaysWorkouts);
+    
+    
+    const steps = todaysWorkouts.reduce((totalSteps, workout) => totalSteps + (workout.steps || 0), 0);
+    console.log("Total steps for today:", steps);
+
+    const totalCalories = todaysWorkouts.reduce((totalCalories, workout) => totalCalories + parseFloat(workout.calories || 0), 0);
+    const roundedCalories = Math.ceil(totalCalories * 100) / 100; // Round up to two decimal places    console.log("Total calories burned for today:", calories);
+    console.log("Total calories burned for today:", roundedCalories.toFixed(2));
 
     const DailyGoal = ({ steps }) => {
         const [dailyGoal, setDailyGoal] = useState('');
@@ -21,6 +56,7 @@ export default function Activitybar() {
     
         useEffect(() => {
             fetchUserGoal();
+            console.log("Steps:", steps);
         }, []);
     
         useEffect(() => {
@@ -81,13 +117,13 @@ export default function Activitybar() {
 
     const activityWindow = () => {
         return (
-            <LinearGradient
-                colors={['#00FF00', '#FF0000']}
+            <View
+                backgroundColor='lightcoral'
                 style={styles.container}>
                 <Text style={styles.title}>Todays Activity</Text>
-                <PedometerSteps/>
-                <ActivityCalculator />
-            </LinearGradient>
+                <Text style={styles.values}>Steps: {steps}</Text>
+                <Text style={styles.values}>Calories Burned: {roundedCalories}</Text>
+            </View>
         );
     }
 
@@ -113,6 +149,9 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         color: 'white',
         textTransform: 'uppercase',
+    },
+    values: {
+        color: 'white',
     },
     bar: {
         width: 280,
