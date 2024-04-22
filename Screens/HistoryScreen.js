@@ -64,7 +64,7 @@ export default function HistoryScreen() {
                 <GradientBackground>
                     {workouts && workouts.length > 0 ? (
                         workouts.map((workout, index) => (
-                            <WorkoutItem  key={index} workout={workout} setModalVisible={setModalVisible} handleShowWorkout={handleWorkout} id={workout.id} />
+                            <WorkoutItem  key={index} workout={workout} setModalVisible={setModalVisible} handleShowWorkout={handleWorkout} id={workout.id} historyFlag={true} />
                         ))
                     ) : (
                         <Text style={styles.noWorkoutsText}>No workouts available</Text>
@@ -164,10 +164,9 @@ export const MapModal = ({ modalVisible, setModalVisible, selectedWorkout, handl
     );
 };
 
-export const WorkoutItem = ({ workout, handleShowWorkout, id}) => {
-    // useEffect(() => {
-    //     console.log(JSON.stringify(workout), 'At workout item!!', id)
-    // }, []);
+export const WorkoutItem = ({ workout, handleShowWorkout, id, historyFlag}) => {
+
+    const showDeleteAndRoute = historyFlag
 
     const handleDelete = async (id) => {
         Alert.alert(
@@ -206,10 +205,15 @@ export const WorkoutItem = ({ workout, handleShowWorkout, id}) => {
                     )}
                 </View>
 
+                {historyFlag === true && (
+                    <TouchableOpacity onPress={()=> handleDelete(id)}>
+                        <FontAwesome5 name="trash" size={20} color="black" />
+                    </TouchableOpacity>
+
+                ) }
+
                 
-                <TouchableOpacity onPress={()=> handleDelete(id)}>
-                    <FontAwesome5 name="trash" size={20} color="black" />
-                </TouchableOpacity>
+
             </View>
             <View style={workoutItemStyles.details}>
                 <View style={workoutItemStyles.leftColumn}>
@@ -237,9 +241,13 @@ export const WorkoutItem = ({ workout, handleShowWorkout, id}) => {
                         <FontAwesome5 name="clock" size={20} color="black" />
                         <Text style={[workoutItemStyles.detailText, workoutItemStyles.duration]}>{workout.duration}</Text>
                     </View>
+                    {historyFlag === true && (
                     <Button icon="map-marker-distance" mode="contained" onPress={() => handleShowWorkout(workout)} buttonColor="lightcoral">
                             ROUTE
                     </Button>
+
+                    )} 
+
                 </View>
             </View>
             <View style={workoutItemStyles.footer}>
