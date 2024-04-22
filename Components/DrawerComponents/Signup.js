@@ -6,8 +6,8 @@ import { addDoc, collection, doc, setDoc, db } from '../../Firebase/Config';
 import Majakkalogo from '../../Images/MajakkaLogo2.png';
 
 export default function Signup({ setLogin }) {
-    const [email, setEmail] = useState('testuser@tester.com');
-    const [password, setPassword] = useState('test123');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [isError, setIsError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
