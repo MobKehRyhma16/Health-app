@@ -3,8 +3,6 @@ import { StyleSheet, View, TouchableOpacity, Text, Modal } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { FontAwesome6, Ionicons, AntDesign } from "@expo/vector-icons";
-import { SvgUri } from "react-native-svg";
-import CustomMarker from "../Components/CustomMarker";
 
 const StartWorkoutScreen = ({ navigation }) => {
   const [location, setLocation] = useState(null);
@@ -52,10 +50,6 @@ const StartWorkoutScreen = ({ navigation }) => {
             }}
             title="Your Location"
           >
-            <CustomMarker
-              width={40}
-              height={40}
-              />
           </Marker>
         </MapView>
       )}
@@ -121,7 +115,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   overlayContainer: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     justifyContent: "flex-end",
     alignItems: "center",
   },
