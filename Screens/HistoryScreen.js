@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Modal} from "react-native";
-import { getWorkouts, saveWorkout } from "../Firebase/workouts";
-import { Foundation, FontAwesome5 } from '@expo/vector-icons';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Modal, Alert, TouchableOpacity} from "react-native";
+import { deleteWorkout, getWorkouts, saveWorkout } from "../Firebase/workouts";
+import { Foundation, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { Button, List, Divider, IconButton, Colors, Card} from "react-native-paper";
 import GradientBackground from "../Components/LinearGradient";
 import HistoryChart from '../Components/HistoryChart'
@@ -9,6 +9,7 @@ import { WORKOUTS } from "../Firebase/Config";
 import { useUserId } from "../Components/UserIdContext";
 import { parseArrayToCoordinates } from "../helpers/Functions";
 import MapView, { Marker, Polyline } from "react-native-maps";
+
 
 
 export default function HistoryScreen() {
@@ -34,6 +35,8 @@ export default function HistoryScreen() {
         setModalVisible(false);
       };
 
+
+
   
 
     return (
@@ -51,7 +54,7 @@ export default function HistoryScreen() {
 
                 {workouts && workouts.length > 0 ? (
                     workouts.map((workout, index) => (
-                        <WorkoutItem key={index} workout={workout} setModalVisible={setModalVisible} handleShowWorkout={handleWorkout}  />
+                        <WorkoutItem  key={index} workout={workout} setModalVisible={setModalVisible} handleShowWorkout={handleWorkout} id={workout.id} />
                     ))
                 ) : (
                     <Text style={styles.noWorkoutsText}>No workouts available</Text>
@@ -148,45 +151,166 @@ const MapModal = ({ modalVisible, setModalVisible, selectedWorkout, handleCloseM
     );
 };
 
-export const WorkoutItem = ({ workout, handleShowWorkout}) => {
+export const WorkoutItem = ({ workout, handleShowWorkout, id}) => {
 
-    const workoutObj = workout
+    const handleDelete = async (id) => {
+        Alert.alert(
+            'Delete workout',
+            'Do you want to delete this workout?',
+            [
+              {
+                text: 'Cancel',
+                style: 'cancel',
+              },
+              {
+                text: 'Delete',
+                onPress: async () => await deleteWorkout(id)
+              }
+            ],
+            { cancelable: false }
+          );
+        
+    }
 
     return (
-        <View style={styles.workoutItem}>
-
-            <View style={styles.nextTo}>
-                <View style={styles.onTop}>
-                {(workout.workout_type === 'running' || workout.workout_type === 'walking') && (
-                    <View style={styles.row}>
-                        <Foundation name="foot" size={35} color="black" />
-                        <Text style={styles.largeText}>{workout.steps}</Text>
-                    </View>
+        <View style={workoutItemStyles.container}>
+            <View style={workoutItemStyles.header}>
+                <View style={{flexDirection: 'row', flex:1, gap: 15}}>
+                    <Text style={workoutItemStyles.timestamp}>{workout.created_at}</Text>
+                    
+                    {workout.workout_type === 'running' && (
+                        <FontAwesome6 name="person-running" size={18} color="black" />
                     )}
+                    {workout.workout_type === 'walking' && (
+                        <FontAwesome6 name="person-walking" size={18} color="black" />
+                    )}
+                    {workout.workout_type === 'cycling' && (
+                        <FontAwesome6 name="bicycle" size={18} color="black" />
+                    )}
+                </View>
 
-                    <View style={styles.row}>
-                        <FontAwesome5 name="fire-alt" size={35} color="black" />
-                        <Text style={styles.largeText}>{workout.calories}</Text>
+                
+                <TouchableOpacity onPress={()=> handleDelete(id)}>
+                    <FontAwesome5 name="trash" size={20} color="black" />
+                </TouchableOpacity>
+            </View>
+            <View style={workoutItemStyles.details}>
+                <View style={workoutItemStyles.leftColumn}>
+                    {(workout.workout_type === 'running' || workout.workout_type === 'walking') && (
+                        <View style={workoutItemStyles.row}>
+                            <FontAwesome5 name="shoe-prints" size={20} color="black" />
+                            <Text style={workoutItemStyles.detailText}>{workout.steps}</Text>
+                            <Text> steps</Text>
+                        </View>
+                    )}
+                    <View style={workoutItemStyles.row}>
+                        <FontAwesome5 name="fire-alt" size={20} color="black" />
+                        <Text style={workoutItemStyles.detailText}>{workout.calories}</Text>
+                        <Text> cal</Text>
                     </View>
+                    <View style={workoutItemStyles.row}>
+                        <FontAwesome5 name="ruler" size={20} color="black" />
+                        <Text style={workoutItemStyles.detailText}>{workout.distance / 1000}</Text> 
+                        <Text> km</Text>
+                    </View>
+                    
                 </View>
+                <View style={workoutItemStyles.rightColumn}>
+                    <View style={workoutItemStyles.durationContainer}>
+                        <FontAwesome5 name="clock" size={20} color="black" />
+                        <Text style={[workoutItemStyles.detailText, workoutItemStyles.duration]}>{workout.duration}</Text>
+                    </View>
+                    <Button icon="map-marker-distance" mode="contained" onPress={() => handleShowWorkout(workout)} buttonColor="lightcoral">
+                            ROUTE
+                    </Button>
+                </View>
+            </View>
+            <View style={workoutItemStyles.footer}>
 
-                <View style={styles.timeContainer}>
-                    <Text style={styles.timeText}>{workout.duration}</Text>
-                    <Text>{workout.distance} m</Text>
-                    <Text >{workout.workout_type}</Text>
-                </View>
+                
 
             </View>
-
-            <Text style={styles.createdAtText}>{workout.created_at}</Text>
-            <Button icon="map-marker-distance" mode="contained" onPress={() => handleShowWorkout(workoutObj)} buttonColor="lightcoral">
-                ROUTE
-            </Button>
-
-            {/* <Button> <FontAwesome5 name="route" size={24} color="black" /> </Button> */}
         </View>
     );
 };
+
+const workoutItemStyles = StyleSheet.create({
+    container: {
+        backgroundColor: '#ffffff',
+        borderRadius: 10,
+        padding: 19,
+        marginBottom: 15,
+        elevation: 3,
+        gap: 15,
+        margin: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+
+    durationContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'lightgrey', // Example background color
+        borderRadius: 5, // Example border radius
+        padding: 5, // Example padding
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    timestamp: {
+        fontSize: 12,
+        fontStyle: 'italic',
+    },
+    details: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+    },
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 5,
+        justifyContent:'space-between',
+        maxWidth: '70%'
+    },
+    leftColumn: {
+        flex: 1,
+        gap: 10,
+        justifyContent: 'center'
+    },
+    rightColumn: {
+        marginTop: '5%',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 13
+    },
+    detailText: {
+        marginLeft: 12,
+        fontSize: 21,
+    },
+    typeText: {
+        fontSize: 12
+    },
+    duration: {
+        fontWeight: 'bold',
+    },
+    footer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+    },
+    
+})
 
 const styles = StyleSheet.create({
     modalContainer: {
@@ -284,7 +408,7 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 8,
+        marginBottom: 15,
     },
     largeText: {
         fontSize: 20,

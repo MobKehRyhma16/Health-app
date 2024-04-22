@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Surface } from "react-native-paper";
@@ -9,6 +9,8 @@ import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import { saveWorkout } from "../Firebase/workouts";
 import { useUserId } from "../Components/UserIdContext";
+import { Foundation, FontAwesome5 } from '@expo/vector-icons';
+import CaloriinaCalculator from "../Components/Caloriina";
 
 
 const OngoingWorkoutScreen = ({ navigation, route }) => {
@@ -35,6 +37,16 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
   const [subscription, setSubscription] = useState(null);
   const [watchLocation, setWatchLocation] = useState(null);
   const [watchLocationArray, setWatchLocationArray] = useState([])
+
+  const [calories, setCalories] = useState()
+
+  useEffect(() => {
+    const burnedCalories = CaloriinaCalculator({workoutType, time, distance })
+
+    if (burnedCalories.length>0){
+      setCalories(burnedCalories)
+    }
+  }, [distance]);
 
 
   //Used to center map to user location
@@ -145,7 +157,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
       setWorkoutIsPaused(true);
 
 
-      await saveWorkout(userDocumentId, caloriesBurned, currentStepCount, time, distance, workoutType, watchLocationArray)
+      await saveWorkout(userDocumentId, calories, currentStepCount, time, distance, workoutType, watchLocationArray)
        
       
       onReset();
@@ -228,7 +240,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
     return (
       <>
         <Button
-          labelStyle={{ fontSize: 30, padding: 2 }}
+          labelStyle={bottomActionsStyles.buttonLabel}
           textColor="red"
           size={50}
           onPress={() => showQuitConfirmationAlert()}
@@ -238,13 +250,13 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
         {modalVisible ? (
           <Button
             onPress={() => toggleVisibility()}
-            labelStyle={{ fontSize: 30, padding: 2 }}
+            labelStyle={bottomActionsStyles.buttonLabel}
             icon="chevron-down"
           ></Button>
         ) : (
           <Button
             onPress={() => toggleVisibility()}
-            labelStyle={{ fontSize: 30, padding: 2 }}
+            labelStyle={bottomActionsStyles.buttonLabel}
             icon="chevron-up"
           ></Button>
         )}
@@ -267,34 +279,57 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
   };
 
   const SurfaceComp = () => {
-    // if (modalVisible) {
     return (
-      // <TouchableOpacity onPress={() => toggleVisibility()}>
-      <Surface style={styles.surface} elevation={4}>
-        <View style={styles.cardStyle}>
-          <Text style={styles.modalTextStyle}>Distance: {distance}</Text>
-          <Text style={styles.modalTextStyle}>
-            DURATION: {time ? time : "Time empty"}
-          </Text>
+      
+    <TouchableOpacity style={surfaceCompStyles.surface} elevation={4} onPress={() => toggleVisibility()}>
+      <View style={surfaceCompStyles.cardContainer}>
+        <View style={surfaceCompStyles.rowContainer}>
+          <View style={surfaceCompStyles.labelContainer}>
+            <FontAwesome5 name="ruler" size={20} color="darkblue" style={surfaceCompStyles.iconStyle} />
+            <Text style={surfaceCompStyles.labelTextStyle}>Distance (m)</Text>
+          </View>
+          <View style={surfaceCompStyles.valueContainer}>
+            <Text style={surfaceCompStyles.valueTextStyle}>{distance}</Text>
+          </View>
         </View>
-        <View style={styles.cardStyle}>
-          <Text style={styles.modalTextStyle}>CALORIES: {caloriesBurned}</Text>
-          <Text style={styles.modalTextStyle}>STEPS: {currentStepCount}</Text>
+        <View style={surfaceCompStyles.rowContainer}>
+          <View style={surfaceCompStyles.labelContainer}>
+            <FontAwesome5 name="shoe-prints" size={20} color="darkgreen" style={surfaceCompStyles.iconStyle} />
+            <Text style={surfaceCompStyles.labelTextStyle}>Steps</Text>
+          </View>
+          <View style={surfaceCompStyles.valueContainer}>
+            <Text style={surfaceCompStyles.valueTextStyle}>{currentStepCount}</Text>
+          </View>
         </View>
-      </Surface>
-    );
+        <View style={surfaceCompStyles.rowContainer}>
+          <View style={surfaceCompStyles.labelContainer}>
+            <FontAwesome5 name="fire-alt" size={20} color="red" style={surfaceCompStyles.iconStyle} />
+            <Text style={surfaceCompStyles.labelTextStyle}>Calories</Text>
+          </View>
+          <View style={surfaceCompStyles.valueContainer}>
+            <Text style={surfaceCompStyles.valueTextStyle}>{calories}</Text>
+          </View>
+        </View>
+      </View>
 
+      <View style={surfaceCompStyles.durationContainer}>
+        <Text style={surfaceCompStyles.durationText}>{time}</Text>
+      </View>
+      <Text style={{fontSize: 9}}>tap to close</Text>
+    </TouchableOpacity>
+    );
   };
+  
 
 
   return (
     <SafeAreaView style={styles.container}>
 
-      <View style={{ flex: 1, flexGrow: 2 }}>
+      <View style={styles.mapContainer}>
         {watchLocation && (
               <MapView
                 ref={mapViewRef}
-                style={{flex: 1}}
+                style={styles.mapView}
                 initialRegion={{
                   latitude: watchLocation.latitude,
                   longitude: watchLocation.longitude,
@@ -321,10 +356,6 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
           </MapView>
         )}
 
-        {/* {watchLocationArray.map((loc, index) => (
-          <Text key={index}>{loc.latitude}, {loc.longitude}</Text>
-        ))} */}
-
       </View>
 
       <View style={styles.actionsContainer}>
@@ -337,6 +368,83 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
     </SafeAreaView>
   );
 };
+
+const bottomActionsStyles = StyleSheet.create({
+  buttonLabel: {
+    fontSize: 30,
+    padding: 2
+  }
+
+})
+
+const surfaceCompStyles = StyleSheet.create({
+  surface: {
+    borderRadius: 15,
+    margin: 10,
+    padding: 15,
+    backgroundColor: "#FFFFFF",
+    elevation: 4,
+    shadowColor: "#000000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    width: '85%',
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    opacity: 0.9,
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  cardContainer: {
+    marginBottom: 15,
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#F0F0F0', // Add background color to the row container
+    borderRadius: 10, // Add border radius to round the corners
+    paddingHorizontal: 15, // Add horizontal padding for spacing
+    marginBottom: 15, // Adjust margin bottom as needed
+    width: '100%',
+  },
+  labelContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  labelTextStyle: {
+    fontSize: 20,
+    color: "#333333",
+    textAlign: "center",
+    marginLeft: 5, // Add spacing between icon and text
+  },
+  valueContainer: {
+    flex: 1,
+    marginLeft: 8,
+    padding: 5,
+  },
+  valueTextStyle: {
+    fontSize: 20,
+    color: "#333333",
+    textAlign: "right",
+  },
+  durationContainer: {
+    backgroundColor: "#F0F0F0",
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 15,
+  },
+  durationText: {
+    fontSize: 24,
+    color: "#333333",
+    textAlign: "center",
+  },
+  iconStyle: {
+    marginRight: 5, // Add spacing between icon and text
+  },
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -351,38 +459,25 @@ const styles = StyleSheet.create({
   actionsContainer: {
     flex: 1,
     justifyContent: "flex-end",
-  },
-  modalTextStyle: {
-    textAlign: "center",
-    fontSize: 20,
-  },
-  mapView: {
-    height: 600,
+    alignItems: 'center'
   },
 
-  surface: {
-    // marginTop: '150%',
-    // minHeight: '40%',
-    borderRadius: 15,
-    margin: 10,
-    opacity: 0.6,
-    // padding: 10,
-    // fontSize: '30%',
-    // flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    minHeight: "auto",
-    padding: 30,
-  },
-  cardStyle: {
+  mapContainer: {
     flex: 1,
     flexGrow: 2,
-    textAlign: "center",
+    ...StyleSheet.absoluteFillObject
   },
+
+  mapView: {
+    ...StyleSheet.absoluteFillObject
+  },
+
+
   bottomContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
+    gap: 20
     // alignContent: 'center'
   },
 });
