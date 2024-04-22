@@ -18,8 +18,8 @@ export default function Achievements() {
 
     useEffect(() => {
         if (workOutTypes.totalWorkoutCount >= 10) {
-            console.log("Workout Warrior completed");
-            console.log(workOutTypes.totalWorkoutCount);
+           // console.log("Workout Warrior completed");
+           // console.log(workOutTypes.totalWorkoutCount);
             const updatedData = data.map(item => {
                 if (item.id === '3') { // Update the id according to your achievement
                     return { ...item, achieved: true };
@@ -28,14 +28,14 @@ export default function Achievements() {
             });
             setData(updatedData);
         } else {
-            console.log("Workouts under 10");
+           // console.log("Workouts under 10");
         }
     }, [workOutTypes.totalWorkoutCount]);
 
     useEffect(() => {
         if (workOutTypes.totalDistance >= 42) {
-            console.log("From Marathon to Athens Completed");
-            console.log(workOutTypes.totalDistance);
+           // console.log("From Marathon to Athens Completed");
+           // console.log(workOutTypes.totalDistance);
             const updatedData = data.map(item => {
                 if (item.id === '1') { // Update the id according to your achievement
                     return { ...item, achieved: true };

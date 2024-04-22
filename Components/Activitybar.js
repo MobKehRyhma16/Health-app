@@ -15,7 +15,7 @@ export default function Activitybar() {
     const userId = uid;
 
     const today = new Date().toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '.');
-    console.log("Today's date:", today);
+    // console.log("Today's date:", today);
     
     const workouts = getWorkouts(userId);
     
@@ -39,15 +39,15 @@ export default function Activitybar() {
         }
     });
     
-    console.log("Todays Workouts:", todaysWorkouts);
+    // console.log("Todays Workouts:", todaysWorkouts);
     
     
     const steps = todaysWorkouts.reduce((totalSteps, workout) => totalSteps + (workout.steps || 0), 0);
-    console.log("Total steps for today:", steps);
+    //console.log("Total steps for today:", steps);
 
     const totalCalories = todaysWorkouts.reduce((totalCalories, workout) => totalCalories + parseFloat(workout.calories || 0), 0);
     const roundedCalories = Math.ceil(totalCalories * 100) / 100; // Round up to two decimal places    console.log("Total calories burned for today:", calories);
-    console.log("Total calories burned for today:", roundedCalories.toFixed(2));
+    //console.log("Total calories burned for today:", roundedCalories.toFixed(2));
 
     const DailyGoal = ({ steps }) => {
         const [dailyGoal, setDailyGoal] = useState('');
@@ -56,7 +56,7 @@ export default function Activitybar() {
     
         useEffect(() => {
             fetchUserGoal();
-            console.log("Steps:", steps);
+            //console.log("Steps:", steps);
         }, []);
     
         useEffect(() => {
