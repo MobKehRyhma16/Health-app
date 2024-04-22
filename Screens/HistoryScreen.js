@@ -16,7 +16,14 @@ export default function HistoryScreen() {
 
     const {userDocumentId } = useUserId()
     const user = userDocumentId
-    const workouts = getWorkouts(user)
+    let workouts = null
+    
+    try{
+        workouts = getWorkouts(user)
+    } catch (error){
+        console.log('Error fetching workouts at history')
+    }
+    
 
     const [modalVisible, setModalVisible] = useState(false)
 
@@ -57,7 +64,7 @@ export default function HistoryScreen() {
                 <GradientBackground>
                     {workouts && workouts.length > 0 ? (
                         workouts.map((workout, index) => (
-                            <WorkoutItem  key={index} workout={workout} setModalVisible={setModalVisible} handleShowWorkout={handleWorkout} id={workout.id} />
+                            <WorkoutItem  key={index} workout={workout} setModalVisible={setModalVisible} handleShowWorkout={handleWorkout} id={workout.id} historyFlag={true} />
                         ))
                     ) : (
                         <Text style={styles.noWorkoutsText}>No workouts available</Text>
@@ -73,7 +80,7 @@ export default function HistoryScreen() {
     );
 }
 
-const MapModal = ({ modalVisible, setModalVisible, selectedWorkout, handleCloseModal }) => {
+export const MapModal = ({ modalVisible, setModalVisible, selectedWorkout, handleCloseModal }) => {
     const [finalRouteObject, setFinalRouteObject] = useState([]);
 
     useEffect(() => {
@@ -157,7 +164,9 @@ const MapModal = ({ modalVisible, setModalVisible, selectedWorkout, handleCloseM
     );
 };
 
-export const WorkoutItem = ({ workout, handleShowWorkout, id}) => {
+export const WorkoutItem = ({ workout, handleShowWorkout, id, historyFlag}) => {
+
+    const showDeleteAndRoute = historyFlag
 
     const handleDelete = async (id) => {
         Alert.alert(
@@ -196,10 +205,15 @@ export const WorkoutItem = ({ workout, handleShowWorkout, id}) => {
                     )}
                 </View>
 
+                {historyFlag === true && (
+                    <TouchableOpacity onPress={()=> handleDelete(id)}>
+                        <FontAwesome5 name="trash" size={20} color="black" />
+                    </TouchableOpacity>
+
+                ) }
+
                 
-                <TouchableOpacity onPress={()=> handleDelete(id)}>
-                    <FontAwesome5 name="trash" size={20} color="black" />
-                </TouchableOpacity>
+
             </View>
             <View style={workoutItemStyles.details}>
                 <View style={workoutItemStyles.leftColumn}>
@@ -227,9 +241,13 @@ export const WorkoutItem = ({ workout, handleShowWorkout, id}) => {
                         <FontAwesome5 name="clock" size={20} color="black" />
                         <Text style={[workoutItemStyles.detailText, workoutItemStyles.duration]}>{workout.duration}</Text>
                     </View>
+                    {historyFlag === true && (
                     <Button icon="map-marker-distance" mode="contained" onPress={() => handleShowWorkout(workout)} buttonColor="lightcoral">
                             ROUTE
                     </Button>
+
+                    )} 
+
                 </View>
             </View>
             <View style={workoutItemStyles.footer}>
