@@ -16,7 +16,14 @@ export default function HistoryScreen() {
 
     const {userDocumentId } = useUserId()
     const user = userDocumentId
-    const workouts = getWorkouts(user)
+    let workouts = null
+    
+    try{
+        workouts = getWorkouts(user)
+    } catch (error){
+        console.log('Error fetching workouts at history')
+    }
+    
 
     const [modalVisible, setModalVisible] = useState(false)
 
@@ -73,7 +80,7 @@ export default function HistoryScreen() {
     );
 }
 
-const MapModal = ({ modalVisible, setModalVisible, selectedWorkout, handleCloseModal }) => {
+export const MapModal = ({ modalVisible, setModalVisible, selectedWorkout, handleCloseModal }) => {
     const [finalRouteObject, setFinalRouteObject] = useState([]);
 
     useEffect(() => {
