@@ -3,6 +3,8 @@ import { StyleSheet, View, TouchableOpacity, Text, Modal } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { FontAwesome6, Ionicons, AntDesign } from "@expo/vector-icons";
+import { SvgUri } from "react-native-svg";
+import CustomMarker from "../Components/CustomMarker";
 
 const StartWorkoutScreen = ({ navigation }) => {
   const [location, setLocation] = useState(null);
@@ -25,10 +27,9 @@ const StartWorkoutScreen = ({ navigation }) => {
 
   const startWorkout = (workoutType) => {
     // Navigate to OngoingWorkoutScreen and pass workoutType as a parameter
-    setModalVisible(false)
-    navigation.navigate('OngoingWorkout', { workoutType: workoutType });
-  }
-
+    setModalVisible(false);
+    navigation.navigate("OngoingWorkout", { workoutType: workoutType });
+  };
 
   return (
     <View style={styles.container}>
@@ -50,7 +51,12 @@ const StartWorkoutScreen = ({ navigation }) => {
               longitude: location.coords.longitude,
             }}
             title="Your Location"
-          />
+          >
+            <CustomMarker
+              width={40}
+              height={40}
+              />
+          </Marker>
         </MapView>
       )}
       <View style={styles.overlayContainer}>
@@ -75,32 +81,31 @@ const StartWorkoutScreen = ({ navigation }) => {
           <View style={styles.modalView}>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={() => startWorkout('running')}
+              onPress={() => startWorkout("running")}
             >
               <FontAwesome6 name="person-running" size={24} color="white" />
               <Text style={styles.modalText}>Running</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={() => startWorkout('cycling')}
+              onPress={() => startWorkout("cycling")}
             >
               <Ionicons name="bicycle" size={24} color="white" />
               <Text style={styles.modalText}>Cycling</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={() => startWorkout('walking')}
+              onPress={() => startWorkout("walking")}
             >
               <FontAwesome6 name="person-walking" size={24} color="white" />
               <Text style={styles.modalText}>Walking</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={()=>setModalVisible(!modalVisible)}
+              onPress={() => setModalVisible(!modalVisible)}
             >
               <AntDesign name="closecircle" size={24} color="white" />
             </TouchableOpacity>
-
           </View>
         </View>
       </Modal>
@@ -174,6 +179,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginLeft: 10,
+  },
+  markerImage: {
+    width: 35,
+    height: 35,
   },
 });
 
