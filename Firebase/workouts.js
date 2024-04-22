@@ -1,4 +1,4 @@
-import { firestore, collection, query, where, onSnapshot, WORKOUTS, GeoPoint, orderBy } from "./Config";
+import { firestore, collection, query, where, onSnapshot, WORKOUTS, GeoPoint, orderBy, deleteDoc } from "./Config";
 import { convertFirebaseTimeStampToJS } from "../helpers/Functions";
 import { useEffect, useState } from "react";
 import { addDoc, doc } from 'firebase/firestore'; // Import the 'doc' function
@@ -33,6 +33,21 @@ export const saveWorkout = async (user,calories, steps, duration, distance ,work
         });
     } catch (error) {
         console.log(error);
+    }
+};
+
+export const deleteWorkout = async (workoutId) => {
+    console.log('Delete workout with id: ', workoutId)
+    try {
+        // Reference to the document to be deleted
+        const workoutDocRef = doc(firestore, 'workouts', workoutId);
+        
+        // Delete the document
+        await deleteDoc(workoutDocRef);
+        
+        console.log('Workout deleted successfully');
+    } catch (error) {
+        console.error('Error deleting workout:', error);
     }
 };
 
