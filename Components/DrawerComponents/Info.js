@@ -89,7 +89,7 @@ export default function Info() {
                 <TextInput style={DrawerStyles.field} keyboardType='default' value={firstname} onChangeText={text => setFirstname(text)} />
                 <Text style={DrawerStyles.field}>Lastname</Text>
                 <TextInput style={DrawerStyles.field} keyboardType='default' value={lastname} onChangeText={text => setLastname(text)} />
-                <Text style={DrawerStyles.field}>Length</Text>
+                <Text style={DrawerStyles.field}>Height</Text>
                 <TextInput style={DrawerStyles.field} keyboardType='default' value={length} onChangeText={text => setLength(text)} />
                 <Text style={DrawerStyles.field}>Weight</Text>
                 <TextInput style={DrawerStyles.field} keyboardType='default' value={weight} onChangeText={text => setWeight(text)} />

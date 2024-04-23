@@ -67,15 +67,16 @@ const StartWorkoutScreen = ({ navigation }) => {
           }}
           showsCompass={true}
           userInterfaceStyle="light"
+          showsUserLocation={true}
         >
-          <Marker
+          {/* <Marker
             coordinate={{
               latitude: location.latitude,
               longitude: location.longitude,
             }}
             title="Your Location"
             image={require("../assets/red_marker128.png")}
-          ></Marker>
+          ></Marker> */}
         </MapView>
       )}
       <View style={styles.overlayTopContainer}>

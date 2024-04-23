@@ -26,7 +26,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
 
   // Other variables
   const [caloriesBurned, setCaloriesBurned] = useState(0);
-  const [modalVisible, setModalVisible] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
   const [savingModalVisible, setSavingModalVisible] = useState(false);
   const [workoutIsPaused, setWorkoutIsPaused] = useState(true);
   const [distance, setDistance] = useState();
