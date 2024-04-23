@@ -7,7 +7,7 @@ import GradientBackground from "../Components/LinearGradient";
 import HistoryChart from '../Components/HistoryChart'
 import { WORKOUTS } from "../Firebase/Config";
 import { useUserId } from "../Components/UserIdContext";
-import { parseArrayToCoordinates } from "../helpers/Functions";
+import { parseArrayToCoordinates, parseDurationToSeconds } from "../helpers/Functions";
 import MapView, { Marker, Polyline } from "react-native-maps";
 
 
@@ -168,6 +168,8 @@ export const WorkoutItem = ({ workout, handleShowWorkout, id, historyFlag}) => {
 
     const showDeleteAndRoute = historyFlag
 
+    const velocityKMH = (workout.distance/parseDurationToSeconds(workout.duration))*3.6
+
     const handleDelete = async (id) => {
         Alert.alert(
             'Delete workout',
@@ -229,14 +231,24 @@ export const WorkoutItem = ({ workout, handleShowWorkout, id, historyFlag}) => {
                         <Text style={workoutItemStyles.detailText}>{workout.calories}</Text>
                         <Text> cal</Text>
                     </View>
+
                     <View style={workoutItemStyles.row}>
-                        <FontAwesome5 name="ruler" size={20} color="black" />
-                        <Text style={workoutItemStyles.detailText}>{workout.distance / 1000}</Text> 
-                        <Text> km</Text>
+                        <FontAwesome5 name="tachometer-alt" size={20} color="black" />
+                        <Text style={workoutItemStyles.detailText}>{velocityKMH.toFixed(1)}</Text> 
+                        <Text> km / h</Text>
                     </View>
+
+
                     
                 </View>
                 <View style={workoutItemStyles.rightColumn}>
+                    <View style={workoutItemStyles.row}>
+                        {/* <FontAwesome5 name="ruler" size={20} color="black" /> */}
+                        <Text style={workoutItemStyles.detailText}>{workout.distance / 1000}</Text> 
+                        <Text> km</Text>
+                    </View>
+
+                    
                     <View style={workoutItemStyles.durationContainer}>
                         <FontAwesome5 name="clock" size={20} color="black" />
                         <Text style={[workoutItemStyles.detailText, workoutItemStyles.duration]}>{workout.duration}</Text>
@@ -267,7 +279,7 @@ const workoutItemStyles = StyleSheet.create({
         padding: 19,
         marginBottom: 15,
         elevation: 3,
-        gap: 15,
+        gap: 0,
         margin: 10,
         shadowColor: '#000',
         shadowOffset: {
@@ -285,21 +297,23 @@ const workoutItemStyles = StyleSheet.create({
         backgroundColor: 'lightgrey', // Example background color
         borderRadius: 5, // Example border radius
         padding: 5, // Example padding
+        marginBottom: 5
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: 5,
     },
     timestamp: {
         fontSize: 12,
         fontStyle: 'italic',
+        alignSelf: 'center',
     },
     details: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 10,
+        marginBottom: 1,
     },
     row: {
         flexDirection: 'row',
@@ -310,19 +324,21 @@ const workoutItemStyles = StyleSheet.create({
     },
     leftColumn: {
         flex: 1,
-        gap: 10,
-        justifyContent: 'center'
+        gap: 15,
+        justifyContent: 'center',
+        marginTop: '5%',
+
     },
     rightColumn: {
         marginTop: '5%',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 13
+        gap: 5
     },
     detailText: {
         marginLeft: 12,
-        fontSize: 21,
+        fontSize: 22,
     },
     typeText: {
         fontSize: 12

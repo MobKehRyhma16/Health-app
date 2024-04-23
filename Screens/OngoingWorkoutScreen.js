@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Surface } from "react-native-paper";
@@ -11,6 +11,7 @@ import { saveWorkout } from "../Firebase/workouts";
 import { useUserId } from "../Components/UserIdContext";
 import { Foundation, FontAwesome5 } from "@expo/vector-icons";
 import CaloriinaCalculator from "../Components/Caloriina";
+import { parseDurationToSeconds } from "../helpers/Functions";
 
 const OngoingWorkoutScreen = ({ navigation, route }) => {
   const { userDocumentId, setUserDocumentId, setUser } = useUserId();
@@ -30,10 +31,13 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
   const [workoutIsPaused, setWorkoutIsPaused] = useState(true);
   const [distance, setDistance] = useState();
 
+  const [velocity, setVelocity] = useState(0)
+
   //Watch user location
   const [subscription, setSubscription] = useState(null);
   const [watchLocation, setWatchLocation] = useState(null);
   const [watchLocationArray, setWatchLocationArray] = useState([]);
+
 
   const [calories, setCalories] = useState();
 
@@ -43,6 +47,13 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
     if (burnedCalories.length > 0) {
       setCalories(burnedCalories);
     }
+  }, [distance]);
+
+  useEffect(() => {
+    const timeInSeconds = parseDurationToSeconds(time)
+    const speed = distance/timeInSeconds
+    setVelocity(speed*3.6)
+
   }, [distance]);
 
   //Used to center map to user location
@@ -314,21 +325,46 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
             </View>
           </View>
           <View style={surfaceCompStyles.rowContainer}>
-            <View style={surfaceCompStyles.labelContainer}>
-              <FontAwesome5
-                name="fire-alt"
-                size={20}
-                color="red"
-                style={surfaceCompStyles.iconStyle}
-              />
-              <Text style={surfaceCompStyles.labelTextStyle}>Calories</Text>
-            </View>
-            <View style={surfaceCompStyles.valueContainer}>
-              <Text style={surfaceCompStyles.valueTextStyle}>
-                {calories} cal
-              </Text>
-            </View>
+
+              <View style={surfaceCompStyles.labelContainer}>
+                <FontAwesome5
+                  name="fire-alt"
+                  size={20}
+                  color="red"
+                  style={surfaceCompStyles.iconStyle}
+                />
+                <Text style={surfaceCompStyles.labelTextStyle}>Calories</Text>
+              </View>
+              <View style={surfaceCompStyles.valueContainer}>
+                <Text style={surfaceCompStyles.valueTextStyle}>
+                  {calories} cal
+                </Text>
+              </View>
+    
           </View>
+          {/* <View style={surfaceCompStyles.rowContainer}>
+
+          <View style={surfaceCompStyles.labelContainer}>
+            <FontAwesome5
+              name="tachometer-alt"
+              size={20}
+              color="purple"
+              style={surfaceCompStyles.iconStyle}
+            />
+            <Text style={surfaceCompStyles.labelTextStyle}>AVG Speed</Text>
+          </View>
+          <View style={surfaceCompStyles.valueContainer}>
+            <Text style={surfaceCompStyles.valueTextStyle}>
+              {velocity > 0 ? (
+                <>{velocity.toFixed(1)} km/h</>
+              ): (
+                <>{0} km/h</>
+              )}
+              
+            </Text>
+          </View>
+
+          </View> */}
         </View>
 
         <View style={surfaceCompStyles.durationContainer}>
@@ -368,9 +404,9 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
             }}
             title="Your Location"
             image={require("../assets/red_marker128.png")}
-            size
+          
           ></Marker>
-
+                
           </MapView>
         )}
       </View>
