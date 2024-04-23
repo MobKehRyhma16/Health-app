@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: 'center',
     position: 'absolute',
-    bottom: 35, // Adjust the bottom position as needed
+    bottom: 60, // Adjust the bottom position as needed
     left: 0,
     right: 0,
     alignItems: "center",
