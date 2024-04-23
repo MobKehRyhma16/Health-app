@@ -14,8 +14,8 @@ const StartWorkoutScreen = ({ navigation }) => {
 
   const startWatchingLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      setStatusState(status)
+    if (status !== "granted") {
+      setStatusState(status);
       return;
     }
 
@@ -25,8 +25,7 @@ const StartWorkoutScreen = ({ navigation }) => {
         timeInterval: 1000,
         distanceInterval: 1,
       },
-      location => {
-
+      (location) => {
         const { latitude, longitude } = location.coords;
         const locationObject = { latitude, longitude };
 
@@ -80,18 +79,20 @@ const StartWorkoutScreen = ({ navigation }) => {
       )}
       <View style={styles.overlayTopContainer}>
         <View style={styles.topBox}>
-        <TouchableOpacity onPress={() => {
-          if (location) {
-            const region = {
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            };
-            mapRef.current.animateToRegion(region);
-          }
-        }}>
-            <Ionicons name="compass-sharp" size={48}/>
+          <TouchableOpacity
+            onPress={() => {
+              if (location) {
+                const region = {
+                  latitude: location.latitude,
+                  longitude: location.longitude,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                };
+                mapRef.current.animateToRegion(region);
+              }
+            }}
+          >
+            <Ionicons name="compass-sharp" size={48} />
           </TouchableOpacity>
         </View>
       </View>
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
   },
   topBox: {
     paddingTop: 65,
-    left: "35%"
+    left: "35%",
   },
   button: {
     backgroundColor: "red",
