@@ -388,24 +388,31 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
               latitudeDelta: 0.01,
               longitudeDelta: 0.01,
             }}
+            showsUserLocation={true}
           >
             {watchLocationArray.length > 1 && (
               <Polyline
                 coordinates={watchLocationArray}
                 strokeColor="#0099cc"
-                strokeWidth={2}
+                strokeWidth={6}
               />
             )}
             {/* Marker for current location */}
-            <Marker
-            coordinate={{
-              latitude: watchLocation.latitude,
-              longitude: watchLocation.longitude,
-            }}
-            title="Your Location"
-            image={require("../assets/red_marker128.png")}
-          
-          ></Marker>
+            {/* <Marker
+              coordinate={{
+                latitude: watchLocation.latitude,
+                longitude: watchLocation.longitude,
+              }}
+              title="Your Location"
+            >
+              <Image
+                source={require("../assets/red_marker128.png")}
+                style={{ width: 32, height: 32}} // Adjust the width and height as needed
+                resizeMode="center"
+                resizeMethod="resize"
+              />
+            </Marker> */}
+            
                 
           </MapView>
         )}
