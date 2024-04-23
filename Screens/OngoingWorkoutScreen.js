@@ -9,13 +9,11 @@ import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import { saveWorkout } from "../Firebase/workouts";
 import { useUserId } from "../Components/UserIdContext";
-import { Foundation, FontAwesome5 } from '@expo/vector-icons';
+import { Foundation, FontAwesome5 } from "@expo/vector-icons";
 import CaloriinaCalculator from "../Components/Caloriina";
 
-
 const OngoingWorkoutScreen = ({ navigation, route }) => {
-
-  const {userDocumentId, setUserDocumentId, setUser} = useUserId()
+  const { userDocumentId, setUserDocumentId, setUser } = useUserId();
 
   const { workoutType } = route.params;
 
@@ -28,35 +26,32 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
   // Other variables
   const [caloriesBurned, setCaloriesBurned] = useState(0);
   const [modalVisible, setModalVisible] = useState(true);
-  const [savingModalVisible,setSavingModalVisible] = useState(false)
+  const [savingModalVisible, setSavingModalVisible] = useState(false);
   const [workoutIsPaused, setWorkoutIsPaused] = useState(true);
   const [distance, setDistance] = useState();
-
 
   //Watch user location
   const [subscription, setSubscription] = useState(null);
   const [watchLocation, setWatchLocation] = useState(null);
-  const [watchLocationArray, setWatchLocationArray] = useState([])
+  const [watchLocationArray, setWatchLocationArray] = useState([]);
 
-  const [calories, setCalories] = useState()
+  const [calories, setCalories] = useState();
 
   useEffect(() => {
-    const burnedCalories = CaloriinaCalculator({workoutType, time, distance })
+    const burnedCalories = CaloriinaCalculator({ workoutType, time, distance });
 
-    if (burnedCalories.length>0){
-      setCalories(burnedCalories)
+    if (burnedCalories.length > 0) {
+      setCalories(burnedCalories);
     }
   }, [distance]);
 
-
   //Used to center map to user location
   const mapViewRef = useRef(null);
-  
 
   const startWatchingLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      setStatusState(status)
+    if (status !== "granted") {
+      setStatusState(status);
       return;
     }
 
@@ -66,8 +61,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
         timeInterval: 1000,
         distanceInterval: 1,
       },
-      location => {
-
+      (location) => {
         const { latitude, longitude } = location.coords;
         const locationObject = { latitude, longitude };
 
@@ -89,19 +83,23 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
     };
   }, []);
 
-
   useEffect(() => {
-
     if (watchLocation && !workoutIsPaused) {
       // Check if the new location is different from the last one
       const lastLocation = watchLocationArray[watchLocationArray.length - 1];
-      if (!lastLocation || (lastLocation.latitude !== watchLocation.latitude || lastLocation.longitude !== watchLocation.longitude)) {
+      if (
+        !lastLocation ||
+        lastLocation.latitude !== watchLocation.latitude ||
+        lastLocation.longitude !== watchLocation.longitude
+      ) {
         // Add the new location to the array only if it's different
-        setWatchLocationArray(prevLocations => [...prevLocations, watchLocation]);
+        setWatchLocationArray((prevLocations) => [
+          ...prevLocations,
+          watchLocation,
+        ]);
       }
     }
   }, [watchLocation]);
-
 
   useEffect(() => {
     if (watchLocationArray.length > 1) {
@@ -124,10 +122,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
     }
   }, [watchLocationArray]);
 
-
-
   useEffect(() => {
-
     if (workoutIsPaused) {
       // setLocation(null)
       // setLocationArray([])
@@ -137,9 +132,7 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
     }
   }, []);
 
-  useEffect(() => {
-
-  }, [workoutIsPaused]);
+  useEffect(() => {}, [workoutIsPaused]);
 
   const quitWorkout = () => {
     pauseStopwatch();
@@ -152,35 +145,34 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
 
   const quitAndSave = async () => {
     // const saveWorkout = async (calories, steps, duration, distance, workout_type, routeArray) => {
-      pauseStopwatch();
-      onPause();
-      setWorkoutIsPaused(true);
+    pauseStopwatch();
+    onPause();
+    setWorkoutIsPaused(true);
 
+    await saveWorkout(
+      userDocumentId,
+      calories,
+      currentStepCount,
+      time,
+      distance,
+      workoutType,
+      watchLocationArray
+    );
 
-      await saveWorkout(userDocumentId, calories, currentStepCount, time, distance, workoutType, watchLocationArray)
-       
-      
-      onReset();
-      resetStopwatch();
+    onReset();
+    resetStopwatch();
 
-      navigation.navigate("Workout");
-
-
-  }
+    navigation.navigate("Workout");
+  };
 
   const toggleWorkout = () => {
-
     setWorkoutIsPaused(!workoutIsPaused);
     if (workoutIsPaused) {
-
       startStopwatch();
       onResume();
-
     } else {
       pauseStopwatch();
       onPause();
-
-
     }
   };
 
@@ -190,22 +182,21 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
 
   const showQuitConfirmationAlert = () => {
     Alert.alert(
-      'Quit Workout',
-      'Are you sure you want to quit the workout?',
+      "Quit Workout",
+      "Are you sure you want to quit the workout?",
       [
         {
-          text: 'Cancel',
-          style: 'cancel',
+          text: "Cancel",
+          style: "cancel",
         },
         {
-          text: 'Quit and Save',
-          onPress: () => quitAndSave()
+          text: "Quit and Save",
+          onPress: () => quitAndSave(),
         },
         {
-          text: 'Quit Without Saving',
+          text: "Quit Without Saving",
           onPress: () => quitWorkout(),
-        }
-
+        },
       ],
       { cancelable: false }
     );
@@ -215,23 +206,27 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
     if (watchLocation) {
       const { latitude, longitude } = watchLocation;
       const delta = 0.01; // Adjust this value as needed for zoom level
-      mapViewRef.current?.animateToRegion({
-        latitude,
-        longitude,
-        latitudeDelta: delta,
-        longitudeDelta: delta
-      }, 1000);
+      mapViewRef.current?.animateToRegion(
+        {
+          latitude,
+          longitude,
+          latitudeDelta: delta,
+          longitudeDelta: delta,
+        },
+        1000
+      );
     }
   }, [watchLocation]);
 
   const handleCenter = () => {
     if (watchLocation) {
-      const { latitude, longitude, latitudeDelta, longitudeDelta } = watchLocation;
+      const { latitude, longitude, latitudeDelta, longitudeDelta } =
+        watchLocation;
       mapViewRef.current?.animateToRegion({
         latitude,
         longitude,
         latitudeDelta,
-        longitudeDelta
+        longitudeDelta,
       });
     }
   };
@@ -280,63 +275,84 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
 
   const SurfaceComp = () => {
     return (
-      
-    <TouchableOpacity style={surfaceCompStyles.surface} elevation={4} onPress={() => toggleVisibility()}>
-      <View style={surfaceCompStyles.cardContainer}>
-        <View style={surfaceCompStyles.rowContainer}>
-          <View style={surfaceCompStyles.labelContainer}>
-            <FontAwesome5 name="ruler" size={20} color="darkblue" style={surfaceCompStyles.iconStyle} />
-            <Text style={surfaceCompStyles.labelTextStyle}>Distance</Text>
+      <TouchableOpacity
+        style={surfaceCompStyles.surface}
+        elevation={4}
+        onPress={() => toggleVisibility()}
+      >
+        <View style={surfaceCompStyles.cardContainer}>
+          <View style={surfaceCompStyles.rowContainer}>
+            <View style={surfaceCompStyles.labelContainer}>
+              <FontAwesome5
+                name="ruler"
+                size={20}
+                color="darkblue"
+                style={surfaceCompStyles.iconStyle}
+              />
+              <Text style={surfaceCompStyles.labelTextStyle}>Distance</Text>
+            </View>
+            <View style={surfaceCompStyles.valueContainer}>
+              <Text style={surfaceCompStyles.valueTextStyle}>
+                {distance / 1000} km
+              </Text>
+            </View>
           </View>
-          <View style={surfaceCompStyles.valueContainer}>
-            <Text style={surfaceCompStyles.valueTextStyle}>{distance/1000} km</Text>
+          <View style={surfaceCompStyles.rowContainer}>
+            <View style={surfaceCompStyles.labelContainer}>
+              <FontAwesome5
+                name="shoe-prints"
+                size={20}
+                color="darkgreen"
+                style={surfaceCompStyles.iconStyle}
+              />
+              <Text style={surfaceCompStyles.labelTextStyle}>Steps</Text>
+            </View>
+            <View style={surfaceCompStyles.valueContainer}>
+              <Text style={surfaceCompStyles.valueTextStyle}>
+                {currentStepCount}
+              </Text>
+            </View>
+          </View>
+          <View style={surfaceCompStyles.rowContainer}>
+            <View style={surfaceCompStyles.labelContainer}>
+              <FontAwesome5
+                name="fire-alt"
+                size={20}
+                color="red"
+                style={surfaceCompStyles.iconStyle}
+              />
+              <Text style={surfaceCompStyles.labelTextStyle}>Calories</Text>
+            </View>
+            <View style={surfaceCompStyles.valueContainer}>
+              <Text style={surfaceCompStyles.valueTextStyle}>
+                {calories} cal
+              </Text>
+            </View>
           </View>
         </View>
-        <View style={surfaceCompStyles.rowContainer}>
-          <View style={surfaceCompStyles.labelContainer}>
-            <FontAwesome5 name="shoe-prints" size={20} color="darkgreen" style={surfaceCompStyles.iconStyle} />
-            <Text style={surfaceCompStyles.labelTextStyle}>Steps</Text>
-          </View>
-          <View style={surfaceCompStyles.valueContainer}>
-            <Text style={surfaceCompStyles.valueTextStyle}>{currentStepCount}</Text>
-          </View>
-        </View>
-        <View style={surfaceCompStyles.rowContainer}>
-          <View style={surfaceCompStyles.labelContainer}>
-            <FontAwesome5 name="fire-alt" size={20} color="red" style={surfaceCompStyles.iconStyle} />
-            <Text style={surfaceCompStyles.labelTextStyle}>Calories</Text>
-          </View>
-          <View style={surfaceCompStyles.valueContainer}>
-            <Text style={surfaceCompStyles.valueTextStyle}>{calories} cal</Text>
-          </View>
-        </View>
-      </View>
 
-      <View style={surfaceCompStyles.durationContainer}>
-        <Text style={surfaceCompStyles.durationText}>{time}</Text>
-      </View>
-      <Text style={{fontSize: 9}}>tap to close</Text>
-    </TouchableOpacity>
+        <View style={surfaceCompStyles.durationContainer}>
+          <Text style={surfaceCompStyles.durationText}>{time}</Text>
+        </View>
+        <Text style={{ fontSize: 9 }}>tap to close</Text>
+      </TouchableOpacity>
     );
   };
-  
-
 
   return (
     <SafeAreaView style={styles.container}>
-
       <View style={styles.mapContainer}>
         {watchLocation && (
-              <MapView
-                ref={mapViewRef}
-                style={styles.mapView}
-                initialRegion={{
-                  latitude: watchLocation.latitude,
-                  longitude: watchLocation.longitude,
-                  latitudeDelta: 0.01,
-                  longitudeDelta: 0.01,
-              }}
-            >
+          <MapView
+            ref={mapViewRef}
+            style={styles.mapView}
+            initialRegion={{
+              latitude: watchLocation.latitude,
+              longitude: watchLocation.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            }}
+          >
             {watchLocationArray.length > 1 && (
               <Polyline
                 coordinates={watchLocationArray}
@@ -346,16 +362,17 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
             )}
             {/* Marker for current location */}
             <Marker
-              coordinate={{
-                latitude: watchLocation.latitude,
-                longitude: watchLocation.longitude,
-              }}
-              title="Current Location"
-              description="This is your current location"
-            />
+            coordinate={{
+              latitude: watchLocation.latitude,
+              longitude: watchLocation.longitude,
+            }}
+            title="Your Location"
+            image={require("../assets/red_marker128.png")}
+            size
+          ></Marker>
+
           </MapView>
         )}
-
       </View>
 
       <View style={styles.actionsContainer}>
@@ -372,10 +389,9 @@ const OngoingWorkoutScreen = ({ navigation, route }) => {
 const bottomActionsStyles = StyleSheet.create({
   buttonLabel: {
     fontSize: 30,
-    padding: 2
-  }
-
-})
+    padding: 2,
+  },
+});
 
 const surfaceCompStyles = StyleSheet.create({
   surface: {
@@ -389,31 +405,30 @@ const surfaceCompStyles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    width: '85%',
+    width: "85%",
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     opacity: 0.9,
     flexDirection: "column",
     alignItems: "center",
-    
   },
   cardContainer: {
     marginBottom: 15,
   },
   rowContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#F0F0F0', // Add background color to the row container
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#F0F0F0", // Add background color to the row container
     borderRadius: 10, // Add border radius to round the corners
     paddingHorizontal: 15, // Add horizontal padding for spacing
     marginBottom: 15, // Adjust margin bottom as needed
-    width: '100%',
+    width: "100%",
   },
   labelContainer: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   labelTextStyle: {
     fontSize: 20,
@@ -460,9 +475,9 @@ const styles = StyleSheet.create({
   actionsContainer: {
     flex: 1,
     justifyContent: "flex-end",
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: 35, // Adjust the bottom position as needed
+    alignItems: "center",
+    position: "absolute",
+    bottom: 60, // Adjust the bottom position as needed
     left: 0,
     right: 0,
     alignItems: "center",
@@ -474,7 +489,6 @@ const styles = StyleSheet.create({
     flexGrow: 2,
     ...StyleSheet.absoluteFillObject,
     zIndex: 1, // Add a zIndex to ensure the map is rendered above other elements
-    
   },
 
   mapView: {
@@ -482,12 +496,11 @@ const styles = StyleSheet.create({
     zIndex: 1, // Add a zIndex to ensure the map is rendered above other elements
   },
 
-
   bottomContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    gap: 20
+    gap: 20,
     // alignContent: 'center'
   },
 });

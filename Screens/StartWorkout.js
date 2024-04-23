@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { StyleSheet, View, TouchableOpacity, Text, Modal } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
@@ -9,12 +9,13 @@ const StartWorkoutScreen = ({ navigation }) => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
+  const mapRef = useRef(null);
   const [subscription, setSubscription] = useState(null);
 
   const startWatchingLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      setStatusState(status)
+    if (status !== "granted") {
+      setStatusState(status);
       return;
     }
 
@@ -24,8 +25,7 @@ const StartWorkoutScreen = ({ navigation }) => {
         timeInterval: 1000,
         distanceInterval: 1,
       },
-      location => {
-
+      (location) => {
         const { latitude, longitude } = location.coords;
         const locationObject = { latitude, longitude };
 
@@ -49,16 +49,16 @@ const StartWorkoutScreen = ({ navigation }) => {
 
   const startWorkout = (workoutType) => {
     // Navigate to OngoingWorkoutScreen and pass workoutType as a parameter
-    setModalVisible(false)
-    navigation.navigate('OngoingWorkout', { workoutType: workoutType });
-  }
-
+    setModalVisible(false);
+    navigation.navigate("OngoingWorkout", { workoutType: workoutType });
+  };
 
   return (
     <View style={styles.container}>
       {location && (
         <MapView
           style={styles.map}
+          ref={mapRef}
           initialRegion={{
             latitude: location.latitude,
             longitude: location.longitude,
@@ -74,10 +74,36 @@ const StartWorkoutScreen = ({ navigation }) => {
               longitude: location.longitude,
             }}
             title="Your Location"
-          />
+            image={require("../assets/red_marker128.png")}
+          ></Marker>
         </MapView>
       )}
-      <View style={styles.overlayContainer}>
+      <View style={styles.overlayTopContainer}>
+        <View style={styles.topBox}>
+          <TouchableOpacity
+            onPress={() => {
+              if (location) {
+                const region = {
+                  latitude: location.latitude,
+                  longitude: location.longitude,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                };
+                mapRef.current.animateToRegion(region);
+              }
+            }}
+          >
+            <View style={{ backgroundColor: "red", borderRadius: 30}}>
+              <Ionicons
+                name="compass"
+                size={48}
+                color="white"
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.overlayBottomContainer}>
         <View style={styles.bottomBox}>
           <TouchableOpacity
             style={styles.button}
@@ -99,32 +125,31 @@ const StartWorkoutScreen = ({ navigation }) => {
           <View style={styles.modalView}>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={() => startWorkout('running')}
+              onPress={() => startWorkout("running")}
             >
               <FontAwesome6 name="person-running" size={24} color="white" />
               <Text style={styles.modalText}>Running</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={() => startWorkout('cycling')}
+              onPress={() => startWorkout("cycling")}
             >
               <Ionicons name="bicycle" size={24} color="white" />
               <Text style={styles.modalText}>Cycling</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={() => startWorkout('walking')}
+              onPress={() => startWorkout("walking")}
             >
               <FontAwesome6 name="person-walking" size={24} color="white" />
               <Text style={styles.modalText}>Walking</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.modalButton}
-              onPress={()=>setModalVisible(!modalVisible)}
+              onPress={() => setModalVisible(!modalVisible)}
             >
               <AntDesign name="closecircle" size={24} color="white" />
             </TouchableOpacity>
-
           </View>
         </View>
       </Modal>
@@ -139,8 +164,19 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
   },
-  overlayContainer: {
-    ...StyleSheet.absoluteFillObject,
+  overlayBottomContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  overlayTopContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
     justifyContent: "flex-end",
     alignItems: "center",
   },
@@ -151,6 +187,10 @@ const styles = StyleSheet.create({
     width: "80%",
     position: "absolute",
     bottom: 40,
+  },
+  topBox: {
+    paddingTop: 50,
+    right: "40%",
   },
   button: {
     backgroundColor: "red",
@@ -198,6 +238,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginLeft: 10,
+  },
+  markerImage: {
+    width: 35,
+    height: 35,
   },
 });
 
