@@ -1,4 +1,4 @@
-import { firestore, collection, query, where, onSnapshot, WORKOUTS, GeoPoint, orderBy } from "./Config";
+import { firestore, collection, query, where, onSnapshot, WORKOUTS, GeoPoint, orderBy, deleteDoc, limit, getDocs } from "./Config";
 import { convertFirebaseTimeStampToJS } from "../helpers/Functions";
 import { useEffect, useState } from "react";
 import { addDoc, doc } from 'firebase/firestore'; // Import the 'doc' function
@@ -33,6 +33,21 @@ export const saveWorkout = async (user,calories, steps, duration, distance ,work
         });
     } catch (error) {
         console.log(error);
+    }
+};
+
+export const deleteWorkout = async (workoutId) => {
+    console.log('Delete workout with id: ', workoutId)
+    try {
+        // Reference to the document to be deleted
+        const workoutDocRef = doc(firestore, 'workouts', workoutId);
+        
+        // Delete the document
+        await deleteDoc(workoutDocRef);
+        
+        console.log('Workout deleted successfully');
+    } catch (error) {
+        console.error('Error deleting workout:', error);
     }
 };
 
@@ -89,4 +104,47 @@ export const getWorkouts = (userId) => {
     }, []);
 
     return workouts;
+};
+
+export const getLatestWorkout = async (userId) => {
+    try {
+        const usersRef = collection(firestore, 'users');
+        const userDocRef = doc(usersRef, userId); // Construct user document reference
+
+        const q = query(
+            collection(firestore, 'workouts'),
+            where("user_id", "==", userDocRef),
+            orderBy('created_at', 'desc'),
+            limit(1) // Limit the query to fetch only the latest workout
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const doc = querySnapshot.docs[0];
+            const routeArray = [];
+            doc.data().route.forEach((points) => {
+                routeArray.push([points.latitude, points.longitude]);
+            });
+
+            const latestWorkoutObject = {
+                id: doc.id,
+                calories: doc.data()?.calories ?? 0, // If calories doesn't exist, default to 0
+                created_at: convertFirebaseTimeStampToJS(doc.data()?.created_at),
+                duration: doc.data()?.duration ?? 0, // If duration doesn't exist, default to 0
+                distance: doc.data()?.distance ?? 0, // If distance doesn't exist, default to 0
+                user_id: doc.data()?.user_id?.id, // Safely access nested property
+                steps: doc.data()?.steps ?? 0, // If steps doesn't exist, default to 0
+                workout_type: doc.data()?.workout_type,
+                route: routeArray
+            };
+
+            return latestWorkoutObject;
+        } else {
+            return null; // Return null if no workout found
+        }
+    } catch (error) {
+        console.error("Error fetching latest workout:", error);
+        return null;
+    }
 };

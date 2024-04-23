@@ -1,8 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, FlatList, Modal, TouchableWithoutFeedback, SafeAreaView } from 'react-native';
 import GradientBackground from '../../Components/LinearGradient';
+import { getUserWorkoutData } from '../../Firebase/profile';
+import { getAuth } from '../../Firebase/Config';
 
 export default function Achievements() {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const uid = user.uid;
+    const userId = uid;
+    const workOutTypes = getUserWorkoutData(userId)
+
+    useEffect(() => {
+        console.log("Total Workout Types:", workOutTypes.totalWorkoutCount);
+        console.log("Total Distance:", workOutTypes.totalDistance);
+    }, []);
+
+    useEffect(() => {
+        if (workOutTypes.totalWorkoutCount >= 10) {
+           // console.log("Workout Warrior completed");
+           // console.log(workOutTypes.totalWorkoutCount);
+            const updatedData = data.map(item => {
+                if (item.id === '3') { // Update the id according to your achievement
+                    return { ...item, achieved: true };
+                }
+                return item;
+            });
+            setData(updatedData);
+        } else {
+           // console.log("Workouts under 10");
+        }
+    }, [workOutTypes.totalWorkoutCount]);
+
+    useEffect(() => {
+        if (workOutTypes.totalDistance >= 42) {
+           // console.log("From Marathon to Athens Completed");
+           // console.log(workOutTypes.totalDistance);
+            const updatedData = data.map(item => {
+                if (item.id === '1') { // Update the id according to your achievement
+                    return { ...item, achieved: true };
+                }
+                return item;
+            });
+            setData(updatedData);
+        }
+    }, [workOutTypes.totalDistance]);
+
     const images = {
         distance: { uri: require('./AchImg/distance.png'), text: 'From Marathon to Athens: Run in total 42 kilometers' },
         speed: { uri: require('./AchImg/speed.png'), text: 'The Speed Demon: Have a running speed of 16km per hour' },
@@ -11,16 +54,19 @@ export default function Achievements() {
         Stepgoal: { uri: require('./AchImg/Stepgoal.png'), text: 'Step Slayer: Complete your daily step goal' },
     };
 
-    const data = [
+    const [data, setData] = useState([
         { id: '1', image: images.distance, achieved: false },
         { id: '2', image: images.speed, achieved: false },
         { id: '3', image: images.workout, achieved: false },
         { id: '4', image: images.ProfAch, achieved: false },
         { id: '5', image: images.Stepgoal, achieved: false },
-    ];
+    ]);
 
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
+
+    const achievedData = data.filter(item => item.achieved);
+    const lockedData = data.filter(item => !item.achieved);
 
     const handleImagePress = (image) => {
         setSelectedImage(image);

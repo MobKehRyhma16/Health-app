@@ -8,8 +8,8 @@ import { useUserId } from '../UserIdContext';
 
 export default function Login({ setLogin }) {
 
-    const [email, setEmail] = useState('testuser@tester.com');
-    const [password, setPassword] = useState('test123');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [isError, setIsError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const { setUserContext } = useContext(UserContext); // Access setUserContext from context

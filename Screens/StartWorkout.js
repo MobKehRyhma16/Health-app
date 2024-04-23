@@ -10,18 +10,42 @@ const StartWorkoutScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const mapRef = useRef(null);
+  const [subscription, setSubscription] = useState(null);
+
+  const startWatchingLocation = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      setStatusState(status)
+      return;
+    }
+
+    const sub = await Location.watchPositionAsync(
+      {
+        accuracy: Location.Accuracy.High,
+        timeInterval: 1000,
+        distanceInterval: 1,
+      },
+      location => {
+
+        const { latitude, longitude } = location.coords;
+        const locationObject = { latitude, longitude };
+
+        setLocation(locationObject);
+      }
+    );
+
+    setSubscription(sub);
+  };
 
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
+    startWatchingLocation();
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    })();
+    // Clean up subscription when component unmounts
+    return () => {
+      if (subscription) {
+        subscription.remove();
+      }
+    };
   }, []);
 
   const startWorkout = (workoutType) => {
@@ -37,8 +61,8 @@ const StartWorkoutScreen = ({ navigation }) => {
           style={styles.map}
           ref={mapRef}
           initialRegion={{
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
+            latitude: location.latitude,
+            longitude: location.longitude,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}
@@ -47,8 +71,8 @@ const StartWorkoutScreen = ({ navigation }) => {
         >
           <Marker
             coordinate={{
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
+              latitude: location.latitude,
+              longitude: location.longitude,
             }}
             title="Your Location"
           ></Marker>

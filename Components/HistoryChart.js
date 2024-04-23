@@ -18,14 +18,16 @@ export const HistoryChart = ({ workouts }) => {
 
     return (
       <BarChart
-      style={styles.chart}
-      barWidth={50}
-      noOfSections={3}
-      barBorderRadius={4}
-      frontColor="lightcoral"
-      data={dataDuration}
-      yAxisThickness={0}
-      xAxisThickness={0}
+          style={styles.chart}
+          barWidth={50}
+          noOfSections={3}
+          barBorderRadius={4}
+          frontColor="lightcoral"
+          data={dataDuration}
+          yAxisThickness={0}
+          xAxisThickness={0}
+
+
     />
     );
   }
@@ -34,15 +36,15 @@ export const HistoryChart = ({ workouts }) => {
 
     return (
       <BarChart
-      style={styles.chart}
-      barWidth={50}
-      noOfSections={3}
-      barBorderRadius={4}
-      frontColor="lightcoral"
-      data={dataDistance}
-      yAxisThickness={0}
-      xAxisThickness={0}
-    />
+          style={styles.chart}
+          barWidth={50}
+          noOfSections={3}
+          barBorderRadius={4}
+          frontColor="lightcoral"
+          data={dataDistance}
+          yAxisThickness={0}
+          xAxisThickness={0}
+      />
     );
   }
    
@@ -81,7 +83,8 @@ export default HistoryChart;
 const styles = StyleSheet.create({
   chartContainer: {
     alignItems: 'center',
-    flexGrow: 2
+    flexGrow: 2,
+    gap: 12
   },
   chart: {
     width: '100%',
