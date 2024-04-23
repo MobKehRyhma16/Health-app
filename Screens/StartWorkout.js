@@ -74,6 +74,7 @@ const StartWorkoutScreen = ({ navigation }) => {
               longitude: location.longitude,
             }}
             title="Your Location"
+            image={require("../assets/red_marker128.png")}
           ></Marker>
         </MapView>
       )}
@@ -92,7 +93,13 @@ const StartWorkoutScreen = ({ navigation }) => {
               }
             }}
           >
-            <Ionicons name="compass-sharp" size={48} />
+            <View style={{ backgroundColor: "red", borderRadius: 30}}>
+              <Ionicons
+                name="compass"
+                size={48}
+                color="white"
+              />
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -182,8 +189,8 @@ const styles = StyleSheet.create({
     bottom: 40,
   },
   topBox: {
-    paddingTop: 65,
-    left: "35%",
+    paddingTop: 50,
+    right: "40%",
   },
   button: {
     backgroundColor: "red",
